@@ -9,8 +9,8 @@ from torch.nn import functional as F
 from torch.nn import Conv1d, ConvTranspose1d, AvgPool1d, Conv2d
 from torch.nn.utils import weight_norm, remove_weight_norm
 
-import modules.commons as commons
-from modules.commons import init_weights, get_padding
+from so_vits_svc_fork import modules as commons
+from so_vits_svc_fork.modules.commons import init_weights, get_padding
 
 
 LRELU_SLOPE = 0.1
@@ -30,7 +30,7 @@ class LayerNorm(nn.Module):
     x = F.layer_norm(x, (self.channels,), self.gamma, self.beta, self.eps)
     return x.transpose(1, -1)
 
- 
+
 class ConvReluNorm(nn.Module):
   def __init__(self, in_channels, hidden_channels, out_channels, kernel_size, n_layers, p_dropout):
     super().__init__()
@@ -85,7 +85,7 @@ class DDSConv(nn.Module):
     for i in range(n_layers):
       dilation = kernel_size ** i
       padding = (kernel_size * dilation - dilation) // 2
-      self.convs_sep.append(nn.Conv1d(channels, channels, kernel_size, 
+      self.convs_sep.append(nn.Conv1d(channels, channels, kernel_size,
           groups=channels, dilation=dilation, padding=padding
       ))
       self.convs_1x1.append(nn.Conv1d(channels, channels, 1))
@@ -264,7 +264,7 @@ class Log(nn.Module):
     else:
       x = torch.exp(x) * x_mask
       return x
-    
+
 
 class Flip(nn.Module):
   def forward(self, x, *args, reverse=False, **kwargs):

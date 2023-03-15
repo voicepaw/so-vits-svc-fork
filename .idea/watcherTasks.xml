@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ProjectTasksOptions">
-    <TaskOptions isEnabled="true">
+    <TaskOptions isEnabled="false">
       <option name="arguments" value="run black $FilePath$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
@@ -21,7 +21,7 @@
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />
     </TaskOptions>
-    <TaskOptions isEnabled="true">
+    <TaskOptions isEnabled="false">
       <option name="arguments" value="run isort $FilePath$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />
@@ -41,7 +41,7 @@
       <option name="workingDir" value="$ProjectFileDir$" />
       <envs />
     </TaskOptions>
-    <TaskOptions isEnabled="true">
+    <TaskOptions isEnabled="false">
       <option name="arguments" value="run pyupgrade --py37-plus $FilePath$" />
       <option name="checkSyntaxErrors" value="true" />
       <option name="description" />

@@ -17,7 +17,7 @@ if __name__ == "__main__":
             #将上传的文件移动到指定的位置上
             shutil.move(os.path.join(basepath, filename), os.path.join(upload_path, "userzip.zip"))
     elif file_type == "audio":
-        upload_path = "./raw/"
+        upload_path = "raw/"
         for filename in uploaded.keys():
             #将上传的文件移动到指定的位置上
             shutil.move(os.path.join(basepath, filename), os.path.join(upload_path, filename))

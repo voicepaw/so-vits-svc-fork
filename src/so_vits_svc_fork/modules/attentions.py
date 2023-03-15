@@ -5,9 +5,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
-import modules.commons as commons
-import modules.modules as modules
-from modules.modules import LayerNorm
+from so_vits_svc_fork import modules as commons, modules as modules
+from so_vits_svc_fork.modules.modules import LayerNorm
 
 
 class FFT(nn.Module):
@@ -136,7 +135,7 @@ class Decoder(nn.Module):
       y = self.encdec_attn_layers[i](x, h, encdec_attn_mask)
       y = self.drop(y)
       x = self.norm_layers_1[i](x + y)
-      
+
       y = self.ffn_layers[i](x, x_mask)
       y = self.drop(y)
       x = self.norm_layers_2[i](x + y)
@@ -180,12 +179,12 @@ class MultiHeadAttention(nn.Module):
       with torch.no_grad():
         self.conv_k.weight.copy_(self.conv_q.weight)
         self.conv_k.bias.copy_(self.conv_q.bias)
-      
+
   def forward(self, x, c, attn_mask=None):
     q = self.conv_q(x)
     k = self.conv_k(c)
     v = self.conv_v(c)
-    
+
     x, self.attn = self.attention(q, k, v, mask=attn_mask)
 
     x = self.conv_o(x)
@@ -264,11 +263,11 @@ class MultiHeadAttention(nn.Module):
     """
     batch, heads, length, _ = x.size()
     # Concat columns of pad to shift from relative to absolute indexing.
-    x = F.pad(x, commons.convert_pad_shape([[0,0],[0,0],[0,0],[0,1]]))
+    x = F.pad(x, commons.convert_pad_shape([[0, 0], [0, 0], [0, 0], [0, 1]]))
 
     # Concat extra elements so to add up to shape (len+1, 2*len-1).
     x_flat = x.view([batch, heads, length * 2 * length])
-    x_flat = F.pad(x_flat, commons.convert_pad_shape([[0,0],[0,0],[0,length-1]]))
+    x_flat = F.pad(x_flat, commons.convert_pad_shape([[0, 0], [0, 0], [0, length - 1]]))
 
     # Reshape and slice out the padded elements.
     x_final = x_flat.view([batch, heads, length+1, 2*length-1])[:, :, :length, length-1:]
@@ -281,7 +280,7 @@ class MultiHeadAttention(nn.Module):
     """
     batch, heads, length, _ = x.size()
     # padd along column
-    x = F.pad(x, commons.convert_pad_shape([[0, 0], [0, 0], [0, 0], [0, length-1]]))
+    x = F.pad(x, commons.convert_pad_shape([[0, 0], [0, 0], [0, 0], [0, length - 1]]))
     x_flat = x.view([batch, heads, length**2 + length*(length -1)])
     # add 0's in the beginning that will skew the elements after reshape
     x_flat = F.pad(x_flat, commons.convert_pad_shape([[0, 0], [0, 0], [length, 0]]))
@@ -329,7 +328,7 @@ class FFN(nn.Module):
     x = self.drop(x)
     x = self.conv_2(self.padding(x * x_mask))
     return x * x_mask
-  
+
   def _causal_padding(self, x):
     if self.kernel_size == 1:
       return x

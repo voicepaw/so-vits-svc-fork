@@ -8,15 +8,15 @@ import io
 import librosa
 import maad
 import numpy as np
-from inference import slicer
+from so_vits_svc_fork.inference import slicer
 import parselmouth
 import soundfile
 import torch
 import torchaudio
 
-from hubert import hubert_model
-import utils
-from models import SynthesizerTrn
+from so_vits_svc_fork.hubert import hubert_model
+from so_vits_svc_fork import utils
+from so_vits_svc_fork.models import SynthesizerTrn
 logging.getLogger('numba').setLevel(logging.WARNING)
 logging.getLogger('matplotlib').setLevel(logging.WARNING)
 

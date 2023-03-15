@@ -21,7 +21,7 @@
 
 ### 4.0版本更新内容
 
-+ 特征输入更换为 [Content Vec](https://github.com/auspicious3000/contentvec) 
++ 特征输入更换为 [Content Vec](https://github.com/auspicious3000/contentvec)
 + 采样率统一使用44100hz
 + 由于更改了hop size等参数以及精简了部分模型结构，推理所需显存占用**大幅降低**，4.0版本44khz显存占用甚至小于3.0版本的32khz
 + 调整了部分代码结构
@@ -74,7 +74,7 @@ dataset_raw
 ```shell
 python resample.py
 ```
- 
+
 2. 自动划分训练集 验证集 测试集 以及自动生成配置文件
 
 ```shell
@@ -98,7 +98,7 @@ python train.py -c configs/config.json -m 44k
 
 ## 推理
 
-使用 [inference_main.py](inference_main.py)
+使用 [inference_main.py](src/so_vits_svc_fork/inference_main.py)
 
 截止此处，4.0使用方法（训练、推理）和3.0完全一致，没有任何变化（推理增加了命令行支持）
 
@@ -146,12 +146,12 @@ python inference_main.py -m "logs/44k/G_30400.pth" -c "configs/config.json" -n "
 
 ## Onnx导出
 
-使用 [onnx_export.py](onnx_export.py)
+使用 [onnx_export.py](src/so_vits_svc_fork/onnx_export.py)
 + 新建文件夹：`checkpoints` 并打开
 + 在`checkpoints`文件夹中新建一个文件夹作为项目文件夹，文件夹名为你的项目名称，比如`aziplayer`
 + 将你的模型更名为`model.pth`，配置文件更名为`config.json`，并放置到刚才创建的`aziplayer`文件夹下
-+ 将 [onnx_export.py](onnx_export.py) 中`path = "NyaruTaffy"` 的 `"NyaruTaffy"` 修改为你的项目名称，`path = "aziplayer"`
-+ 运行 [onnx_export.py](onnx_export.py) 
++ 将 [onnx_export.py](src/so_vits_svc_fork/onnx_export.py) 中`path = "NyaruTaffy"` 的 `"NyaruTaffy"` 修改为你的项目名称，`path = "aziplayer"`
++ 运行 [onnx_export.py](src/so_vits_svc_fork/onnx_export.py)
 + 等待执行完毕，在你的项目文件夹下会生成一个`model.onnx`，即为导出的模型
 
 ### Onnx模型支持的UI
@@ -165,17 +165,17 @@ python inference_main.py -m "logs/44k/G_30400.pth" -c "configs/config.json" -n "
 
 #### 《民法典》
 
-##### 第一千零一十九条 
+##### 第一千零一十九条
 
 任何组织或者个人不得以丑化、污损，或者利用信息技术手段伪造等方式侵害他人的肖像权。未经肖像权人同意，不得制作、使用、公开肖像权人的肖像，但是法律另有规定的除外。
 未经肖像权人同意，肖像作品权利人不得以发表、复制、发行、出租、展览等方式使用或者公开肖像权人的肖像。
 对自然人声音的保护，参照适用肖像权保护的有关规定。
 
-#####  第一千零二十四条 
+#####  第一千零二十四条
 
-【名誉权】民事主体享有名誉权。任何组织或者个人不得以侮辱、诽谤等方式侵害他人的名誉权。  
+【名誉权】民事主体享有名誉权。任何组织或者个人不得以侮辱、诽谤等方式侵害他人的名誉权。
 
 #####  第一千零二十七条
 
 【作品侵害名誉权】行为人发表的文学、艺术作品以真人真事或者特定人为描述对象，含有侮辱、诽谤内容，侵害他人名誉权的，受害人有权依法请求该行为人承担民事责任。
-行为人发表的文学、艺术作品不以特定人为描述对象，仅其中的情节与该特定人的情况相似的，不承担民事责任。  
+行为人发表的文学、艺术作品不以特定人为描述对象，仅其中的情节与该特定人的情况相似的，不承担民事责任。

@@ -5,7 +5,7 @@ import logging
 import os
 import time
 from pathlib import Path
-from inference import slicer
+from so_vits_svc_fork.inference import slicer
 
 import librosa
 import numpy as np
@@ -15,10 +15,9 @@ import soundfile
 import torch
 import torchaudio
 
-import cluster
-from hubert import hubert_model
-import utils
-from models import SynthesizerTrn
+from so_vits_svc_fork import cluster, utils
+from so_vits_svc_fork.hubert import hubert_model
+from so_vits_svc_fork.models import SynthesizerTrn
 
 logging.getLogger('matplotlib').setLevel(logging.WARNING)
 
@@ -181,7 +180,7 @@ class Svc(object):
             use_time = time.time() - start
             print("vits use time:{}".format(use_time))
         return audio, audio.shape[-1]
-    
+
     def clear_empty(self):
         # 清理显存
         torch.cuda.empty_cache()
