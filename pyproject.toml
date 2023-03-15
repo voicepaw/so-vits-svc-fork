@@ -24,6 +24,28 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+librosa = "*"
+fairseq = "*"
+flask = "*"
+flask_cors = "*"
+gradio = "*"
+numpy = "*"
+pyaudio = "*"
+pydub = "*"
+pyworld = "*"
+requests = "*"
+scipy = "*"
+sounddevice = "*"
+SoundFile = "*"
+starlette = "*"
+tqdm = "*"
+scikit-maad = "*"
+praat-parselmouth = "*"
+onnx = "*"
+onnxsim = "*"
+onnxoptimizer = "*"
+torch = "^1.12.1"
+torchaudio = "^0.12.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"
