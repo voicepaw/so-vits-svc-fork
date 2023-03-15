@@ -1,0 +1,8 @@
+tasks:
+  - command: |
+      pip install poetry
+      PIP_USER=false poetry install
+  - command: |
+      pip install pre-commit
+      pre-commit install
+      PIP_USER=false pre-commit install-hooks

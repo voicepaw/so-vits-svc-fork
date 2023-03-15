@@ -1,0 +1,22 @@
+# Changes here will be overwritten by Copier
+_commit: 2b33a13
+_src_path: gh:34j/pypackage-template-fork
+add_me_as_contributor: true
+copyright_year: '2023'
+documentation: true
+email: 34j.95a2p@simplelogin.com
+full_name: 34j
+github_username: 34j
+initial_commit: true
+open_source_license: MIT
+open_with_vscode: true
+package_name: so_vits_svc_fork
+project_name: SoftVC VITS Singing Voice Conversion Fork
+project_short_description: A fork of so-vits-svc.
+project_slug: so-vits-svc-fork
+run_poetry_install: true
+setup_github: true
+setup_pre_commit: true
+setup_venv: true
+venv_version: '3.10'
+

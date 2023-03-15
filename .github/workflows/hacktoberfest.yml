@@ -1,0 +1,17 @@
+name: Hacktoberfest
+
+on:
+  schedule:
+    # Run every day in October
+    - cron: "0 0 * 10 *"
+    # Run on the 1st of November to revert
+    - cron: "0 13 1 11 *"
+
+jobs:
+  hacktoberfest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: browniebroke/hacktoberfest-labeler-action@v2.3.0
+        with:
+          github_token: ${{ secrets.GH_PAT }}
