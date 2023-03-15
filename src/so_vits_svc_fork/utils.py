@@ -13,8 +13,8 @@ import numpy as np
 from scipy.io.wavfile import read
 import torch
 from torch.nn import functional as F
-from modules.commons import sequence_mask
-from hubert import hubert_model
+from .modules.commons import sequence_mask
+from .hubert import hubert_model
 MATPLOTLIB_FLAG = False
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)

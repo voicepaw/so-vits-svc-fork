@@ -8,7 +8,7 @@ import torch
 from glob import glob
 from tqdm import tqdm
 
-import utils
+from . import utils
 import logging
 logging.getLogger('numba').setLevel(logging.WARNING)
 import librosa

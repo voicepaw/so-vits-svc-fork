@@ -8,9 +8,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import soundfile
 
-from inference import infer_tool
-from inference import slicer
-from inference.infer_tool import Svc
+from .inference import infer_tool
+from .inference import slicer
+from .inference.infer_tool import Svc
 
 logging.getLogger('numba').setLevel(logging.WARNING)
 chunks_dict = infer_tool.read_temp("inference/chunks_temp.json")

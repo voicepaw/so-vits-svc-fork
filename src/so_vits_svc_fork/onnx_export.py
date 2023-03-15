@@ -1,6 +1,6 @@
 import torch
-from onnxexport.model_onnx import SynthesizerTrn
-import utils
+from .onnxexport.model_onnx import SynthesizerTrn
+from . import utils
 
 def main(NetExport):
     path = "SoVits4.0"

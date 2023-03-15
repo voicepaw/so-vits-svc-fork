@@ -18,19 +18,19 @@ import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.cuda.amp import autocast, GradScaler
 
-import modules.commons as commons
-import utils
-from data_utils import TextAudioSpeakerLoader, TextAudioCollate
-from models import (
+import so_vits_svc_fork.modules.commons as commons
+from . import utils
+from .data_utils import TextAudioSpeakerLoader, TextAudioCollate
+from .models import (
     SynthesizerTrn,
     MultiPeriodDiscriminator,
 )
-from modules.losses import (
+from .modules.losses import (
     kl_loss,
     generator_loss, discriminator_loss, feature_loss
 )
 
-from modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
+from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
 
 torch.backends.cudnn.benchmark = True
 global_step = 0

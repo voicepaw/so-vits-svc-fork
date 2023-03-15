@@ -6,7 +6,7 @@ import gradio as gr
 import librosa
 import numpy as np
 import soundfile
-from inference.infer_tool import Svc
+from .inference.infer_tool import Svc
 import logging
 
 logging.getLogger('numba').setLevel(logging.WARNING)
