@@ -1,4 +1,0 @@
-./dataset/44k/taffy/000562.wav
-./dataset/44k/nyaru/000011.wav
-./dataset/44k/nyaru/000008.wav
-./dataset/44k/taffy/000563.wav
