@@ -51,7 +51,7 @@ def preprocess_hubert_f0(input_dir: Path, config_path: Path):
             _process_one(filepath, hmodel, device)  
     
     filepaths = list(input_dir.glob("**/*.wav"))
-    n_jobs = min(cpu_count(), len(filepaths) // 32, 8)
+    n_jobs = min(cpu_count(), len(filepaths) // 32 + 1, 8)
     shuffle(filepaths)
     filepath_chunks = np.array_split(filepaths, n_jobs)
     Parallel(n_jobs=n_jobs)(delayed(_process_batch)(chunk) for chunk in filepath_chunks)
