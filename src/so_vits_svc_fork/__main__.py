@@ -54,7 +54,7 @@ def train(config_path: Path, model_path: Path):
     "-m",
     "--model_path",
     type=click.Path(exists=True),
-    default=Path("./logs/44k/G_0.pth"),
+    default=Path("./logs/44k/G_800.pth"),
     help="path to model",
 )
 @click.option(
@@ -94,7 +94,7 @@ def infer(
     speaker: str,
     model_path: Path,
     config_path: Path,
-    cluster_model_path: Path | None = None,
+    cluster_model_path: "Path | None" = None,
     transpose: int = 0,
     db_thresh: int = -40,
     auto_predict_f0: bool = False,

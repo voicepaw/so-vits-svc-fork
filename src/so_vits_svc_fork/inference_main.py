@@ -22,7 +22,7 @@ def infer(
     speaker: str,
     model_path: Path,
     config_path: Path,
-    cluster_model_path: Path | None = None,
+    cluster_model_path: "Path | None" = None,
     transpose: int = 0,
     db_thresh: int = -40,
     auto_predict_f0: bool = False,
