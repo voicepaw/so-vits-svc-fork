@@ -11,6 +11,7 @@ import torchaudio
 from so_vits_svc_fork import utils
 from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
+from ..utils import HUBERT_SAMPLING_RATE
 
 
 def resize2d_f0(x, target_len):
@@ -26,14 +27,14 @@ def resize2d_f0(x, target_len):
 
 
 def get_f0(x, p_len, f0_up_key=0):
-    time_step = 160 / 16000 * 1000
+    time_step = 160 / HUBERT_SAMPLING_RATE * 1000
     f0_min = 50
     f0_max = 1100
     f0_mel_min = 1127 * np.log(1 + f0_min / 700)
     f0_mel_max = 1127 * np.log(1 + f0_max / 700)
 
     f0 = (
-        parselmouth.Sound(x, 16000)
+        parselmouth.Sound(x, HUBERT_SAMPLING_RATE)
         .to_pitch_ac(
             time_step=time_step / 1000,
             voicing_threshold=0.6,
@@ -95,7 +96,7 @@ class VitsSvc:
         self.hps = None
         self.speakers = None
         self.hubert_soft = utils.get_hubert_model()
-        self.sampling_rate = 16000
+        HUBERT_SAMPLING_RATE = HUBERT_SAMPLING_RATE
 
     def set_device(self, device):
         self.device = torch.device(device)
@@ -122,7 +123,7 @@ class VitsSvc:
 
     def get_unit_pitch(self, in_path, tran):
         source, sr = torchaudio.load(in_path)
-        source = torchaudio.functional.resample(source, sr, self.sampling_rate)
+        source = torchaudio.functional.resample(source, sr, HUBERT_SAMPLING_RATE)
         if len(source.shape) == 2 and source.shape[1] >= 2:
             source = torch.mean(source, dim=0).unsqueeze(0)
         soft = self.get_units(source, sr).squeeze(0).cpu().numpy()
@@ -146,11 +147,11 @@ class VitsSvc:
         audio = (audio / np.iinfo(audio.dtype).max).astype(np.float32)
         if len(audio.shape) > 1:
             audio = librosa.to_mono(audio.transpose(1, 0))
-        if sampling_rate != self.sampling_rate:
+        if sampling_rate != HUBERT_SAMPLING_RATE:
             audio = librosa.resample(
-                audio, orig_sr=sampling_rate, target_sr=self.sampling_rate
+                audio, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE
             )
-        soundfile.write("tmpwav.wav", audio, self.sampling_rate, format="wav")
+        soundfile.write("tmpwav.wav", audio, HUBERT_SAMPLING_RATE, format="wav")
         chunks = slicer.cut("tmpwav.wav", db_thresh=slice_db)
         audio_data, audio_sr = slicer.chunks2audio("tmpwav.wav", chunks)
         audio = []

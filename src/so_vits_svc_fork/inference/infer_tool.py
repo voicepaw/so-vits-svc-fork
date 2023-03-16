@@ -17,7 +17,7 @@ import torchaudio
 from so_vits_svc_fork import cluster, utils
 from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
-
+from ..utils import HUBERT_SAMPLING_RATE
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 
@@ -160,7 +160,7 @@ class Svc:
         f0 = f0.unsqueeze(0).to(self.dev)
         uv = uv.unsqueeze(0).to(self.dev)
 
-        wav16k = librosa.resample(wav, orig_sr=self.target_sample, target_sr=16000)
+        wav16k = librosa.resample(wav, orig_sr=self.target_sample, target_sr=HUBERT_SAMPLING_RATE)
         wav16k = torch.from_numpy(wav16k).to(self.dev)
         c = utils.get_hubert_content(self.hubert_model, wav_16k_tensor=wav16k)
         c = utils.repeat_expand_2d(c.squeeze(0), f0.shape[1])
@@ -259,7 +259,7 @@ class RealTimeVC:
     def __init__(self):
         self.last_chunk = None
         self.last_o = None
-        self.chunk_len = 16000  # 区块长度
+        self.chunk_len = HUBERT_SAMPLING_RATE  # 区块长度
         self.pre_len = 3840  # 交叉淡化长度，640的倍数
 
     """输入输出都是1维numpy 音频波形数组"""
