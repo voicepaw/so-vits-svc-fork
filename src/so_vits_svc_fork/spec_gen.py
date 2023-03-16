@@ -1,8 +1,8 @@
 import json
 
-from data_utils import TextAudioSpeakerLoader
+from .data_utils import TextAudioSpeakerLoader
 from tqdm import tqdm
-from utils import HParams
+from .utils import HParams
 
 config_path = "configs/config.json"
 with open(config_path) as f:
