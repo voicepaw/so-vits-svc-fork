@@ -138,3 +138,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# additional files
+dataset/
+filelists/
