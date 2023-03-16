@@ -5,16 +5,18 @@ import logging
 import os
 import re
 import subprocess
-import sys
+from pathlib import Path
 
 import numpy as np
+import requests
 import torch
 from scipy.io.wavfile import read
+from tqdm import tqdm
 
 MATPLOTLIB_FLAG = False
+from logging import getLogger
 
-logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-logger = logging
+LOG = getLogger(__name__)
 
 f0_bin = 256
 f0_max = 1100.0
@@ -84,10 +86,6 @@ def plot_data_to_numpy(x, y):
 
 
 def interpolate_f0(f0):
-    """
-    对F0进行插值处理
-    """
-
     data = np.reshape(f0, (f0.size, 1))
 
     vuv_vector = np.zeros((data.size, 1), dtype=np.float32)
@@ -196,9 +194,29 @@ def f0_to_coarse(f0):
     return f0_coarse
 
 
+def download_file(url: str, save_path: Path, **tqdm_kwargs):
+    r = requests.get(url, stream=True)
+    total_size = int(r.headers.get("content-length", 0))
+
+    with open(save_path, "wb") as f:
+        for chunk in tqdm(
+            r.iter_content(32 * 1024),
+            total=total_size,
+            unit="B",
+            unit_scale=True,
+            unit_divisor=1024,
+            **tqdm_kwargs,
+        ):
+            if chunk:
+                f.write(chunk)
+
+
 def get_hubert_model():
-    vec_path = "hubert/checkpoint_best_legacy_500.pt"
-    print(f"load model(s) from {vec_path}")
+    vec_path = Path("checkpoint_best_legacy_500.pt")
+    if not vec_path.exists():
+        url = "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
+        download_file(url, vec_path, desc="Downloading Hubert model")
+
     from fairseq import checkpoint_utils
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
@@ -263,19 +281,19 @@ def load_checkpoint(checkpoint_path, model, optimizer=None, skip_optimizer=False
             )
         except:
             print("error, %s is not in the checkpoint" % k)
-            logger.info("%s is not in the checkpoint" % k)
+            LOG.info("%s is not in the checkpoint" % k)
             new_state_dict[k] = v
     if hasattr(model, "module"):
         model.module.load_state_dict(new_state_dict)
     else:
         model.load_state_dict(new_state_dict)
     print("load ")
-    logger.info(f"Loaded checkpoint '{checkpoint_path}' (iteration {iteration})")
+    LOG.info(f"Loaded checkpoint '{checkpoint_path}' (iteration {iteration})")
     return model, optimizer, learning_rate, iteration
 
 
 def save_checkpoint(model, optimizer, learning_rate, iteration, checkpoint_path):
-    logger.info(
+    LOG.info(
         "Saving model and optimizer state at iteration {} to {}".format(
             iteration, checkpoint_path
         )
@@ -320,7 +338,7 @@ def clean_checkpoints(path_to_models="logs/44k/", n_ckpts_to_keep=2, sort_by_tim
         os.path.join(path_to_models, fn)
         for fn in (x_sorted("G")[:-n_ckpts_to_keep] + x_sorted("D")[:-n_ckpts_to_keep])
     ]
-    del_info = lambda fn: logger.info(f".. Free up space by deleting ckpt {fn}")
+    del_info = lambda fn: LOG.info(f".. Free up space by deleting ckpt {fn}")
     del_routine = lambda x: [os.remove(x), del_info(x)]
     [del_routine(fn) for fn in to_del]
 
@@ -477,7 +495,7 @@ def get_hparams_from_file(config_path):
 def check_git_hash(model_dir):
     source_dir = os.path.dirname(os.path.realpath(__file__))
     if not os.path.exists(os.path.join(source_dir, ".git")):
-        logger.warn(
+        LOG.warn(
             "{} is not a git repository, therefore hash value comparison will be ignored.".format(
                 source_dir
             )
@@ -490,7 +508,7 @@ def check_git_hash(model_dir):
     if os.path.exists(path):
         saved_hash = open(path).read()
         if saved_hash != cur_hash:
-            logger.warn(
+            LOG.warn(
                 "git hash values are different. {}(saved) != {}(current)".format(
                     saved_hash[:8], cur_hash[:8]
                 )
@@ -499,10 +517,10 @@ def check_git_hash(model_dir):
         open(path, "w").write(cur_hash)
 
 
+"""
 def get_logger(model_dir, filename="train.log"):
-    global logger
-    logger = logging.getLogger(os.path.basename(model_dir))
-    logger.setLevel(logging.DEBUG)
+    LOG = logging.getLogger(os.path.basename(model_dir))
+    LOG.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter("%(asctime)s\t%(name)s\t%(levelname)s\t%(message)s")
     if not os.path.exists(model_dir):
@@ -510,8 +528,9 @@ def get_logger(model_dir, filename="train.log"):
     h = logging.FileHandler(os.path.join(model_dir, filename))
     h.setLevel(logging.DEBUG)
     h.setFormatter(formatter)
-    logger.addHandler(h)
-    return logger
+    LOG.addHandler(h)
+    return LOG
+"""
 
 
 def repeat_expand_2d(content, target_len):

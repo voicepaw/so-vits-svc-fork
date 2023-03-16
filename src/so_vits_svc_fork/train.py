@@ -28,6 +28,10 @@ start_time = time.time()
 
 # os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'INFO'
 
+from logging import getLogger
+
+LOG = getLogger(__name__)
+
 
 def main():
     """Assume Single Node Multi GPUs Training Only"""
@@ -51,8 +55,7 @@ def main():
 def run(rank, n_gpus, hps):
     global global_step
     if rank == 0:
-        logger = utils.get_logger(hps.model_dir)
-        logger.info(hps)
+        LOG.info(hps)
         utils.check_git_hash(hps.model_dir)
         writer = SummaryWriter(log_dir=hps.model_dir)
         writer_eval = SummaryWriter(log_dir=os.path.join(hps.model_dir, "eval"))
@@ -154,7 +157,7 @@ def run(rank, n_gpus, hps):
                 [scheduler_g, scheduler_d],
                 scaler,
                 [train_loader, eval_loader],
-                logger,
+                LOG,
                 [writer, writer_eval],
             )
         else:
@@ -409,7 +412,3 @@ def evaluate(hps, generator, eval_loader, writer_eval):
         audio_sampling_rate=hps.data.sampling_rate,
     )
     generator.train()
-
-
-if __name__ == "__main__":
-    main()

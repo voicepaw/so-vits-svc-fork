@@ -15,7 +15,7 @@ from joblib import Parallel, delayed
 # - save as 16-bit wav file
 
 
-def preprocessing(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
+def preprocess_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
     """Preprocess audio files in input_dir and save them to output_dir."""
 
     def preprocess_one(input_path: Path, output_path: Path) -> None:

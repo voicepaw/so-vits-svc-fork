@@ -1,5 +1,4 @@
 import io
-import logging
 import os
 
 import librosa
@@ -12,9 +11,6 @@ import torchaudio
 from so_vits_svc_fork import utils
 from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
-
-logging.getLogger("numba").setLevel(logging.WARNING)
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 
 def resize2d_f0(x, target_len):
@@ -99,6 +95,7 @@ class VitsSvc:
         self.hps = None
         self.speakers = None
         self.hubert_soft = utils.get_hubert_model()
+        self.sampling_rate = 16000
 
     def set_device(self, device):
         self.device = torch.device(device)
@@ -125,7 +122,7 @@ class VitsSvc:
 
     def get_unit_pitch(self, in_path, tran):
         source, sr = torchaudio.load(in_path)
-        source = torchaudio.functional.resample(source, sr, 16000)
+        source = torchaudio.functional.resample(source, sr, self.sampling_rate)
         if len(source.shape) == 2 and source.shape[1] >= 2:
             source = torch.mean(source, dim=0).unsqueeze(0)
         soft = self.get_units(source, sr).squeeze(0).cpu().numpy()
@@ -149,9 +146,11 @@ class VitsSvc:
         audio = (audio / np.iinfo(audio.dtype).max).astype(np.float32)
         if len(audio.shape) > 1:
             audio = librosa.to_mono(audio.transpose(1, 0))
-        if sampling_rate != 16000:
-            audio = librosa.resample(audio, orig_sr=sampling_rate, target_sr=16000)
-        soundfile.write("tmpwav.wav", audio, 16000, format="wav")
+        if sampling_rate != self.sampling_rate:
+            audio = librosa.resample(
+                audio, orig_sr=sampling_rate, target_sr=self.sampling_rate
+            )
+        soundfile.write("tmpwav.wav", audio, self.sampling_rate, format="wav")
         chunks = slicer.cut("tmpwav.wav", db_thresh=slice_db)
         audio_data, audio_sr = slicer.chunks2audio("tmpwav.wav", chunks)
         audio = []

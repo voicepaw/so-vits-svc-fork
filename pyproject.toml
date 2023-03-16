@@ -18,6 +18,10 @@ packages = [
     { include = "so_vits_svc_fork", from = "src" },
 ]
 
+[tool.poetry.scripts]
+so-vits-svc-fork = "so_vits_svc_fork.__main__:cli"
+svc = "so_vits_svc_fork.__main__:cli"
+
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/34j/so-vits-svc-fork/issues"
 "Changelog" = "https://github.com/34j/so-vits-svc-fork/blob/main/CHANGELOG.md"
@@ -46,6 +50,7 @@ onnxsim = "*"
 onnxoptimizer = "*"
 torch = "^1.12.1"
 torchaudio = "^0.12.1"
+tensorboard = "^2.12.0"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"

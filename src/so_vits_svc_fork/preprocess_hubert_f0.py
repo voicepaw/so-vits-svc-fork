@@ -1,71 +1,51 @@
-import argparse
-import logging
-import math
-import multiprocessing
 import os
-from glob import glob
+from logging import getLogger
+from pathlib import Path
 from random import shuffle
+from typing import Iterable, Literal
 
+import librosa
+import numpy as np
 import torch
+from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
 from . import utils
 
-logging.getLogger("numba").setLevel(logging.WARNING)
-import librosa
-import numpy as np
-
+LOG = getLogger(__name__)
 hps = utils.get_hparams_from_file("configs/config.json")
 sampling_rate = hps.data.sampling_rate
 hop_length = hps.data.hop_length
 
 
-def process_one(filename, hmodel):
-    # print(filename)
-    wav, sr = librosa.load(filename, sr=sampling_rate)
-    soft_path = filename + ".soft.pt"
+def _process_one(filepath: Path, hmodel, device: Literal["cuda", "cpu"] = "cuda"):
+    wav, sr = librosa.load(filepath, sr=sampling_rate)
+    soft_path = filepath.parent / (filepath.stem + ".soft.pt")
     if not os.path.exists(soft_path):
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         wav16k = librosa.resample(wav, orig_sr=sampling_rate, target_sr=16000)
         wav16k = torch.from_numpy(wav16k).to(device)
         c = utils.get_hubert_content(hmodel, wav_16k_tensor=wav16k)
         torch.save(c.cpu(), soft_path)
-    f0_path = filename + ".f0.npy"
-    if not os.path.exists(f0_path):
+    f0_path = filepath.parent / (filepath.stem + ".f0.npy")
+    if not f0_path.exists():
         f0 = utils.compute_f0_dio(
             wav, sampling_rate=sampling_rate, hop_length=hop_length
         )
         np.save(f0_path, f0)
 
 
-def process_batch(filenames):
-    print("Loading hubert for content...")
+def _process_batch(filepaths: Iterable[Path]):
+    LOG.info("Loading hubert model...")
     device = "cuda" if torch.cuda.is_available() else "cpu"
     hmodel = utils.get_hubert_model().to(device)
-    print("Loaded hubert.")
-    for filename in tqdm(filenames):
-        process_one(filename, hmodel)
+    LOG.info("Hubert model loaded.")
+    for filepath in tqdm(filepaths):
+        _process_one(filepath, hmodel, device)
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--in_dir", type=str, default="dataset/44k", help="path to input dir"
-    )
-
-    args = parser.parse_args()
-    filenames = glob(f"{args.in_dir}/*/*.wav", recursive=True)  # [:10]
-    shuffle(filenames)
-    multiprocessing.set_start_method("spawn", force=True)
-
-    num_processes = 1
-    chunk_size = int(math.ceil(len(filenames) / num_processes))
-    chunks = [
-        filenames[i : i + chunk_size] for i in range(0, len(filenames), chunk_size)
-    ]
-    print([len(c) for c in chunks])
-    processes = [
-        multiprocessing.Process(target=process_batch, args=(chunk,)) for chunk in chunks
-    ]
-    for p in processes:
-        p.start()
+def preprocess_hubert_f0(input_dir: Path):
+    n_jobs = cpu_count()
+    filepaths = list(input_dir.glob("**/*.wav"))
+    shuffle(filepaths)
+    filepath_chunks = np.array_split(filepaths, n_jobs)
+    Parallel(n_jobs=n_jobs)(delayed(_process_batch)(chunk) for chunk in filepath_chunks)
