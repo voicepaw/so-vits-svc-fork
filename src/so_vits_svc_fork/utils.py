@@ -285,14 +285,13 @@ def load_checkpoint(checkpoint_path, model, optimizer=None, skip_optimizer=False
                 v.shape,
             )
         except:
-            print("error, %s is not in the checkpoint" % k)
+            LOG.error("error, %s is not in the checkpoint" % k)
             LOG.info("%s is not in the checkpoint" % k)
             new_state_dict[k] = v
     if hasattr(model, "module"):
         model.module.load_state_dict(new_state_dict)
     else:
         model.load_state_dict(new_state_dict)
-    print("load ")
     LOG.info(f"Loaded checkpoint '{checkpoint_path}' (iteration {iteration})")
     return model, optimizer, learning_rate, iteration
 
@@ -371,7 +370,6 @@ def latest_checkpoint_path(dir_path, regex="G_*.pth"):
     f_list = glob.glob(os.path.join(dir_path, regex))
     f_list.sort(key=lambda f: int("".join(filter(str.isdigit, f))))
     x = f_list[-1]
-    print(x)
     return x
 
 

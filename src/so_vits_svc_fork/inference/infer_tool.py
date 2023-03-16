@@ -18,7 +18,9 @@ from so_vits_svc_fork import cluster, utils
 from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
 from ..utils import HUBERT_SAMPLING_RATE
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
+from logging import getLogger
+
+LOG = getLogger(__name__)
 
 
 def read_temp(file_name):
@@ -33,7 +35,7 @@ def read_temp(file_name):
             data_dict = json.loads(data)
             if os.path.getsize(file_name) > 50 * 1024 * 1024:
                 f_name = file_name.replace("\\", "/").split("/")[-1]
-                print(f"clean {f_name}")
+                LOG.info(f"clean {f_name}")
                 for wav_hash in list(data_dict.keys()):
                     if (
                         int(time.time()) - int(data_dict[wav_hash]["time"])
@@ -41,8 +43,8 @@ def read_temp(file_name):
                     ):
                         del data_dict[wav_hash]
         except Exception as e:
-            print(e)
-            print(f"{file_name} error,auto rebuild file")
+            LOG.exception(e)
+            LOG.info(f"{file_name} error,auto rebuild file")
             data_dict = {"info": "temp_dict"}
         return data_dict
 
@@ -56,7 +58,7 @@ def timeit(func):
     def run(*args, **kwargs):
         t = time.time()
         res = func(*args, **kwargs)
-        print(f"executing '{func.__name__}' costed {time.time() - t:.3f}s")
+        LOG.info(f"executing '{func.__name__}' costed {time.time() - t:.3f}s")
         return res
 
     return run
@@ -203,7 +205,7 @@ class Svc:
                 noice_scale=noice_scale,
             )[0, 0].data.float()
             use_time = time.time() - start
-            print(f"vits use time:{use_time}")
+            LOG.info(f"vits use time:{use_time}")
         return audio, audio.shape[-1]
 
     def clear_empty(self):
@@ -227,7 +229,7 @@ class Svc:
 
         audio = []
         for slice_tag, data in audio_data:
-            print(f"#=====segment start, {round(len(data) / audio_sr, 3)}s======")
+            LOG.info(f"#=====segment start, {round(len(data) / audio_sr, 3)}s======")
             # padd
             pad_len = int(audio_sr * pad_seconds)
             data = np.concatenate([np.zeros([pad_len]), data, np.zeros([pad_len])])
@@ -236,7 +238,7 @@ class Svc:
             soundfile.write(raw_path, data, audio_sr, format="wav")
             raw_path.seek(0)
             if slice_tag:
-                print("jump empty segment")
+                LOG.info("jump empty segment")
                 _audio = np.zeros(length)
             else:
                 out_audio, out_sr = self.infer(

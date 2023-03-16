@@ -8,24 +8,24 @@ import torch
 import tqdm
 from sklearn.cluster import KMeans, MiniBatchKMeans
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 import time
+from logging import getLogger
+LOG = getLogger(__name__)
 
 
 def train_cluster(in_dir, n_clusters, use_minibatch=True, verbose=False):
-    logger.info(f"Loading features from {in_dir}")
+    LOG.info(f"Loading features from {in_dir}")
     features = []
     nums = 0
     for path in tqdm.tqdm(in_dir.glob("*.soft.pt")):
         features.append(torch.load(path).squeeze(0).numpy().T)
-        # print(features[-1].shape)
+        # LOG.info(features[-1].shape)
     features = np.concatenate(features, axis=0)
-    print(
+    LOG.info(
         nums, features.nbytes / 1024**2, "MB , shape:", features.shape, features.dtype
     )
     features = features.astype(np.float32)
-    logger.info(f"Clustering features of shape: {features.shape}")
+    LOG.info(f"Clustering features of shape: {features.shape}")
     t = time.time()
     if use_minibatch:
         kmeans = MiniBatchKMeans(
@@ -33,14 +33,14 @@ def train_cluster(in_dir, n_clusters, use_minibatch=True, verbose=False):
         ).fit(features)
     else:
         kmeans = KMeans(n_clusters=n_clusters, verbose=verbose).fit(features)
-    print(time.time() - t, "s")
+    LOG.info(time.time() - t, "s")
 
     x = {
         "n_features_in_": kmeans.n_features_in_,
         "_n_threads": kmeans._n_threads,
         "cluster_centers_": kmeans.cluster_centers_,
     }
-    print("end")
+    LOG.info("end")
 
     return x
 
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     ckpt = {}
     for spk in os.listdir(dataset):
         if os.path.isdir(dataset / spk):
-            print(f"train kmeans for {spk}...")
+            LOG.info(f"train kmeans for {spk}...")
             in_dir = dataset / spk
             x = train_cluster(in_dir, n_clusters, verbose=False)
             ckpt[spk] = x
@@ -81,7 +81,7 @@ if __name__ == "__main__":
     # import cluster
     # for spk in tqdm.tqdm(os.listdir("dataset")):
     #     if os.path.isdir(f"dataset/{spk}"):
-    #         print(f"start kmeans inference for {spk}...")
+    #         LOG.info(f"start kmeans inference for {spk}...")
     #         for feature_path in tqdm.tqdm(glob(f"dataset/{spk}/*.discrete.npy", recursive=True)):
     #             mel_path = feature_path.replace(".discrete.npy",".mel.npy")
     #             mel_spectrogram = np.load(mel_path)

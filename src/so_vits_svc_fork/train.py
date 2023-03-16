@@ -131,8 +131,9 @@ def run(rank, n_gpus, hps):
         )
         epoch_str = max(epoch_str, 1)
         global_step = (epoch_str - 1) * len(train_loader)
-    except:
-        print("load old checkpoint failed...")
+    except Exception as e:
+        LOG.exception(e)
+        LOG.info("No checkpoint found, start from scratch")
         epoch_str = 1
         global_step = 0
     if skip_optimizer:
@@ -147,6 +148,8 @@ def run(rank, n_gpus, hps):
     )
 
     scaler = GradScaler(enabled=hps.train.fp16_run)
+    
+    LOG.info("Start training")
 
     for epoch in range(epoch_str, hps.train.epochs + 1):
         if rank == 0:

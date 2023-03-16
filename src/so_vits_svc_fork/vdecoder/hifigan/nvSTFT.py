@@ -7,15 +7,16 @@ import soundfile as sf
 import torch
 import torch.utils.data
 from librosa.filters import mel as librosa_mel_fn
-
+from logging import getLogger
+LOG = getLogger(__name__)
 
 def load_wav_to_torch(full_path, target_sr=None, return_empty_on_exception=False):
     sampling_rate = None
     try:
         data, sampling_rate = sf.read(full_path, always_2d=True)  # than soundfile.
     except Exception as ex:
-        print(f"'{full_path}' failed to load.\nException:")
-        print(ex)
+        LOG.info(f"'{full_path}' failed to load.\nException:")
+        LOG.info(ex)
         if return_empty_on_exception:
             return [], sampling_rate or target_sr or 32000
         else:
@@ -107,9 +108,9 @@ class STFT:
         clip_val = self.clip_val
 
         if torch.min(y) < -1.0:
-            print("min value is ", torch.min(y))
+            LOG.info("min value is ", torch.min(y))
         if torch.max(y) > 1.0:
-            print("max value is ", torch.max(y))
+            LOG.info("max value is ", torch.max(y))
 
         if fmax not in self.mel_basis:
             mel = librosa_mel_fn(
@@ -140,13 +141,13 @@ class STFT:
             normalized=False,
             onesided=True,
         )
-        # print(111,spec)
+        # LOG.info(111,spec)
         spec = torch.sqrt(spec.pow(2).sum(-1) + (1e-9))
-        # print(222,spec)
+        # LOG.info(222,spec)
         spec = torch.matmul(self.mel_basis[str(fmax) + "_" + str(y.device)], spec)
-        # print(333,spec)
+        # LOG.info(333,spec)
         spec = dynamic_range_compression_torch(spec, clip_val=clip_val)
-        # print(444,spec)
+        # LOG.info(444,spec)
         return spec
 
     def __call__(self, audiopath):

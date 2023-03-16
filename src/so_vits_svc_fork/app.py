@@ -8,6 +8,9 @@ import soundfile
 
 from .inference.infer_tool import Svc
 from .utils import HUBERT_SAMPLING_RATE
+from logging import getLogger
+
+LOG = getLogger(__name__)
 logging.getLogger("numba").setLevel(logging.WARNING)
 logging.getLogger("markdown_it").setLevel(logging.WARNING)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
@@ -28,7 +31,7 @@ def vc_fn(
     if input_audio is None:
         return "You need to upload an audio", None
     sampling_rate, audio = input_audio
-    # print(audio.shape,sampling_rate)
+    # LOG.info(audio.shape,sampling_rate)
     duration = audio.shape[0] / sampling_rate
     if duration > 90:
         return "请上传小于90s的音频，需要转换长音频请本地进行转换", None
@@ -37,10 +40,10 @@ def vc_fn(
         audio = librosa.to_mono(audio.transpose(1, 0))
     if sampling_rate != HUBERT_SAMPLING_RATE:
         audio = librosa.resample(audio, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE)
-    print(audio.shape)
+    LOG.info(audio.shape)
     out_wav_path = "temp.wav"
     soundfile.write(out_wav_path, audio, HUBERT_SAMPLING_RATE, format="wav")
-    print(cluster_ratio, auto_f0, noise_scale)
+    LOG.info(cluster_ratio, auto_f0, noise_scale)
     _audio = model.slice_inference(
         out_wav_path, sid, vc_transform, slice_db, cluster_ratio, auto_f0, noise_scale
     )

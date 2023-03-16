@@ -10,6 +10,8 @@ from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
 
 from .env import AttrDict
 from .utils import get_padding, init_weights
+from logging import getLogger
+LOG = getLogger(__name__)
 
 LRELU_SLOPE = 0.1
 
@@ -422,20 +424,20 @@ class Generator(torch.nn.Module):
         self.cond = nn.Conv1d(h["gin_channels"], h["upsample_initial_channel"], 1)
 
     def forward(self, x, f0, g=None):
-        # print(1,x.shape,f0.shape,f0[:, None].shape)
+        # LOG.info(1,x.shape,f0.shape,f0[:, None].shape)
         f0 = self.f0_upsamp(f0[:, None]).transpose(1, 2)  # bs,n,t
-        # print(2,f0.shape)
+        # LOG.info(2,f0.shape)
         har_source, noi_source, uv = self.m_source(f0)
         har_source = har_source.transpose(1, 2)
         x = self.conv_pre(x)
         x = x + self.cond(g)
-        # print(124,x.shape,har_source.shape)
+        # LOG.info(124,x.shape,har_source.shape)
         for i in range(self.num_upsamples):
             x = F.leaky_relu(x, LRELU_SLOPE)
-            # print(3,x.shape)
+            # LOG.info(3,x.shape)
             x = self.ups[i](x)
             x_source = self.noise_convs[i](har_source)
-            # print(4,x_source.shape,har_source.shape,x.shape)
+            # LOG.info(4,x_source.shape,har_source.shape,x.shape)
             x = x + x_source
             xs = None
             for j in range(self.num_kernels):
@@ -451,7 +453,7 @@ class Generator(torch.nn.Module):
         return x
 
     def remove_weight_norm(self):
-        print("Removing weight norm...")
+        LOG.info("Removing weight norm...")
         for l in self.ups:
             remove_weight_norm(l)
         for l in self.resblocks:
