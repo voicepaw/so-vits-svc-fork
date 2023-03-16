@@ -140,5 +140,8 @@ dmypy.json
 cython_debug/
 
 # additional files
-dataset/
-filelists/
+tests/**/*.wav
+tests/**/*.npy
+tests/**/*.pt
+tests/**/*.txt
+tests/**/*.json

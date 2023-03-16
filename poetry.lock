@@ -4170,6 +4170,23 @@ files = [
 ]
 
 [[package]]
+name = "tensorboardx"
+version = "2.6"
+description = "TensorBoardX lets you watch Tensors Flow without Tensorflow"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "tensorboardX-2.6-py2.py3-none-any.whl", hash = "sha256:24a7cd076488de1e9d15ef25371b8ebf90c4f8f622af2477c611198f03f4a606"},
+    {file = "tensorboardX-2.6.tar.gz", hash = "sha256:d4c036964dd2deb075a1909832b276daa383eab3f9db519ad90b99f5aea06b0c"},
+]
+
+[package.dependencies]
+numpy = "*"
+packaging = "*"
+protobuf = ">=3.8.0,<4"
+
+[[package]]
 name = "threadpoolctl"
 version = "3.1.0"
 description = "threadpoolctl"
@@ -4308,6 +4325,20 @@ dev = ["py-make (>=0.1.0)", "twine", "wheel"]
 notebook = ["ipywidgets (>=6)"]
 slack = ["slack-sdk"]
 telegram = ["requests"]
+
+[[package]]
+name = "tqdm-joblib"
+version = "0.0.3"
+description = "Tracking progress of joblib.Parallel execution"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "tqdm_joblib-0.0.3.tar.gz", hash = "sha256:77283c359890feac6752c59de838ec5031f8265231d0f9935b03ade3e0d1add5"},
+]
+
+[package.dependencies]
+tqdm = "*"
 
 [[package]]
 name = "typing-extensions"
@@ -4612,4 +4643,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "8659404569e0c7a7e8646264da136db140a619b00d5c24e13416a45711efa661"
+content-hash = "3ed492077ec2cfd738e8d222f9962e630be51839d0abd23aa1e77fece74d98cc"

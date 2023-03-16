@@ -13,11 +13,12 @@ from tqdm import tqdm
 LOG = getLogger(__name__)
 
 
-def _get_wav_duration(file_path):
-    with wave.open(file_path, "rb") as wav_file:
-        n_frames = wav_file.getnframes()
-        framerate = wav_file.getframerate()
-        duration = n_frames / float(framerate)
+def _get_wav_duration(filepath: Path):
+    with open(filepath, "rb") as f:
+        with wave.open(f) as wav_file:
+            n_frames = wav_file.getnframes()
+            framerate = wav_file.getframerate()
+            duration = n_frames / float(framerate)
     return duration
 
 
@@ -26,55 +27,56 @@ def preprocess_config(
     train_list_path: Path,
     val_list_path: Path,
     test_list_path: Path,
+    config_path: Path,
 ):
     train = []
     val = []
     test = []
     spk_dict = {}
     spk_id = 0
-    for speaker in tqdm(os.listdir(input_dir)):
+    for speaker in os.listdir(input_dir):
         spk_dict[speaker] = spk_id
         spk_id += 1
-        paths = [
-            input_dir / speaker / i for i in (input_dir / speaker).glob("**/*.wav")
-        ]
-        new_paths = []
-        for path in paths:
+        paths = []
+        for path in tqdm(list((input_dir / speaker).glob("**/*.wav"))):
             pattern = re.compile(r"^[\.a-zA-Z0-9_\/]+$")
             if not pattern.match(path.name):
-                warnings.warn(f"file name {path} contains non-alphanumeric characters.")
+                LOG.warning(f"file name {path} contains non-alphanumeric characters.")
             if _get_wav_duration(path) < 0.3:
-                warnings.warn(f"skip {path} because it is too short.")
+                LOG.warning(f"skip {path} because it is too short.")
                 continue
-            new_paths.append(path)
-        paths = new_paths
+            paths.append(path)
         shuffle(paths)
         train += paths[2:-2]
         val += paths[:2]
         test += paths[-2:]
 
-    LOG.info("Writing", train_list_path)
-    with open(train_list_path, "w") as f:
-        for fname in tqdm(train):
-            wavpath = fname
+    LOG.info(f"Writing {train_list_path}")
+    train_list_path.parent.mkdir(parents=True, exist_ok=True)
+    with train_list_path.open("w") as f:
+        for fname in train:
+            wavpath = fname.as_posix()
             f.write(wavpath + "\n")
 
-    LOG.info("Writing", val_list_path)
-    with open(val_list_path, "w") as f:
-        for fname in tqdm(val):
-            wavpath = fname
+    LOG.info(f"Writing {val_list_path}")
+    val_list_path.parent.mkdir(parents=True, exist_ok=True)
+    with val_list_path.open("w") as f:
+        for fname in val:
+            wavpath = fname.as_posix()
             f.write(wavpath + "\n")
 
-    LOG.info("Writing", test_list_path)
-    with open(test_list_path, "w") as f:
-        for fname in tqdm(test):
-            wavpath = fname
+    LOG.info(f"Writing {test_list_path}")
+    test_list_path.parent.mkdir(parents=True, exist_ok=True)
+    with test_list_path.open("w") as f:
+        for fname in test:
+            wavpath = fname.as_posix()
             f.write(wavpath + "\n")
 
     config = deepcopy(
-        json.loads(Path("configs_template/config_template.json").read_text())
+        json.loads((Path(__file__).parent / "configs_template" / "config_template.json").read_text())
     )
     config["spk"] = spk_dict
-    LOG.info("Writing configs/config.json")
-    with open("configs/config.json", "w") as f:
+    LOG.info(f"Writing {config_path}")
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+    with config_path.open("w") as f:
         json.dump(config, f, indent=2)

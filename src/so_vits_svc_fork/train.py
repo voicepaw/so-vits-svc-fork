@@ -35,7 +35,8 @@ LOG = getLogger(__name__)
 
 def main():
     """Assume Single Node Multi GPUs Training Only"""
-    assert torch.cuda.is_available(), "CPU training is not allowed."
+    if not torch.cuda.is_available():
+        raise RuntimeError("CUDA is not available.")
     hps = utils.get_hparams()
 
     n_gpus = torch.cuda.device_count()

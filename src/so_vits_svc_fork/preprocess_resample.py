@@ -4,6 +4,7 @@ import librosa
 import numpy as np
 import soundfile
 from joblib import Parallel, delayed
+from tqdm_joblib import tqdm_joblib
 
 # input_dir and output_dir exists.
 # write code to convert input dir audio files to output dir audio files,
@@ -42,6 +43,7 @@ def preprocess_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -
         out_path = output_dir / in_path.relative_to(input_dir)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         in_and_out_paths.append((in_path, out_path))
-    Parallel(n_jobs=-1, verbose=10)(
-        delayed(preprocess_one)(*args) for args in in_and_out_paths
-    )
+    with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
+        Parallel(n_jobs=-1)(
+            delayed(preprocess_one)(*args) for args in in_and_out_paths
+        )

@@ -8,15 +8,16 @@ import torch
 @click.help_option("--help", "-h")
 @click.group()
 def cli():
-    from logging import basicConfig, FileHandler
+    from logging import basicConfig, FileHandler, captureWarnings
     from rich.logging import RichHandler
 
     basicConfig(
         level="INFO",
         format="%(asctime)s %(message)s",
         datefmt="[%X]",
-        handlers=[RichHandler(), FileHandler(f"{__file__.__module__}.log")],
+        handlers=[RichHandler(), FileHandler(f"so-vits-svc-fork.log")],
     )
+    captureWarnings(True)
 
 
 @click.help_option("--help", "-h")
@@ -33,14 +34,12 @@ def train():
     "-i",
     "--input_path",
     type=click.Path(exists=True),
-    default="./dataset/44k",
     help="path to source dir",
 )
 @click.option(
     "-o",
     "--output_path",
-    type=click.Path(exists=True),
-    default="./dataset/44k",
+    type=click.Path(),
     help="path to output dir",
 )
 @click.option("-s", "--speaker", type=str, default="p225", help="speaker name")
@@ -48,14 +47,14 @@ def train():
     "-m",
     "--model_path",
     type=click.Path(exists=True),
-    default="./logs/44k/epoch_1000.pt",
+    default=Path("./logs/44k/epoch_1000.pt"),
     help="path to model",
 )
 @click.option(
     "-c",
     "--config_path",
     type=click.Path(exists=True),
-    default="./logs/44k/config.json",
+    default=Path("./configs/44k/config.json"),
     help="path to config",
 )
 @click.option(
@@ -122,14 +121,14 @@ def infer(
     "-i",
     "--input_dir",
     type=click.Path(exists=True),
-    default="./dataset/44k",
+    default=Path("./dataset_raw/44k"),
     help="path to source dir",
 )
 @click.option(
     "-o",
     "--output_dir",
-    type=click.Path(exists=True),
-    default="./dataset/44k",
+    type=click.Path(),
+    default=Path("./dataset/44k"),
     help="path to output dir",
 )
 @click.option("-s", "--sampling_rate", type=int, default=44100, help="sampling rate")
@@ -147,40 +146,34 @@ def preprocess(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
     "-i",
     "--input_dir",
     type=click.Path(exists=True),
-    default="./dataset/44k",
+    default=Path("./dataset/44k"),
     help="path to source dir",
 )
 @click.option(
-    "--train_list_path",
-    type=click.Path(exists=True),
-    default="./filelists/train.txt",
-    help="path to train list",
+    "--filelist_path",
+    type=click.Path(),
+    default=Path("./filelists/44k"),
+    help="path to filelist dir",
 )
 @click.option(
-    "--val_list_path",
-    type=click.Path(exists=True),
-    default="./filelists/val.txt",
-    help="path to val list",
-)
-@click.option(
-    "--test_list_path",
-    type=click.Path(exists=True),
-    default="./filelists/test.txt",
-    help="path to test list",
+    "--config_path",
+    type=click.Path(),
+    default=Path("./configs/44k/config.json"),
+    help="path to config",
 )
 def preprocess_config(
     input_dir: Path,
-    train_list_path: Path,
-    val_list_path: Path,
-    test_list_path: Path,
+    filelist_path: Path,
+    config_path: Path,
 ):
     from .preprocess_flist_config import preprocess_config
 
     preprocess_config(
         input_dir=input_dir,
-        train_list_path=train_list_path,
-        val_list_path=val_list_path,
-        test_list_path=test_list_path,
+        train_list_path=filelist_path / "train.txt",
+        val_list_path=filelist_path / "val.txt",
+        test_list_path=filelist_path / "test.txt",
+        config_path=config_path,
     )
 
 
@@ -190,10 +183,17 @@ def preprocess_config(
     "-i",
     "--input_dir",
     type=click.Path(exists=True),
-    default="./dataset/44k",
+    default=Path("./dataset/44k"),
     help="path to source dir",
 )
-def preprocess_hubert(input_dir: Path):
+@click.option(
+    "-c",
+    "--config_path",
+    type=click.Path(exists=True),
+    help="path to config",
+    default=Path("./configs/44k/config.json"),
+)
+def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
     from .preprocess_hubert_f0 import preprocess_hubert_f0
 
-    preprocess_hubert_f0(input_dir=input_dir)
+    preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)

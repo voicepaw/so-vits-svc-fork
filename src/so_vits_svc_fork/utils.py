@@ -195,21 +195,25 @@ def f0_to_coarse(f0):
     return f0_coarse
 
 
-def download_file(url: str, save_path: Path, **tqdm_kwargs):
-    r = requests.get(url, stream=True)
-    total_size = int(r.headers.get("content-length", 0))
-
-    with open(save_path, "wb") as f:
-        for chunk in tqdm(
-            r.iter_content(32 * 1024),
-            total=total_size,
-            unit="B",
-            unit_scale=True,
-            unit_divisor=1024,
-            **tqdm_kwargs,
-        ):
-            if chunk:
-                f.write(chunk)
+def download_file(url: str, filepath: Path | str, chunk_size: int=32 * 1024, **kwargs):
+    filepath = Path(filepath)
+    temppath = filepath.parent / f".{filepath.name}.download"
+    if filepath.exists():
+        raise FileExistsError(f"{filepath} already exists")
+    temppath.unlink(missing_ok=True)
+    resp = requests.get(url, stream=True)
+    total = int(resp.headers.get('content-length', 0))
+    with temppath.open("wb") as f, tqdm(
+        total=total,
+        unit='iB',
+        unit_scale=True,
+        unit_divisor=1024,
+        **kwargs,
+    ) as pbar:
+        for data in resp.iter_content(chunk_size=chunk_size):
+            size = f.write(data)
+            pbar.update(size)
+    temppath.rename(filepath)
 
 
 def get_hubert_model():
@@ -221,7 +225,7 @@ def get_hubert_model():
     from fairseq import checkpoint_utils
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
-        [vec_path],
+        [vec_path.as_posix()],
         suffix="",
     )
     model = models[0]
