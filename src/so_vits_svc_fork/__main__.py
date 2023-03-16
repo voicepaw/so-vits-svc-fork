@@ -7,14 +7,20 @@ import click
 import torch
 
 from logging import getLogger
-from logging import basicConfig, FileHandler, captureWarnings, INFO
+from logging import basicConfig, FileHandler, captureWarnings, INFO, StreamHandler
 from rich.logging import RichHandler
+import os
+
+IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
 
 basicConfig(
     level=INFO,
     format="%(asctime)s %(message)s",
     datefmt="[%X]",
-    handlers=[RichHandler(), FileHandler(f"so-vits-svc-fork.log")],
+    handlers=[
+        RichHandler() if not IN_COLAB else StreamHandler(),
+        FileHandler(f"so-vits-svc-fork.log"),
+    ],
 )
 captureWarnings(True)
 LOG = getLogger(__name__)
@@ -25,13 +31,23 @@ LOG = getLogger(__name__)
 def cli():
     pass
 
-    
-
 
 @click.help_option("--help", "-h")
 @cli.command()
-@click.option("-c", "--config-path", type=click.Path(exists=True), help="path to config", default=Path("./configs/44k/config.json"))
-@click.option("-m", "--model-path", type=click.Path(), help="path to output dir", default=Path("./logs/44k"))
+@click.option(
+    "-c",
+    "--config-path",
+    type=click.Path(exists=True),
+    help="path to config",
+    default=Path("./configs/44k/config.json"),
+)
+@click.option(
+    "-m",
+    "--model-path",
+    type=click.Path(),
+    help="path to output dir",
+    default=Path("./logs/44k"),
+)
 def train(config_path: Path, model_path: Path):
     from .train import main
 
@@ -40,7 +56,8 @@ def train(config_path: Path, model_path: Path):
 
 @click.help_option("--help", "-h")
 @cli.command()
-@click.argument("input_path",
+@click.argument(
+    "input_path",
     type=click.Path(exists=True),
 )
 @click.option(
@@ -104,6 +121,7 @@ def infer(
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     from .inference_main import infer
+
     input_path = Path(input_path)
     if output_path is None:
         output_path = input_path.parent / f"{input_path.stem}.out.{input_path.suffix}"
@@ -207,12 +225,15 @@ def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
     from .preprocess_hubert_f0 import preprocess_hubert_f0
 
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
-    
+
+
 import pyinputplus as pyip
-    
+
+
 @cli.command
 def clean():
     import shutil
+
     folders = ["dataset", "filelists", "logs"]
     if pyip.inputYesNo(f"Are you sure you want to delete files in {folders}?") == "yes":
         for folder in folders:
