@@ -46,7 +46,9 @@ def preprocess_config(
                 LOG.warning(f"skip {path} because it is too short.")
                 continue
             paths.append(path)
-        shuffle(paths)
+        shuffle(paths)        
+        if len(paths) <= 4:
+            raise ValueError(f"too few files in {input_dir / speaker} (expected at least 4).")
         train += paths[2:-2]
         val += paths[:2]
         test += paths[-2:]
