@@ -12,7 +12,7 @@ from torch.nn import functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
-
+from tqdm import trange
 import so_vits_svc_fork.modules.commons as commons
 
 from . import utils
@@ -150,7 +150,7 @@ def run(rank, n_gpus, hps):
     
     LOG.info("Start training")
 
-    for epoch in range(epoch_str, hps.train.epochs + 1):
+    for epoch in trange(epoch_str, hps.train.epochs + 1):
         if rank == 0:
             train_and_evaluate(
                 rank,
@@ -161,7 +161,6 @@ def run(rank, n_gpus, hps):
                 [scheduler_g, scheduler_d],
                 scaler,
                 [train_loader, eval_loader],
-                LOG,
                 [writer, writer_eval],
             )
         else:
@@ -175,14 +174,13 @@ def run(rank, n_gpus, hps):
                 scaler,
                 [train_loader, None],
                 None,
-                None,
             )
         scheduler_g.step()
         scheduler_d.step()
 
 
 def train_and_evaluate(
-    rank, epoch, hps, nets, optims, schedulers, scaler, loaders, logger, writers
+    rank, epoch, hps, nets, optims, schedulers, scaler, loaders,  writers
 ):
     net_g, net_d = nets
     optim_g, optim_d = optims
@@ -277,12 +275,12 @@ def train_and_evaluate(
             if global_step % hps.train.log_interval == 0:
                 lr = optim_g.param_groups[0]["lr"]
                 losses = [loss_disc, loss_gen, loss_fm, loss_mel, loss_kl]
-                logger.info(
+                LOG.info(
                     "Train Epoch: {} [{:.0f}%]".format(
                         epoch, 100.0 * batch_idx / len(train_loader)
                     )
                 )
-                logger.info(
+                LOG.info(
                     f"Losses: {[x.item() for x in losses]}, step: {global_step}, lr: {lr}"
                 )
 
@@ -333,6 +331,7 @@ def train_and_evaluate(
                 )
 
             if global_step % hps.train.eval_interval == 0:
+                LOG.info("Saving checkpoints...")
                 evaluate(hps, net_g, eval_loader, writer_eval)
                 utils.save_checkpoint(
                     net_g,
@@ -362,7 +361,7 @@ def train_and_evaluate(
         global start_time
         now = time.time()
         durtaion = format(now - start_time, ".2f")
-        logger.info(f"====> Epoch: {epoch}, cost {durtaion} s")
+        LOG.info(f"====> Epoch: {epoch}, cost {durtaion} s")
         start_time = now
 
 
