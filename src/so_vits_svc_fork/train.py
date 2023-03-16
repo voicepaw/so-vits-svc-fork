@@ -37,6 +37,7 @@ def main(config_path: Path, model_path: Path):
     """Assume Single Node Multi GPUs Training Only"""
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
+    utils.ensure_pretrained_model(model_path)
     hps = utils.get_hparams(config_path, model_path)
 
     n_gpus = torch.cuda.device_count()
