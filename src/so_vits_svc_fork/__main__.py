@@ -38,11 +38,8 @@ def train(config_path: Path, model_path: Path):
 
 @click.help_option("--help", "-h")
 @cli.command()
-@click.option(
-    "-i",
-    "--input_path",
+@click.argument("input_path",
     type=click.Path(exists=True),
-    help="path to source dir",
 )
 @click.option(
     "-o",
@@ -55,7 +52,7 @@ def train(config_path: Path, model_path: Path):
     "-m",
     "--model_path",
     type=click.Path(exists=True),
-    default=Path("./logs/44k/G_800.pth"),
+    default=Path("./logs/44k/G_0.pth"),
     help="path to model",
 )
 @click.option(
@@ -105,7 +102,10 @@ def infer(
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     from .inference_main import infer
-
+    input_path = Path(input_path)
+    if output_path is None:
+        output_path = input_path.parent / f"{input_path.stem}.out.{input_path.suffix}"
+    output_path = Path(output_path)
     infer(
         input_path=input_path,
         output_path=output_path,

@@ -29,9 +29,8 @@ def infer(
     pad_seconds: float = 0.5,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
-    infer_tool.read_temp("inference/chunks_temp.json")
-    svc_model = Svc(model_path, config_path, cluster_model_path, device)
-    infer_tool.fill_a_to_b(transpose, input_path)
+    svc_model = Svc(model_path.as_posix(), config_path.as_posix(), cluster_model_path, device)
+    # infer_tool.fill_a_to_b(transpose, input_path)
 
     raw_audio_path = input_path
     infer_tool.format_wav(raw_audio_path)
