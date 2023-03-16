@@ -57,10 +57,5 @@
     "n_speakers": 200
   },
   "spk": {
-    "nyaru": 0,
-    "huiyu": 1,
-    "nen": 2,
-    "paimon": 3,
-    "yunhao": 4
   }
 }
