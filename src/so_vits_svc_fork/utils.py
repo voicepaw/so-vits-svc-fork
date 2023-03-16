@@ -1,7 +1,6 @@
 import argparse
 import glob
 import json
-import logging
 import os
 import re
 import subprocess
@@ -69,8 +68,6 @@ def plot_data_to_numpy(x, y):
 
         matplotlib.use("Agg")
         MATPLOTLIB_FLAG = True
-        mpl_logger = logging.getLogger("matplotlib")
-        mpl_logger.setLevel(logging.WARNING)
     import matplotlib.pylab as plt
     import numpy as np
 
@@ -380,8 +377,6 @@ def plot_spectrogram_to_numpy(spectrogram):
 
         matplotlib.use("Agg")
         MATPLOTLIB_FLAG = True
-        mpl_logger = logging.getLogger("matplotlib")
-        mpl_logger.setLevel(logging.WARNING)
     import matplotlib.pylab as plt
     import numpy as np
 
@@ -406,8 +401,6 @@ def plot_alignment_to_numpy(alignment, info=None):
 
         matplotlib.use("Agg")
         MATPLOTLIB_FLAG = True
-        mpl_logger = logging.getLogger("matplotlib")
-        mpl_logger.setLevel(logging.WARNING)
     import matplotlib.pylab as plt
     import numpy as np
 
@@ -502,22 +495,6 @@ def check_git_hash(model_dir):
             )
     else:
         open(path, "w").write(cur_hash)
-
-
-"""
-def get_logger(model_dir, filename="train.log"):
-    LOG = logging.getLogger(os.path.basename(model_dir))
-    LOG.setLevel(logging.DEBUG)
-
-    formatter = logging.Formatter("%(asctime)s\t%(name)s\t%(levelname)s\t%(message)s")
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
-    h = logging.FileHandler(os.path.join(model_dir, filename))
-    h.setLevel(logging.DEBUG)
-    h.setFormatter(formatter)
-    LOG.addHandler(h)
-    return LOG
-"""
 
 
 def repeat_expand_2d(content, target_len):

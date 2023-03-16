@@ -1,8 +1,7 @@
-import logging
+
 import multiprocessing
 import time
 
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
 import os
 
 import torch

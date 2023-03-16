@@ -1,5 +1,4 @@
 # os.system("wget -P cvec/ https://huggingface.co/spaces/innnky/nanami/resolve/main/checkpoint_best_legacy_500.pt")
-import logging
 
 import gradio as gr
 import librosa
@@ -11,10 +10,6 @@ from .utils import HUBERT_SAMPLING_RATE
 from logging import getLogger
 
 LOG = getLogger(__name__)
-logging.getLogger("numba").setLevel(logging.WARNING)
-logging.getLogger("markdown_it").setLevel(logging.WARNING)
-logging.getLogger("urllib3").setLevel(logging.WARNING)
-logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 config_path = "configs/config.json"
 
