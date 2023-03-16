@@ -3062,6 +3062,21 @@ files = [
 plugins = ["importlib-metadata"]
 
 [[package]]
+name = "pyinputplus"
+version = "0.2.12"
+description = "Provides more featureful versions of input() and raw_input()."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "PyInputPlus-0.2.12.tar.gz", hash = "sha256:3a86b03dc6d003fec7dc627ad175cacaaf6e14a6a3b13b34c8fe6f5d01506231"},
+]
+
+[package.dependencies]
+pysimplevalidate = ">=0.2.7"
+stdiomask = ">=0.0.3"
+
+[[package]]
 name = "pyparsing"
 version = "3.0.9"
 description = "pyparsing module - Classes and methods to define and execute parsing grammars"
@@ -3111,6 +3126,17 @@ files = [
     {file = "pyrsistent-0.19.3-cp39-cp39-win_amd64.whl", hash = "sha256:878433581fc23e906d947a6814336eee031a00e6defba224234169ae3d3d6a98"},
     {file = "pyrsistent-0.19.3-py3-none-any.whl", hash = "sha256:ccf0d6bd208f8111179f0c26fdf84ed7c3891982f2edaeae7422575f47e66b64"},
     {file = "pyrsistent-0.19.3.tar.gz", hash = "sha256:1a2994773706bbb4995c31a97bc94f1418314923bd1048c6d964837040376440"},
+]
+
+[[package]]
+name = "pysimplevalidate"
+version = "0.2.12"
+description = "A collection of string-based validation functions, suitable for use in other Python 2 and 3 applications."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "PySimpleValidate-0.2.12.tar.gz", hash = "sha256:645d24bdca17ad4c40658f3aa0bd5c1aa1688ba0c02ba75c5ed2cb3b8abaaa19"},
 ]
 
 [[package]]
@@ -4105,6 +4131,17 @@ typing-extensions = {version = ">=3.10.0", markers = "python_version < \"3.10\""
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart", "pyyaml"]
 
 [[package]]
+name = "stdiomask"
+version = "0.0.6"
+description = "A cross-platform Python module for entering passwords to a stdio terminal and displaying a **** mask, which getpass cannot do."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "stdiomask-0.0.6.tar.gz", hash = "sha256:c1e47069ead9e10bda150a26f7922ca01d2adc503042a9d7acf64877a2b9a3a6"},
+]
+
+[[package]]
 name = "tabulate"
 version = "0.9.0"
 description = "Pretty-print tabular data"
@@ -4643,4 +4680,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "3ed492077ec2cfd738e8d222f9962e630be51839d0abd23aa1e77fece74d98cc"
+content-hash = "366dd16524e0f31e611759d56b2edd23e684ef6924bb782d9360e0dda15bb464"

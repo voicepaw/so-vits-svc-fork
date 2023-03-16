@@ -54,6 +54,7 @@ tensorboard = "*"
 rich = "*"
 tqdm-joblib = "*"
 tensorboardx = "*"
+pyinputplus = "^0.2.12"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"

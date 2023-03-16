@@ -4,20 +4,26 @@ from typing import Literal
 import click
 import torch
 
+from logging import getLogger
+from logging import basicConfig, FileHandler, captureWarnings, INFO
+from rich.logging import RichHandler
+
+basicConfig(
+    level=INFO,
+    format="%(asctime)s %(message)s",
+    datefmt="[%X]",
+    handlers=[RichHandler(), FileHandler(f"so-vits-svc-fork.log")],
+)
+captureWarnings(True)
+LOG = getLogger(__name__)
+
 
 @click.help_option("--help", "-h")
 @click.group()
 def cli():
-    from logging import basicConfig, FileHandler, captureWarnings
-    from rich.logging import RichHandler
+    pass
 
-    basicConfig(
-        level="INFO",
-        format="%(asctime)s %(message)s",
-        datefmt="[%X]",
-        handlers=[RichHandler(), FileHandler(f"so-vits-svc-fork.log")],
-    )
-    captureWarnings(True)
+    
 
 
 @click.help_option("--help", "-h")
@@ -199,3 +205,16 @@ def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
     from .preprocess_hubert_f0 import preprocess_hubert_f0
 
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
+    
+import pyinputplus as pyip
+    
+@cli.command
+def clean():
+    import shutil
+    folders = ["dataset", "filelists", "logs"]
+    if pyip.inputYesNo(f"Are you sure you want to delete files in {folders}?") == "yes":
+        for folder in folders:
+            shutil.rmtree(folder)
+        LOG.info("Cleaned up files")
+    else:
+        LOG.info("Aborted")
