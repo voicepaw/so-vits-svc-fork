@@ -217,8 +217,10 @@ def download_file(url: str, filepath: "Path | str", chunk_size: int=32 * 1024, *
 
 def ensure_pretrained_model(folder_path: Path) -> None:
     model_urls = [
-        "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
-        "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/D_0.pth",
+        #"https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
+        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth"
+        #"https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/D_0.pth",
+        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth"
     ]
     for model_url in model_urls:
         model_path = folder_path / model_url.split("/")[-1]
@@ -229,7 +231,8 @@ def ensure_hurbert_model() -> Path:
     vec_path = Path("checkpoint_best_legacy_500.pt")
     if not vec_path.exists():
         # url = "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
-        url = "https://huggingface.co/innnky/contentvec/resolve/main/checkpoint_best_legacy_500.pt"
+        # url = "https://huggingface.co/innnky/contentvec/resolve/main/checkpoint_best_legacy_500.pt"
+        url = "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/checkpoint_best_legacy_500.pt"
         download_file(url, vec_path, desc="Downloading Hubert model")
     return vec_path
 
