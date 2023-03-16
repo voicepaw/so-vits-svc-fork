@@ -51,6 +51,7 @@ onnxoptimizer = "*"
 torch = "^1.12.1"
 torchaudio = "^0.12.1"
 tensorboard = "^2.12.0"
+rich = "^13.3.2"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"

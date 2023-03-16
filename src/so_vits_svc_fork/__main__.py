@@ -8,7 +8,15 @@ import torch
 @click.help_option("--help", "-h")
 @click.group()
 def cli():
-    pass
+    from logging import basicConfig, FileHandler
+    from rich.logging import RichHandler
+
+    basicConfig(
+        level="INFO",
+        format="%(asctime)s %(message)s",
+        datefmt="[%X]",
+        handlers=[RichHandler(), FileHandler(f"{__file__.__module__}.log")],
+    )
 
 
 @click.help_option("--help", "-h")
