@@ -36,7 +36,7 @@ class Hubert(nn.Module):
         return x, mask
 
     def encode(
-            self, x: torch.Tensor, layer: Optional[int] = None
+        self, x: torch.Tensor, layer: Optional[int] = None
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         x = self.feature_extractor(x)
         x = self.feature_projection(x.transpose(1, 2))
@@ -66,6 +66,7 @@ class HubertSoft(Hubert):
 
     def forward(self, x):
         return self.units(x)
+
 
 class FeatureExtractor(nn.Module):
     def __init__(self):
@@ -124,20 +125,20 @@ class PositionalConvEmbedding(nn.Module):
 
 class TransformerEncoder(nn.Module):
     def __init__(
-            self, encoder_layer: nn.TransformerEncoderLayer, num_layers: int
+        self, encoder_layer: nn.TransformerEncoderLayer, num_layers: int
     ) -> None:
-        super(TransformerEncoder, self).__init__()
+        super().__init__()
         self.layers = nn.ModuleList(
             [copy.deepcopy(encoder_layer) for _ in range(num_layers)]
         )
         self.num_layers = num_layers
 
     def forward(
-            self,
-            src: torch.Tensor,
-            mask: torch.Tensor = None,
-            src_key_padding_mask: torch.Tensor = None,
-            output_layer: Optional[int] = None,
+        self,
+        src: torch.Tensor,
+        mask: torch.Tensor = None,
+        src_key_padding_mask: torch.Tensor = None,
+        output_layer: Optional[int] = None,
     ) -> torch.Tensor:
         output = src
         for layer in self.layers[:output_layer]:
@@ -148,11 +149,11 @@ class TransformerEncoder(nn.Module):
 
 
 def _compute_mask(
-        shape: Tuple[int, int],
-        mask_prob: float,
-        mask_length: int,
-        device: torch.device,
-        min_masks: int = 0,
+    shape: Tuple[int, int],
+    mask_prob: float,
+    mask_length: int,
+    device: torch.device,
+    min_masks: int = 0,
 ) -> torch.Tensor:
     batch_size, sequence_length = shape
 
@@ -203,7 +204,7 @@ def _compute_mask(
 
 
 def hubert_soft(
-        path: str,
+    path: str,
 ) -> HubertSoft:
     r"""HuBERT-Soft from `"A Comparison of Discrete and Soft Speech Units for Improved Voice Conversion"`.
     Args:

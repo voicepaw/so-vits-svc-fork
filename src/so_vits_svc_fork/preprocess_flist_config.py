@@ -1,18 +1,19 @@
-import os
 import argparse
+import json
+import os
 import re
+import wave
+from random import shuffle
 
 from tqdm import tqdm
-from random import shuffle
-import json
-import wave
 
 config_template = json.load(open("configs_template/config_template.json"))
 
-pattern = re.compile(r'^[\.a-zA-Z0-9_\/]+$')
+pattern = re.compile(r"^[\.a-zA-Z0-9_\/]+$")
+
 
 def get_wav_duration(file_path):
-    with wave.open(file_path, 'rb') as wav_file:
+    with wave.open(file_path, "rb") as wav_file:
         # 获取音频帧数
         n_frames = wav_file.getnframes()
         # 获取采样率
@@ -21,14 +22,29 @@ def get_wav_duration(file_path):
         duration = n_frames / float(framerate)
     return duration
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--train_list", type=str, default="./filelists/train.txt", help="path to train list")
-    parser.add_argument("--val_list", type=str, default="./filelists/val.txt", help="path to val list")
-    parser.add_argument("--test_list", type=str, default="./filelists/test.txt", help="path to test list")
-    parser.add_argument("--source_dir", type=str, default="./dataset/44k", help="path to source dir")
+    parser.add_argument(
+        "--train_list",
+        type=str,
+        default="./filelists/train.txt",
+        help="path to train list",
+    )
+    parser.add_argument(
+        "--val_list", type=str, default="./filelists/val.txt", help="path to val list"
+    )
+    parser.add_argument(
+        "--test_list",
+        type=str,
+        default="./filelists/test.txt",
+        help="path to test list",
+    )
+    parser.add_argument(
+        "--source_dir", type=str, default="./dataset/44k", help="path to source dir"
+    )
     args = parser.parse_args()
-    
+
     train = []
     val = []
     test = []
@@ -38,7 +54,10 @@ if __name__ == "__main__":
     for speaker in tqdm(os.listdir(args.source_dir)):
         spk_dict[speaker] = spk_id
         spk_id += 1
-        wavs = ["/".join([args.source_dir, speaker, i]) for i in os.listdir(os.path.join(args.source_dir, speaker))]
+        wavs = [
+            "/".join([args.source_dir, speaker, i])
+            for i in os.listdir(os.path.join(args.source_dir, speaker))
+        ]
         new_wavs = []
         for file in wavs:
             if not file.endswith("wav"):
@@ -58,19 +77,19 @@ if __name__ == "__main__":
     shuffle(train)
     shuffle(val)
     shuffle(test)
-            
+
     print("Writing", args.train_list)
     with open(args.train_list, "w") as f:
         for fname in tqdm(train):
             wavpath = fname
             f.write(wavpath + "\n")
-        
+
     print("Writing", args.val_list)
     with open(args.val_list, "w") as f:
         for fname in tqdm(val):
             wavpath = fname
             f.write(wavpath + "\n")
-            
+
     print("Writing", args.test_list)
     with open(args.test_list, "w") as f:
         for fname in tqdm(test):

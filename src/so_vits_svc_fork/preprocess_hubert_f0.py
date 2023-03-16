@@ -1,16 +1,17 @@
+import argparse
+import logging
 import math
 import multiprocessing
 import os
-import argparse
+from glob import glob
 from random import shuffle
 
 import torch
-from glob import glob
 from tqdm import tqdm
 
 from . import utils
-import logging
-logging.getLogger('numba').setLevel(logging.WARNING)
+
+logging.getLogger("numba").setLevel(logging.WARNING)
 import librosa
 import numpy as np
 
@@ -24,14 +25,16 @@ def process_one(filename, hmodel):
     wav, sr = librosa.load(filename, sr=sampling_rate)
     soft_path = filename + ".soft.pt"
     if not os.path.exists(soft_path):
-        devive = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         wav16k = librosa.resample(wav, orig_sr=sampling_rate, target_sr=16000)
-        wav16k = torch.from_numpy(wav16k).to(devive)
+        wav16k = torch.from_numpy(wav16k).to(device)
         c = utils.get_hubert_content(hmodel, wav_16k_tensor=wav16k)
         torch.save(c.cpu(), soft_path)
     f0_path = filename + ".f0.npy"
     if not os.path.exists(f0_path):
-        f0 = utils.compute_f0_dio(wav, sampling_rate=sampling_rate, hop_length=hop_length)
+        f0 = utils.compute_f0_dio(
+            wav, sampling_rate=sampling_rate, hop_length=hop_length
+        )
         np.save(f0_path, f0)
 
 
@@ -46,17 +49,23 @@ def process_batch(filenames):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--in_dir", type=str, default="dataset/44k", help="path to input dir")
+    parser.add_argument(
+        "--in_dir", type=str, default="dataset/44k", help="path to input dir"
+    )
 
     args = parser.parse_args()
-    filenames = glob(f'{args.in_dir}/*/*.wav', recursive=True)  # [:10]
+    filenames = glob(f"{args.in_dir}/*/*.wav", recursive=True)  # [:10]
     shuffle(filenames)
-    multiprocessing.set_start_method('spawn',force=True)
+    multiprocessing.set_start_method("spawn", force=True)
 
     num_processes = 1
     chunk_size = int(math.ceil(len(filenames) / num_processes))
-    chunks = [filenames[i:i + chunk_size] for i in range(0, len(filenames), chunk_size)]
+    chunks = [
+        filenames[i : i + chunk_size] for i in range(0, len(filenames), chunk_size)
+    ]
     print([len(c) for c in chunks])
-    processes = [multiprocessing.Process(target=process_batch, args=(chunk,)) for chunk in chunks]
+    processes = [
+        multiprocessing.Process(target=process_batch, args=(chunk,)) for chunk in chunks
+    ]
     for p in processes:
         p.start()

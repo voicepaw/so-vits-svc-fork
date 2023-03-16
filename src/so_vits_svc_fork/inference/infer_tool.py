@@ -5,21 +5,20 @@ import logging
 import os
 import time
 from pathlib import Path
-from so_vits_svc_fork.inference import slicer
 
 import librosa
 import numpy as np
+
 # import onnxruntime
-import parselmouth
 import soundfile
 import torch
 import torchaudio
 
 from so_vits_svc_fork import cluster, utils
-from so_vits_svc_fork.hubert import hubert_model
+from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
 
-logging.getLogger('matplotlib').setLevel(logging.WARNING)
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
 
 
 def read_temp(file_name):
@@ -29,14 +28,17 @@ def read_temp(file_name):
         return {}
     else:
         try:
-            with open(file_name, "r") as f:
+            with open(file_name) as f:
                 data = f.read()
             data_dict = json.loads(data)
             if os.path.getsize(file_name) > 50 * 1024 * 1024:
                 f_name = file_name.replace("\\", "/").split("/")[-1]
                 print(f"clean {f_name}")
                 for wav_hash in list(data_dict.keys()):
-                    if int(time.time()) - int(data_dict[wav_hash]["time"]) > 14 * 24 * 3600:
+                    if (
+                        int(time.time()) - int(data_dict[wav_hash]["time"])
+                        > 14 * 24 * 3600
+                    ):
                         del data_dict[wav_hash]
         except Exception as e:
             print(e)
@@ -54,14 +56,14 @@ def timeit(func):
     def run(*args, **kwargs):
         t = time.time()
         res = func(*args, **kwargs)
-        print('executing \'%s\' costed %.3fs' % (func.__name__, time.time() - t))
+        print(f"executing '{func.__name__}' costed {time.time() - t:.3f}s")
         return res
 
     return run
 
 
 def format_wav(audio_path):
-    if Path(audio_path).suffix == '.wav':
+    if Path(audio_path).suffix == ".wav":
         return
     raw_audio, raw_sample_rate = librosa.load(audio_path, mono=True, sr=None)
     soundfile.write(Path(audio_path).with_suffix(".wav"), raw_audio, raw_sample_rate)
@@ -70,8 +72,8 @@ def format_wav(audio_path):
 def get_end_file(dir_path, end):
     file_lists = []
     for root, dirs, files in os.walk(dir_path):
-        files = [f for f in files if f[0] != '.']
-        dirs[:] = [d for d in dirs if d[0] != '.']
+        files = [f for f in files if f[0] != "."]
+        dirs[:] = [d for d in dirs if d[0] != "."]
         for f_file in files:
             if f_file.endswith(end):
                 file_lists.append(os.path.join(root, f_file).replace("\\", "/"))
@@ -81,15 +83,18 @@ def get_end_file(dir_path, end):
 def get_md5(content):
     return hashlib.new("md5", content).hexdigest()
 
+
 def fill_a_to_b(a, b):
     if len(a) < len(b):
         for _ in range(0, len(b) - len(a)):
             a.append(a[0])
 
+
 def mkdir(paths: list):
     for path in paths:
         if not os.path.exists(path):
             os.mkdir(path)
+
 
 def pad_array(arr, target_length):
     current_length = arr.shape[0]
@@ -99,14 +104,20 @@ def pad_array(arr, target_length):
         pad_width = target_length - current_length
         pad_left = pad_width // 2
         pad_right = pad_width - pad_left
-        padded_arr = np.pad(arr, (pad_left, pad_right), 'constant', constant_values=(0, 0))
+        padded_arr = np.pad(
+            arr, (pad_left, pad_right), "constant", constant_values=(0, 0)
+        )
         return padded_arr
 
 
-class Svc(object):
-    def __init__(self, net_g_path, config_path,
-                 device=None,
-                 cluster_model_path="logs/44k/kmeans_10000.pt"):
+class Svc:
+    def __init__(
+        self,
+        net_g_path,
+        config_path,
+        device=None,
+        cluster_model_path="logs/44k/kmeans_10000.pt",
+    ):
         self.net_g_path = net_g_path
         if device is None:
             self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -128,20 +139,20 @@ class Svc(object):
         self.net_g_ms = SynthesizerTrn(
             self.hps_ms.data.filter_length // 2 + 1,
             self.hps_ms.train.segment_size // self.hps_ms.data.hop_length,
-            **self.hps_ms.model)
+            **self.hps_ms.model,
+        )
         _ = utils.load_checkpoint(self.net_g_path, self.net_g_ms, None)
         if "half" in self.net_g_path and torch.cuda.is_available():
             _ = self.net_g_ms.half().eval().to(self.dev)
         else:
             _ = self.net_g_ms.eval().to(self.dev)
 
-
-
     def get_unit_f0(self, in_path, tran, cluster_infer_ratio, speaker):
-
         wav, sr = librosa.load(in_path, sr=self.target_sample)
 
-        f0 = utils.compute_f0_parselmouth(wav, sampling_rate=self.target_sample, hop_length=self.hop_size)
+        f0 = utils.compute_f0_parselmouth(
+            wav, sampling_rate=self.target_sample, hop_length=self.hop_size
+        )
         f0, uv = utils.interpolate_f0(f0)
         f0 = torch.FloatTensor(f0)
         uv = torch.FloatTensor(uv)
@@ -154,18 +165,25 @@ class Svc(object):
         c = utils.get_hubert_content(self.hubert_model, wav_16k_tensor=wav16k)
         c = utils.repeat_expand_2d(c.squeeze(0), f0.shape[1])
 
-        if cluster_infer_ratio !=0:
-            cluster_c = cluster.get_cluster_center_result(self.cluster_model, c.cpu().numpy().T, speaker).T
+        if cluster_infer_ratio != 0:
+            cluster_c = cluster.get_cluster_center_result(
+                self.cluster_model, c.cpu().numpy().T, speaker
+            ).T
             cluster_c = torch.FloatTensor(cluster_c).to(self.dev)
             c = cluster_infer_ratio * cluster_c + (1 - cluster_infer_ratio) * c
 
         c = c.unsqueeze(0)
         return c, f0, uv
 
-    def infer(self, speaker, tran, raw_path,
-              cluster_infer_ratio=0,
-              auto_predict_f0=False,
-              noice_scale=0.4):
+    def infer(
+        self,
+        speaker,
+        tran,
+        raw_path,
+        cluster_infer_ratio=0,
+        auto_predict_f0=False,
+        noice_scale=0.4,
+    ):
         speaker_id = self.spk2id.__dict__.get(speaker)
         if not speaker_id and type(speaker) is int:
             if len(self.spk2id.__dict__) >= speaker:
@@ -176,23 +194,40 @@ class Svc(object):
             c = c.half()
         with torch.no_grad():
             start = time.time()
-            audio = self.net_g_ms.infer(c, f0=f0, g=sid, uv=uv, predict_f0=auto_predict_f0, noice_scale=noice_scale)[0,0].data.float()
+            audio = self.net_g_ms.infer(
+                c,
+                f0=f0,
+                g=sid,
+                uv=uv,
+                predict_f0=auto_predict_f0,
+                noice_scale=noice_scale,
+            )[0, 0].data.float()
             use_time = time.time() - start
-            print("vits use time:{}".format(use_time))
+            print(f"vits use time:{use_time}")
         return audio, audio.shape[-1]
 
     def clear_empty(self):
         # 清理显存
         torch.cuda.empty_cache()
 
-    def slice_inference(self,raw_audio_path, spk, tran, slice_db,cluster_infer_ratio, auto_predict_f0,noice_scale, pad_seconds=0.5):
+    def slice_inference(
+        self,
+        raw_audio_path,
+        spk,
+        tran,
+        slice_db,
+        cluster_infer_ratio,
+        auto_predict_f0,
+        noice_scale,
+        pad_seconds=0.5,
+    ):
         wav_path = raw_audio_path
         chunks = slicer.cut(wav_path, db_thresh=slice_db)
         audio_data, audio_sr = slicer.chunks2audio(wav_path, chunks)
 
         audio = []
-        for (slice_tag, data) in audio_data:
-            print(f'#=====segment start, {round(len(data) / audio_sr, 3)}s======')
+        for slice_tag, data in audio_data:
+            print(f"#=====segment start, {round(len(data) / audio_sr, 3)}s======")
             # padd
             pad_len = int(audio_sr * pad_seconds)
             data = np.concatenate([np.zeros([pad_len]), data, np.zeros([pad_len])])
@@ -201,14 +236,17 @@ class Svc(object):
             soundfile.write(raw_path, data, audio_sr, format="wav")
             raw_path.seek(0)
             if slice_tag:
-                print('jump empty segment')
+                print("jump empty segment")
                 _audio = np.zeros(length)
             else:
-                out_audio, out_sr = self.infer(spk, tran, raw_path,
-                                                    cluster_infer_ratio=cluster_infer_ratio,
-                                                    auto_predict_f0=auto_predict_f0,
-                                                    noice_scale=noice_scale
-                                                    )
+                out_audio, out_sr = self.infer(
+                    spk,
+                    tran,
+                    raw_path,
+                    cluster_infer_ratio=cluster_infer_ratio,
+                    auto_predict_f0=auto_predict_f0,
+                    noice_scale=noice_scale,
+                )
                 _audio = out_audio.cpu().numpy()
 
             pad_len = int(self.target_sample * pad_seconds)
@@ -228,6 +266,7 @@ class RealTimeVC:
 
     def process(self, svc_model, speaker_id, f_pitch_change, input_wav_path):
         import maad
+
         audio, sr = torchaudio.load(input_wav_path)
         audio = audio.cpu().numpy()[0]
         temp_wav = io.BytesIO()
@@ -235,9 +274,9 @@ class RealTimeVC:
             input_wav_path.seek(0)
             audio, sr = svc_model.infer(speaker_id, f_pitch_change, input_wav_path)
             audio = audio.cpu().numpy()
-            self.last_chunk = audio[-self.pre_len:]
+            self.last_chunk = audio[-self.pre_len :]
             self.last_o = audio
-            return audio[-self.chunk_len:]
+            return audio[-self.chunk_len :]
         else:
             audio = np.concatenate([self.last_chunk, audio])
             soundfile.write(temp_wav, audio, sr, format="wav")
@@ -245,6 +284,6 @@ class RealTimeVC:
             audio, sr = svc_model.infer(speaker_id, f_pitch_change, temp_wav)
             audio = audio.cpu().numpy()
             ret = maad.util.crossfade(self.last_o, audio, self.pre_len)
-            self.last_chunk = audio[-self.pre_len:]
+            self.last_chunk = audio[-self.pre_len :]
             self.last_o = audio
-            return ret[self.chunk_len:2 * self.chunk_len]
+            return ret[self.chunk_len : 2 * self.chunk_len]

@@ -1,20 +1,19 @@
-import os
-from glob import glob
-from pathlib import Path
-import torch
-import logging
 import argparse
-import torch
+import logging
+import os
+from pathlib import Path
+
 import numpy as np
-from sklearn.cluster import KMeans, MiniBatchKMeans
+import torch
 import tqdm
+from sklearn.cluster import KMeans, MiniBatchKMeans
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 import time
-import random
+
 
 def train_cluster(in_dir, n_clusters, use_minibatch=True, verbose=False):
-
     logger.info(f"Loading features from {in_dir}")
     features = []
     nums = 0
@@ -22,20 +21,24 @@ def train_cluster(in_dir, n_clusters, use_minibatch=True, verbose=False):
         features.append(torch.load(path).squeeze(0).numpy().T)
         # print(features[-1].shape)
     features = np.concatenate(features, axis=0)
-    print(nums, features.nbytes/ 1024**2, "MB , shape:",features.shape, features.dtype)
+    print(
+        nums, features.nbytes / 1024**2, "MB , shape:", features.shape, features.dtype
+    )
     features = features.astype(np.float32)
     logger.info(f"Clustering features of shape: {features.shape}")
     t = time.time()
     if use_minibatch:
-        kmeans = MiniBatchKMeans(n_clusters=n_clusters,verbose=verbose, batch_size=4096, max_iter=80).fit(features)
+        kmeans = MiniBatchKMeans(
+            n_clusters=n_clusters, verbose=verbose, batch_size=4096, max_iter=80
+        ).fit(features)
     else:
-        kmeans = KMeans(n_clusters=n_clusters,verbose=verbose).fit(features)
-    print(time.time()-t, "s")
+        kmeans = KMeans(n_clusters=n_clusters, verbose=verbose).fit(features)
+    print(time.time() - t, "s")
 
     x = {
-            "n_features_in_": kmeans.n_features_in_,
-            "_n_threads": kmeans._n_threads,
-            "cluster_centers_": kmeans.cluster_centers_,
+        "n_features_in_": kmeans.n_features_in_,
+        "_n_threads": kmeans._n_threads,
+        "cluster_centers_": kmeans.cluster_centers_,
     }
     print("end")
 
@@ -43,12 +46,16 @@ def train_cluster(in_dir, n_clusters, use_minibatch=True, verbose=False):
 
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--dataset', type=Path, default="./dataset/44k",
-                        help='path of training data directory')
-    parser.add_argument('--output', type=Path, default="logs/44k",
-                        help='path of model output directory')
+    parser.add_argument(
+        "--dataset",
+        type=Path,
+        default="./dataset/44k",
+        help="path of training data directory",
+    )
+    parser.add_argument(
+        "--output", type=Path, default="logs/44k", help="path of model output directory"
+    )
 
     args = parser.parse_args()
 
@@ -58,9 +65,9 @@ if __name__ == "__main__":
 
     ckpt = {}
     for spk in os.listdir(dataset):
-        if os.path.isdir(dataset/spk):
+        if os.path.isdir(dataset / spk):
             print(f"train kmeans for {spk}...")
-            in_dir = dataset/spk
+            in_dir = dataset / spk
             x = train_cluster(in_dir, n_clusters, verbose=False)
             ckpt[spk] = x
 
@@ -70,7 +77,6 @@ if __name__ == "__main__":
         ckpt,
         checkpoint_path,
     )
-
 
     # import cluster
     # for spk in tqdm.tqdm(os.listdir("dataset")):
@@ -85,5 +91,3 @@ if __name__ == "__main__":
     #             feature = c.T
     #             feature_class = cluster.get_cluster_result(feature, spk)
     #             np.save(feature_path.replace(".discrete.npy", ".discrete_class.npy"), feature_class)
-
-
