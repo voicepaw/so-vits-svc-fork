@@ -37,6 +37,7 @@ A fork of so-vits-svc.
 Install this via pip (or your favourite package manager):
 
 ```shell
+pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
 pip install so-vits-svc-fork
 ```
 

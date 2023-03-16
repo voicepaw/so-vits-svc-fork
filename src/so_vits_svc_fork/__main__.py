@@ -22,10 +22,12 @@ def cli():
 
 @click.help_option("--help", "-h")
 @cli.command()
-def train():
+@click.option("-c", "--config-path", type=click.Path(exists=True), help="path to config", default=Path("./configs/44k/config.json"))
+@click.option("-m", "--model-path", type=click.Path(), help="path to output dir", default=Path("./logs/44k"))
+def train(config_path: Path, model_path: Path):
     from .train import main
 
-    main()
+    main(config_path=config_path, model_path=model_path)
 
 
 @click.help_option("--help", "-h")
@@ -42,12 +44,12 @@ def train():
     type=click.Path(),
     help="path to output dir",
 )
-@click.option("-s", "--speaker", type=str, default="p225", help="speaker name")
+@click.option("-s", "--speaker", type=str, default=None, help="speaker name")
 @click.option(
     "-m",
     "--model_path",
     type=click.Path(exists=True),
-    default=Path("./logs/44k/epoch_1000.pt"),
+    default=Path("./logs/44k/G_800.pth"),
     help="path to model",
 )
 @click.option(

@@ -145,3 +145,5 @@ tests/**/*.npy
 tests/**/*.pt
 tests/**/*.txt
 tests/**/*.json
+tests/**/*.pth
+*.tfevents.*

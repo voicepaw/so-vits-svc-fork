@@ -4,7 +4,7 @@ from torch.nn import Conv1d
 from torch.nn import functional as F
 from torch.nn.utils import remove_weight_norm, weight_norm
 
-from so_vits_svc_fork import modules as commons
+from so_vits_svc_fork.modules import commons
 from so_vits_svc_fork.modules.commons import get_padding, init_weights
 
 LRELU_SLOPE = 0.1

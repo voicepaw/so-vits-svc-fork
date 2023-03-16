@@ -28,13 +28,13 @@ def preprocess_hubert_f0(input_dir: Path, config_path: Path):
   
     def _process_one(filepath: Path, hmodel, device: Literal["cuda", "cpu"] = "cuda"):
         wav, sr = librosa.load(filepath, sr=sampling_rate)
-        soft_path = filepath.parent / (filepath.stem + ".soft.pt")
+        soft_path = filepath.parent / (filepath.name + ".soft.pt")
         if not os.path.exists(soft_path):
             wav16k = librosa.resample(wav, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE)
             wav16k = torch.from_numpy(wav16k).to(device)
             c = utils.get_hubert_content(hmodel, wav_16k_tensor=wav16k)
             torch.save(c.cpu(), soft_path)
-        f0_path = filepath.parent / (filepath.stem + ".f0.npy")
+        f0_path = filepath.parent / (filepath.name + ".f0.npy")
         if not f0_path.exists():
             f0 = utils.compute_f0_dio(
                 wav, sampling_rate=sampling_rate, hop_length=hop_length
@@ -50,8 +50,8 @@ def preprocess_hubert_f0(input_dir: Path, config_path: Path):
         for filepath in tqdm(filepaths):
             _process_one(filepath, hmodel, device)  
     
-    n_jobs = cpu_count()
     filepaths = list(input_dir.glob("**/*.wav"))
+    n_jobs = min(cpu_count(), len(filepaths) // 32, 8)
     shuffle(filepaths)
     filepath_chunks = np.array_split(filepaths, n_jobs)
     Parallel(n_jobs=n_jobs)(delayed(_process_batch)(chunk) for chunk in filepath_chunks)

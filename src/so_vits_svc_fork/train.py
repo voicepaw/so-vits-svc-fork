@@ -22,22 +22,23 @@ from .models import MultiPeriodDiscriminator, SynthesizerTrn
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
 
-torch.backends.cudnn.benchmark = True
-global_step = 0
-start_time = time.time()
+
 
 # os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'INFO'
 
 from logging import getLogger
+from pathlib import Path
 
 LOG = getLogger(__name__)
+torch.backends.cudnn.benchmark = True
+global_step = 0
+start_time = time.time()
 
-
-def main():
+def main(config_path: Path, model_path: Path):
     """Assume Single Node Multi GPUs Training Only"""
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
-    hps = utils.get_hparams()
+    hps = utils.get_hparams(config_path, model_path)
 
     n_gpus = torch.cuda.device_count()
     os.environ["MASTER_ADDR"] = "localhost"

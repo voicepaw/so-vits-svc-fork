@@ -443,25 +443,9 @@ def load_filepaths_and_text(filename, split="|"):
     return filepaths_and_text
 
 
-def get_hparams(init=True):
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "-c",
-        "--config",
-        type=str,
-        default="./configs/base.json",
-        help="JSON file for configuration",
-    )
-    parser.add_argument("-m", "--model", type=str, required=True, help="Model name")
-
-    args = parser.parse_args()
-    model_dir = os.path.join("logs", args.model)
-
-    if not os.path.exists(model_dir):
-        os.makedirs(model_dir)
-
-    config_path = args.config
-    config_save_path = os.path.join(model_dir, "config.json")
+def get_hparams(config_path: Path, model_path: Path, init: bool=True) -> "HParams":
+    model_path.mkdir(parents=True, exist_ok=True)
+    config_save_path = os.path.join(model_path, "config.json")
     if init:
         with open(config_path) as f:
             data = f.read()
@@ -473,7 +457,7 @@ def get_hparams(init=True):
     config = json.loads(data)
 
     hparams = HParams(**config)
-    hparams.model_dir = model_dir
+    hparams.model_dir = model_path.as_posix()
     return hparams
 
 
