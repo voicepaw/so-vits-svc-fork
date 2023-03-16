@@ -195,7 +195,7 @@ def f0_to_coarse(f0):
 
 def download_file(url: str, filepath: "Path | str", chunk_size: int=32 * 1024, **kwargs):
     filepath = Path(filepath)
-    temppath = filepath.parent / f".{filepath.name}.download"
+    temppath = filepath.parent / f"{filepath.name}.download"
     if filepath.exists():
         raise FileExistsError(f"{filepath} already exists")
     temppath.unlink(missing_ok=True)
