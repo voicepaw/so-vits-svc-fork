@@ -50,7 +50,8 @@ def cli():
 )
 def train(config_path: Path, model_path: Path):
     from .train import main
-
+    config_path = Path(config_path)
+    model_path = Path(model_path)
     main(config_path=config_path, model_path=model_path)
 
 
@@ -126,6 +127,10 @@ def infer(
     if output_path is None:
         output_path = input_path.parent / f"{input_path.stem}.out.{input_path.suffix}"
     output_path = Path(output_path)
+    model_path = Path(model_path)
+    config_path = Path(config_path)
+    if cluster_model_path is not None:
+        cluster_model_path = Path(cluster_model_path)
     infer(
         input_path=input_path,
         output_path=output_path,
@@ -163,6 +168,8 @@ def infer(
 def preprocess(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
     from .preprocess_resample import preprocess_resample
 
+    input_dir = Path(input_dir)
+    output_dir = Path(output_dir)
     preprocess_resample(
         input_dir=input_dir, output_dir=output_dir, sampling_rate=sampling_rate
     )
@@ -196,6 +203,9 @@ def preprocess_config(
 ):
     from .preprocess_flist_config import preprocess_config
 
+    input_dir = Path(input_dir)
+    filelist_path = Path(filelist_path)
+    config_path = Path(config_path)
     preprocess_config(
         input_dir=input_dir,
         train_list_path=filelist_path / "train.txt",
@@ -223,7 +233,8 @@ def preprocess_config(
 )
 def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
     from .preprocess_hubert_f0 import preprocess_hubert_f0
-
+    input_dir = Path(input_dir)
+    config_path = Path(config_path)
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
 
 
