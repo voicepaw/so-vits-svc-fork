@@ -146,4 +146,5 @@ tests/**/*.pt
 tests/**/*.txt
 tests/**/*.json
 tests/**/*.pth
+tests/**/*.download
 *.tfevents.*
