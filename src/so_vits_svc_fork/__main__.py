@@ -17,18 +17,22 @@ import pyinputplus as pyip
 import torch
 from rich.logging import RichHandler
 
-IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
 
-basicConfig(
-    level=INFO,
-    format="%(asctime)s %(message)s",
-    datefmt="[%X]",
-    handlers=[
-        RichHandler() if not IN_COLAB else StreamHandler(),
-        FileHandler(f"{__name__.split('.')[0]}.log"),
-    ],
-)
-captureWarnings(True)
+def init_logger() -> None:
+    IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
+
+    basicConfig(
+        level=INFO,
+        format="%(asctime)s %(message)s",
+        datefmt="[%X]",
+        handlers=[
+            RichHandler() if not IN_COLAB else StreamHandler(),
+            FileHandler(f"{__name__.split('.')[0]}.log"),
+        ],
+    )
+    captureWarnings(True)
+
+
 LOG = getLogger(__name__)
 
 
@@ -48,6 +52,7 @@ def cli():
     To train a model, run pre-resample, pre-config, pre-hubert, train.
     To infer a model, run infer.
     """
+    init_logger()
 
 
 @click.help_option("--help", "-h")
