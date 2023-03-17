@@ -27,7 +27,7 @@ svc = "so_vits_svc_fork.__main__:cli"
 "Changelog" = "https://github.com/34j/so-vits-svc-fork/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 librosa = "*"
 fairseq = "*"
 flask = "*"
