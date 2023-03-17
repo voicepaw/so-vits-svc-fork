@@ -138,3 +138,13 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+
+# additional files
+tests/**/*.wav
+tests/**/*.npy
+tests/**/*.pt
+tests/**/*.txt
+tests/**/*.json
+tests/**/*.pth
+tests/**/*.download
+*.tfevents.*

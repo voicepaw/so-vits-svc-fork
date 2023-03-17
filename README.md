@@ -30,14 +30,43 @@
   <img src="https://img.shields.io/pypi/l/so-vits-svc-fork.svg?style=flat-square" alt="License">
 </p>
 
-A fork of so-vits-svc.
+A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with a **greatly improved interface**. Based on branch `4.0` (v1). No differences in functionality and the models are compatible.
 
 ## Installation
 
 Install this via pip (or your favourite package manager):
 
 ```shell
+pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
 pip install so-vits-svc-fork
+```
+
+## Features not available in the original repo
+
+- Unified command-line interface (no need to run Python scripts)
+- Ready to use just by installing with `pip`.
+- Automatically download pretrained base model and HuBERT model
+- Code completely formatted with black, isort, autoflake etc.
+
+## Usage
+
+### Training
+
+Colab notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
+
+Place your dataset like `dataset_raw/{speaker_id}/{wav_file}.wav` and run:
+
+```shell
+svc pre-resample
+svc pre-config
+svc pre-hubert
+svc train
+```
+
+### Inference
+
+```shell
+svc --model-path <model-path> source.wav
 ```
 
 ## Contributors ✨
@@ -46,8 +75,19 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- prettier-ignore-start -->
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
-<!-- markdownlint-enable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/34j"><img src="https://avatars.githubusercontent.com/u/55338215?v=4?s=80" width="80px;" alt="34j"/><br /><sub><b>34j</b></sub></a><br /><a href="https://github.com/34j/so-vits-svc-fork/commits?author=34j" title="Code">💻</a> <a href="#ideas-34j" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/34j/so-vits-svc-fork/commits?author=34j" title="Documentation">📖</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 <!-- prettier-ignore-end -->
 

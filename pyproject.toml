@@ -18,12 +18,42 @@ packages = [
     { include = "so_vits_svc_fork", from = "src" },
 ]
 
+[tool.poetry.scripts]
+so-vits-svc-fork = "so_vits_svc_fork.__main__:cli"
+svc = "so_vits_svc_fork.__main__:cli"
+
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/34j/so-vits-svc-fork/issues"
 "Changelog" = "https://github.com/34j/so-vits-svc-fork/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
+librosa = "*"
+fairseq = "*"
+flask = "*"
+flask_cors = "*"
+gradio = "*"
+numpy = ">=1.23"
+pydub = "*"
+pyworld = "*"
+requests = "*"
+scipy = "*"
+sounddevice = "*"
+SoundFile = "*"
+starlette = "*"
+tqdm = "*"
+scikit-maad = "*"
+praat-parselmouth = "*"
+onnx = "*"
+onnxsim = "*"
+onnxoptimizer = "*"
+torch = "*"
+torchaudio = "*"
+tensorboard = "*"
+rich = "*"
+tqdm-joblib = "*"
+tensorboardx = "*"
+pyinputplus = "*"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"
@@ -64,6 +94,9 @@ exclude_lines = [
 profile = "black"
 known_first_party = ["so_vits_svc_fork", "tests"]
 
+[tool.autoflake]
+remove_all_unused_imports = true
+
 [tool.mypy]
 check_untyped_defs = true
 disallow_any_generics = true
@@ -86,6 +119,9 @@ allow_untyped_defs = true
 [[tool.mypy.overrides]]
 module = "docs.*"
 ignore_errors = true
+
+[tool.bandit]
+exclude_dirs = ["src"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

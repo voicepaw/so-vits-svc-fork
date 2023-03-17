@@ -1,0 +1,295 @@
+from __future__ import annotations
+
+import os
+from logging import (
+    INFO,
+    FileHandler,
+    StreamHandler,
+    basicConfig,
+    captureWarnings,
+    getLogger,
+)
+from pathlib import Path
+from typing import Literal
+
+import click
+import pyinputplus as pyip
+import torch
+from rich.logging import RichHandler
+
+IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
+
+basicConfig(
+    level=INFO,
+    format="%(asctime)s %(message)s",
+    datefmt="[%X]",
+    handlers=[
+        RichHandler() if not IN_COLAB else StreamHandler(),
+        FileHandler(f"{__name__.split('.')[0]}.log"),
+    ],
+)
+captureWarnings(True)
+LOG = getLogger(__name__)
+
+
+@click.help_option("--help", "-h")
+@click.group()
+def cli():
+    """so-vits-svc allows any folder structure for training data.
+    However, it is recommended to place the training data in the following structure:
+
+        dataset_raw/{speaker_name}/{wav_name}.wav
+
+    To train a model, run pre-resample, pre-config, pre-hubert, train.
+    To infer a model, run infer.
+    """
+
+
+@click.help_option("--help", "-h")
+@cli.command()
+@click.option(
+    "-c",
+    "--config-path",
+    type=click.Path(exists=True),
+    help="path to config",
+    default=Path("./configs/44k/config.json"),
+)
+@click.option(
+    "-m",
+    "--model-path",
+    type=click.Path(),
+    help="path to output dir",
+    default=Path("./logs/44k"),
+)
+def train(config_path: Path, model_path: Path):
+    """Train model"""
+    from .train import main
+
+    config_path = Path(config_path)
+    model_path = Path(model_path)
+    main(config_path=config_path, model_path=model_path)
+
+
+@click.help_option("--help", "-h")
+@cli.command()
+@click.argument(
+    "input_path",
+    type=click.Path(exists=True),
+)
+@click.option(
+    "-o",
+    "--output_path",
+    type=click.Path(),
+    help="path to output dir",
+)
+@click.option("-s", "--speaker", type=str, default=None, help="speaker name")
+@click.option(
+    "-m",
+    "--model_path",
+    type=click.Path(exists=True),
+    default=Path("./logs/44k/G_800.pth"),
+    help="path to model",
+)
+@click.option(
+    "-c",
+    "--config_path",
+    type=click.Path(exists=True),
+    default=Path("./configs/44k/config.json"),
+    help="path to config",
+)
+@click.option(
+    "-k",
+    "--cluster_model_path",
+    type=click.Path(exists=True),
+    default=None,
+    help="path to cluster model",
+)
+@click.option("-t", "--transpose", type=int, default=0, help="transpose")
+@click.option("-d", "--db_thresh", type=int, default=-40, help="db thresh")
+@click.option(
+    "-a", "--auto_predict_f0", type=bool, default=False, help="auto predict f0"
+)
+@click.option(
+    "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
+)
+@click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
+@click.option("-p", "--pad_seconds", type=float, default=0.5, help="pad seconds")
+@click.option(
+    "-d",
+    "--device",
+    type=str,
+    default="cuda" if torch.cuda.is_available() else "cpu",
+    help="device",
+)
+def infer(
+    input_path: Path,
+    output_path: Path,
+    speaker: str,
+    model_path: Path,
+    config_path: Path,
+    cluster_model_path: Path | None = None,
+    transpose: int = 0,
+    db_thresh: int = -40,
+    auto_predict_f0: bool = False,
+    cluster_infer_ratio: float = 0,
+    noise_scale: float = 0.4,
+    pad_seconds: float = 0.5,
+    device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
+):
+    """Inference"""
+    from .inference_main import infer
+
+    input_path = Path(input_path)
+    if output_path is None:
+        output_path = input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
+    output_path = Path(output_path)
+    model_path = Path(model_path)
+    config_path = Path(config_path)
+    if cluster_model_path is not None:
+        cluster_model_path = Path(cluster_model_path)
+    infer(
+        input_path=input_path,
+        output_path=output_path,
+        speaker=speaker,
+        model_path=model_path,
+        config_path=config_path,
+        cluster_model_path=cluster_model_path,
+        transpose=transpose,
+        db_thresh=db_thresh,
+        auto_predict_f0=auto_predict_f0,
+        cluster_infer_ratio=cluster_infer_ratio,
+        noise_scale=noise_scale,
+        pad_seconds=pad_seconds,
+        device=device,
+    )
+
+
+@click.help_option("--help", "-h")
+@cli.command()
+@click.option(
+    "-i",
+    "--input_dir",
+    type=click.Path(exists=True),
+    default=Path("./dataset_raw/44k"),
+    help="path to source dir",
+)
+@click.option(
+    "-o",
+    "--output_dir",
+    type=click.Path(),
+    default=Path("./dataset/44k"),
+    help="path to output dir",
+)
+@click.option("-s", "--sampling_rate", type=int, default=44100, help="sampling rate")
+def pre_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
+    """Preprocessing part 1: resample"""
+    from .preprocess_resample import preprocess_resample
+
+    input_dir = Path(input_dir)
+    output_dir = Path(output_dir)
+    preprocess_resample(
+        input_dir=input_dir, output_dir=output_dir, sampling_rate=sampling_rate
+    )
+
+
+@click.help_option("--help", "-h")
+@cli.command()
+@click.option(
+    "-i",
+    "--input_dir",
+    type=click.Path(exists=True),
+    default=Path("./dataset/44k"),
+    help="path to source dir",
+)
+@click.option(
+    "--filelist_path",
+    type=click.Path(),
+    default=Path("./filelists/44k"),
+    help="path to filelist dir",
+)
+@click.option(
+    "--config_path",
+    type=click.Path(),
+    default=Path("./configs/44k/config.json"),
+    help="path to config",
+)
+def pre_config(
+    input_dir: Path,
+    filelist_path: Path,
+    config_path: Path,
+):
+    """Preprocessing part 2: config"""
+    from .preprocess_flist_config import preprocess_config
+
+    input_dir = Path(input_dir)
+    filelist_path = Path(filelist_path)
+    config_path = Path(config_path)
+    preprocess_config(
+        input_dir=input_dir,
+        train_list_path=filelist_path / "train.txt",
+        val_list_path=filelist_path / "val.txt",
+        test_list_path=filelist_path / "test.txt",
+        config_path=config_path,
+    )
+
+
+@click.help_option("--help", "-h")
+@cli.command()
+@click.option(
+    "-i",
+    "--input_dir",
+    type=click.Path(exists=True),
+    default=Path("./dataset/44k"),
+    help="path to source dir",
+)
+@click.option(
+    "-c",
+    "--config_path",
+    type=click.Path(exists=True),
+    help="path to config",
+    default=Path("./configs/44k/config.json"),
+)
+def pre_hubert(input_dir: Path, config_path: Path) -> None:
+    """Preprocessing part 3: hubert"""
+    from .preprocess_hubert_f0 import preprocess_hubert_f0
+
+    input_dir = Path(input_dir)
+    config_path = Path(config_path)
+    preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
+
+
+@click.help_option("--help", "-h")
+@cli.command
+def clean():
+    """Clean up files, only useful if you are using the default file structure"""
+    import shutil
+
+    folders = ["dataset", "filelists", "logs"]
+    if pyip.inputYesNo(f"Are you sure you want to delete files in {folders}?") == "yes":
+        for folder in folders:
+            shutil.rmtree(folder)
+        LOG.info("Cleaned up files")
+    else:
+        LOG.info("Aborted")
+
+
+@cli.command
+@click.help_option("--help", "-h")
+@click.option("-i", "--input_path", type=click.Path(exists=True), help="model path")
+@click.option("-o", "--output_path", type=click.Path(), help="onnx model path to save")
+@click.option("-c", "--config_path", type=click.Path(), help="config path")
+@click.option("-d", "--device", type=str, default="cpu", help="torch device")
+def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
+    """Export model to onnx"""
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+    config_path = Path(config_path)
+    device_ = torch.device(device)
+    from .onnx_export import onnx_export
+
+    onnx_export(
+        input_path=input_path,
+        output_path=output_path,
+        config_path=config_path,
+        device=device_,
+    )
