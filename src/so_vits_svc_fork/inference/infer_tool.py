@@ -173,7 +173,7 @@ class Svc:
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
-        fade_seconds: float = 0.04,
+        # fade_seconds: float = 0.0,
     ) -> np.ndarray[Any, np.dtype[np.float32]]:
         chunks = slicer.cut(audio, self.target_sample, db_thresh=db_thresh)
         LOG.info(f"Cut audio into chunks {chunks}")
@@ -203,9 +203,9 @@ class Svc:
                 _audio = _audio[pad_len:-pad_len]
 
                 # add fade
-                fade_len = int(self.target_sample * fade_seconds)
-                _audio[:fade_len] = _audio[:fade_len] * np.linspace(0, 1, fade_len)
-                _audio[-fade_len:] = _audio[-fade_len:] * np.linspace(1, 0, fade_len)
+                # fade_len = int(self.target_sample * fade_seconds)
+                # _audio[:fade_len] = _audio[:fade_len] * np.linspace(0, 1, fade_len)
+                # _audio[-fade_len:] = _audio[-fade_len:] * np.linspace(1, 0, fade_len)
             result_audio = np.concatenate([result_audio, pad_array(_audio, length)])
         result_audio = result_audio[: audio.shape[0]]
         return result_audio
