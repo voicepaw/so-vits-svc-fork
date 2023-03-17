@@ -32,13 +32,11 @@ def infer(
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     svc_model = Svc(model_path.as_posix(), config_path.as_posix(), cluster_model_path, device)
-    # infer_tool.fill_a_to_b(transpose, input_path)
 
-    raw_audio_path = input_path
-    infer_tool.format_wav(raw_audio_path)
-    wav_path = Path(raw_audio_path).with_suffix(".wav")
-    chunks = slicer.cut(wav_path, db_thresh=db_thresh)
-    audio_data, audio_sr = slicer.chunks2audio(wav_path, chunks)
+    infer_tool.format_wav(input_path)
+    input_path = Path(input_path).with_suffix(".wav")
+    chunks = slicer.cut(input_path, db_thresh=db_thresh)
+    audio_data, audio_sr = slicer.chunks2audio(input_path, chunks)
 
     audio = []
     for slice_tag, data in tqdm(audio_data):
