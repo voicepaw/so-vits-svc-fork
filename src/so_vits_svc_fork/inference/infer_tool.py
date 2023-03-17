@@ -244,6 +244,15 @@ class RealTimeVCBase:
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
     ):
+        """
+        chunks        : ■■■■■■□□□□□□
+        add last input:□■■■■■■
+                             ■□□□□□□
+        infer         :□■■■■■■
+                             ■□□□□□□
+        crossfade     :▲■■■■■
+                             ▲□□□□□
+        """
         if input_audio.ndim != 1:
             raise ValueError("Input audio must be 1-dimensional.")
         if input_audio.shape[0] < self.crossfade_len:
@@ -292,15 +301,14 @@ class RealTimeVCBase:
                     noise_scale=noise_scale,
                 )
                 infered_audio_c = infered_audio_c.cpu().numpy()
-        infered_audio_c = infered_audio_c
         LOG.info(f"Concentrated Inferred shape: {infered_audio_c.shape}")
         assert infered_audio_c.shape[0] == input_audio_c.shape[0]
 
         # crossfade
         result = maad.util.crossfade(
             self.last_infered, infered_audio_c, 1, self.crossfade_len
-        )[: input_audio.shape[0]]
+        )[-(input_audio.shape[0] + self.crossfade_len) : -self.crossfade_len]
         LOG.info(f"Result shape: {result.shape}")
         assert result.shape[0] == input_audio.shape[0]
-        self.last_infered = infered_audio_c
+        self.last_infered = infered_audio_c[-self.crossfade_len - 1 :].copy()
         return result
