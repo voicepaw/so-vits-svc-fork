@@ -1,5 +1,6 @@
 import json
 import os
+from logging import getLogger
 
 import numpy as np
 import torch
@@ -10,7 +11,7 @@ from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
 
 from .env import AttrDict
 from .utils import get_padding, init_weights
-from logging import getLogger
+
 LOG = getLogger(__name__)
 
 LRELU_SLOPE = 0.1
@@ -283,7 +284,7 @@ class SineGen(torch.nn.Module):
         output uv: tensor(batchsize=1, length, 1)
         """
         with torch.no_grad():
-            f0_buf = torch.zeros(f0.shape[0], f0.shape[1], self.dim, device=f0.device)
+            # f0_buf = torch.zeros(f0.shape[0], f0.shape[1], self.dim, device=f0.device)
             # fundamental component
             fn = torch.multiply(
                 f0, torch.FloatTensor([[range(1, self.harmonic_num + 2)]]).to(f0.device)

@@ -1,14 +1,17 @@
 import os
 
 os.environ["LRU_CACHE_CAPACITY"] = "3"
+from logging import getLogger
+
 import librosa
 import numpy as np
 import soundfile as sf
 import torch
 import torch.utils.data
 from librosa.filters import mel as librosa_mel_fn
-from logging import getLogger
+
 LOG = getLogger(__name__)
+
 
 def load_wav_to_torch(full_path, target_sr=None, return_empty_on_exception=False):
     sampling_rate = None

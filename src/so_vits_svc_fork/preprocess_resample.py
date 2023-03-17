@@ -44,6 +44,4 @@ def preprocess_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -
         out_path.parent.mkdir(parents=True, exist_ok=True)
         in_and_out_paths.append((in_path, out_path))
     with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
-        Parallel(n_jobs=-1)(
-            delayed(preprocess_one)(*args) for args in in_and_out_paths
-        )
+        Parallel(n_jobs=-1)(delayed(preprocess_one)(*args) for args in in_and_out_paths)

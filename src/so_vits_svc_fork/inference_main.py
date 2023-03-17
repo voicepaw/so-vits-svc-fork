@@ -22,16 +22,18 @@ def infer(
     speaker: str,
     model_path: Path,
     config_path: Path,
-    cluster_model_path: "Path | None" = None,
+    cluster_model_path: Path | None = None,
     transpose: int = 0,
     db_thresh: int = -40,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
-    noice_scale: float = 0.4,
+    noise_scale: float = 0.4,
     pad_seconds: float = 0.5,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
-    svc_model = Svc(model_path.as_posix(), config_path.as_posix(), cluster_model_path, device)
+    svc_model = Svc(
+        model_path.as_posix(), config_path.as_posix(), cluster_model_path, device
+    )
 
     infer_tool.format_wav(input_path)
     input_path = Path(input_path).with_suffix(".wav")
@@ -58,7 +60,7 @@ def infer(
                 raw_path,
                 cluster_infer_ratio=cluster_infer_ratio,
                 auto_predict_f0=auto_predict_f0,
-                noice_scale=noice_scale,
+                noice_scale=noise_scale,
             )
             _audio = out_audio.cpu().numpy()
             pad_len = int(svc_model.target_sample * pad_seconds)

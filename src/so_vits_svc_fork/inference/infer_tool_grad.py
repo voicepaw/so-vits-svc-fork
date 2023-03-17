@@ -11,6 +11,7 @@ import torchaudio
 from so_vits_svc_fork import utils
 from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
+
 from ..utils import HUBERT_SAMPLING_RATE
 
 
@@ -96,7 +97,6 @@ class VitsSvc:
         self.hps = None
         self.speakers = None
         self.hubert_soft = utils.get_hubert_model()
-        HUBERT_SAMPLING_RATE = HUBERT_SAMPLING_RATE
 
     def set_device(self, device):
         self.device = torch.device(device)

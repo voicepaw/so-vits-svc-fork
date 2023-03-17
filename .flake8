@@ -1,3 +1,4 @@
 [flake8]
 exclude = docs
 max-line-length = 88
+ignore = E203, E501, E741, E402, E712, W503, E731, E711

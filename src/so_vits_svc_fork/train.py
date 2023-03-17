@@ -1,8 +1,8 @@
-
 import multiprocessing
-import time
-
 import os
+import time
+from logging import getLogger
+from pathlib import Path
 
 import torch
 import torch.distributed as dist
@@ -13,6 +13,7 @@ from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
+
 import so_vits_svc_fork.modules.commons as commons
 
 from . import utils
@@ -21,17 +22,14 @@ from .models import MultiPeriodDiscriminator, SynthesizerTrn
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
 
-
-
 # os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'INFO'
 
-from logging import getLogger
-from pathlib import Path
 
 LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
 global_step = 0
 start_time = time.time()
+
 
 def main(config_path: Path, model_path: Path):
     """Assume Single Node Multi GPUs Training Only"""
@@ -148,7 +146,7 @@ def run(rank, n_gpus, hps):
     )
 
     scaler = GradScaler(enabled=hps.train.fp16_run)
-    
+
     LOG.info("Start training")
 
     for epoch in trange(epoch_str, hps.train.epochs + 1):
@@ -181,7 +179,7 @@ def run(rank, n_gpus, hps):
 
 
 def train_and_evaluate(
-    rank, epoch, hps, nets, optims, schedulers, scaler, loaders,  writers
+    rank, epoch, hps, nets, optims, schedulers, scaler, loaders, writers
 ):
     net_g, net_d = nets
     optim_g, optim_d = optims
@@ -404,7 +402,7 @@ def evaluate(hps, generator, eval_loader, writer_eval):
             )
         image_dict.update(
             {
-                f"gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().numpy()),
+                "gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().numpy()),
                 "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
             }
         )

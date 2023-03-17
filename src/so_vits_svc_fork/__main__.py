@@ -1,15 +1,21 @@
 from __future__ import annotations
 
+import os
+from logging import (
+    INFO,
+    FileHandler,
+    StreamHandler,
+    basicConfig,
+    captureWarnings,
+    getLogger,
+)
 from pathlib import Path
 from typing import Literal
 
 import click
+import pyinputplus as pyip
 import torch
-
-from logging import getLogger
-from logging import basicConfig, FileHandler, captureWarnings, INFO, StreamHandler
 from rich.logging import RichHandler
-import os
 
 IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
 
@@ -19,7 +25,7 @@ basicConfig(
     datefmt="[%X]",
     handlers=[
         RichHandler() if not IN_COLAB else StreamHandler(),
-        FileHandler(f"so-vits-svc-fork.log"),
+        FileHandler(f"{__name__.split('.')[0]}.log"),
     ],
 )
 captureWarnings(True)
@@ -98,7 +104,7 @@ def train(config_path: Path, model_path: Path):
 @click.option(
     "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
 )
-@click.option("-n", "--noice_scale", type=float, default=0.4, help="noice scale")
+@click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
 @click.option("-p", "--pad_seconds", type=float, default=0.5, help="pad seconds")
 @click.option(
     "-d",
@@ -113,12 +119,12 @@ def infer(
     speaker: str,
     model_path: Path,
     config_path: Path,
-    cluster_model_path: "Path | None" = None,
+    cluster_model_path: Path | None = None,
     transpose: int = 0,
     db_thresh: int = -40,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
-    noice_scale: float = 0.4,
+    noise_scale: float = 0.4,
     pad_seconds: float = 0.5,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
@@ -143,7 +149,7 @@ def infer(
         db_thresh=db_thresh,
         auto_predict_f0=auto_predict_f0,
         cluster_infer_ratio=cluster_infer_ratio,
-        noice_scale=noice_scale,
+        noise_scale=noise_scale,
         pad_seconds=pad_seconds,
         device=device,
     )
@@ -238,9 +244,6 @@ def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
     input_dir = Path(input_dir)
     config_path = Path(config_path)
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
-
-
-import pyinputplus as pyip
 
 
 @cli.command

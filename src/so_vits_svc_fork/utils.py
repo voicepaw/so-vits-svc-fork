@@ -5,6 +5,7 @@ import json
 import os
 import re
 import subprocess
+from logging import getLogger
 from pathlib import Path
 
 import numpy as np
@@ -12,9 +13,6 @@ import requests
 import torch
 from scipy.io.wavfile import read
 from tqdm import tqdm
-
-
-from logging import getLogger
 
 LOG = getLogger(__name__)
 MATPLOTLIB_FLAG = False
@@ -193,7 +191,7 @@ def f0_to_coarse(f0):
     return f0_coarse
 
 
-def download_file(url: str, filepath: "Path | str", chunk_size: int=4 * 1024, **kwargs):
+def download_file(url: str, filepath: Path | str, chunk_size: int = 4 * 1024, **kwargs):
     filepath = Path(filepath)
     filepath.parent.mkdir(parents=True, exist_ok=True)
     temppath = filepath.parent / f"{filepath.name}.download"
@@ -201,10 +199,10 @@ def download_file(url: str, filepath: "Path | str", chunk_size: int=4 * 1024, **
         raise FileExistsError(f"{filepath} already exists")
     temppath.unlink(missing_ok=True)
     resp = requests.get(url, stream=True)
-    total = int(resp.headers.get('content-length', 0))
+    total = int(resp.headers.get("content-length", 0))
     with temppath.open("wb") as f, tqdm(
         total=total,
-        unit='iB',
+        unit="iB",
         unit_scale=True,
         unit_divisor=1024,
         **kwargs,
@@ -213,20 +211,21 @@ def download_file(url: str, filepath: "Path | str", chunk_size: int=4 * 1024, **
             size = f.write(data)
             pbar.update(size)
     temppath.rename(filepath)
-    
+
 
 def ensure_pretrained_model(folder_path: Path) -> None:
     model_urls = [
-        #"https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
+        # "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
         "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
-        #"https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/D_0.pth",
-        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth"
+        # "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/D_0.pth",
+        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth",
     ]
     for model_url in model_urls:
         model_path = folder_path / model_url.split("/")[-1]
         if not model_path.exists():
             download_file(model_url, model_path, desc=f"Downloading {model_path.name}")
-    
+
+
 def ensure_hurbert_model() -> Path:
     vec_path = Path("checkpoint_best_legacy_500.pt")
     if not vec_path.exists():
@@ -301,7 +300,7 @@ def load_checkpoint(checkpoint_path, model, optimizer=None, skip_optimizer=False
                 saved_state_dict[k].shape,
                 v.shape,
             )
-        except:
+        except Exception:
             LOG.error("error, %s is not in the checkpoint" % k)
             LOG.info("%s is not in the checkpoint" % k)
             new_state_dict[k] = v
@@ -454,7 +453,7 @@ def load_filepaths_and_text(filename, split="|"):
     return filepaths_and_text
 
 
-def get_hparams(config_path: Path, model_path: Path, init: bool=True) -> "HParams":
+def get_hparams(config_path: Path, model_path: Path, init: bool = True) -> HParams:
     model_path.mkdir(parents=True, exist_ok=True)
     config_save_path = os.path.join(model_path, "config.json")
     if init:

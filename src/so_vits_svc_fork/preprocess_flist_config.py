@@ -1,7 +1,6 @@
 import json
 import os
 import re
-import warnings
 import wave
 from copy import deepcopy
 from logging import getLogger
@@ -46,9 +45,11 @@ def preprocess_config(
                 LOG.warning(f"skip {path} because it is too short.")
                 continue
             paths.append(path)
-        shuffle(paths)        
+        shuffle(paths)
         if len(paths) <= 4:
-            raise ValueError(f"too few files in {input_dir / speaker} (expected at least 4).")
+            raise ValueError(
+                f"too few files in {input_dir / speaker} (expected at least 4)."
+            )
         train += paths[2:-2]
         val += paths[:2]
         test += paths[-2:]
@@ -75,7 +76,11 @@ def preprocess_config(
             f.write(wavpath + "\n")
 
     config = deepcopy(
-        json.loads((Path(__file__).parent / "configs_template" / "config_template.json").read_text())
+        json.loads(
+            (
+                Path(__file__).parent / "configs_template" / "config_template.json"
+            ).read_text()
+        )
     )
     config["spk"] = spk_dict
     LOG.info(f"Writing {config_path}")

@@ -1,5 +1,7 @@
 import argparse
 import os
+import time
+from logging import getLogger
 from pathlib import Path
 
 import numpy as np
@@ -7,8 +9,6 @@ import torch
 import tqdm
 from sklearn.cluster import KMeans, MiniBatchKMeans
 
-import time
-from logging import getLogger
 LOG = getLogger(__name__)
 
 

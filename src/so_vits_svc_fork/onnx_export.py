@@ -1,15 +1,19 @@
 from __future__ import annotations
+
+from pathlib import Path
+
 import torch
 
 from . import utils
 from .onnxexport.model_onnx import SynthesizerTrn
-from pathlib import Path
 
 
 def onnx_export(
-    input_path: Path, output_path: Path, config_path: Path, device: "str | torch.device" = "cpu"
+    input_path: Path,
+    output_path: Path,
+    config_path: Path,
+    device: str | torch.device = "cpu",
 ):
-    path = "SoVits4.0"
     hps = utils.get_hparams_from_file(config_path.as_posix())
     SVCVITS = SynthesizerTrn(
         hps.data.filter_length // 2 + 1,

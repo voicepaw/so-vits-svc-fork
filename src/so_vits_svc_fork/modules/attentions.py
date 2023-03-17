@@ -408,7 +408,7 @@ class MultiHeadAttention(nn.Module):
         ret: [b, h, l, 2*l-1]
         """
         batch, heads, length, _ = x.size()
-        # padd along column
+        # pad along column
         x = F.pad(
             x, commons.convert_pad_shape([[0, 0], [0, 0], [0, 0], [0, length - 1]])
         )

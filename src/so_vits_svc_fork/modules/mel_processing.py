@@ -1,7 +1,8 @@
+from logging import getLogger
+
 import torch
 import torch.utils.data
 from librosa.filters import mel as librosa_mel_fn
-from logging import getLogger
 
 LOG = getLogger(__name__)
 

@@ -3,6 +3,7 @@ import io
 import json
 import os
 import time
+from logging import getLogger
 from pathlib import Path
 
 import librosa
@@ -16,8 +17,8 @@ import torchaudio
 from so_vits_svc_fork import cluster, utils
 from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
+
 from ..utils import HUBERT_SAMPLING_RATE
-from logging import getLogger
 
 LOG = getLogger(__name__)
 
@@ -161,7 +162,9 @@ class Svc:
         f0 = f0.unsqueeze(0).to(self.dev)
         uv = uv.unsqueeze(0).to(self.dev)
 
-        wav16k = librosa.resample(wav, orig_sr=self.target_sample, target_sr=HUBERT_SAMPLING_RATE)
+        wav16k = librosa.resample(
+            wav, orig_sr=self.target_sample, target_sr=HUBERT_SAMPLING_RATE
+        )
         wav16k = torch.from_numpy(wav16k).to(self.dev)
         c = utils.get_hubert_content(self.hubert_model, wav_16k_tensor=wav16k)
         c = utils.repeat_expand_2d(c.squeeze(0), f0.shape[1])
@@ -229,7 +232,7 @@ class Svc:
         audio = []
         for slice_tag, data in audio_data:
             LOG.info(f"#=====segment start, {round(len(data) / audio_sr, 3)}s======")
-            # padd
+            # pad
             pad_len = int(audio_sr * pad_seconds)
             data = np.concatenate([np.zeros([pad_len]), data, np.zeros([pad_len])])
             length = int(np.ceil(len(data) / audio_sr * self.target_sample))

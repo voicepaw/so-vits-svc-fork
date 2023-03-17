@@ -12,7 +12,7 @@ from .utils import load_filepaths_and_text, load_wav_to_torch
 # import h5py
 
 
-"""Multi speaker version"""
+# Multi speaker version
 
 
 class TextAudioSpeakerLoader(torch.utils.data.Dataset):

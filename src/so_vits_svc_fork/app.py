@@ -1,5 +1,7 @@
 # os.system("wget -P cvec/ https://huggingface.co/spaces/innnky/nanami/resolve/main/checkpoint_best_legacy_500.pt")
 
+from logging import getLogger
+
 import gradio as gr
 import librosa
 import numpy as np
@@ -7,7 +9,6 @@ import soundfile
 
 from .inference.infer_tool import Svc
 from .utils import HUBERT_SAMPLING_RATE
-from logging import getLogger
 
 LOG = getLogger(__name__)
 
@@ -34,7 +35,9 @@ def vc_fn(
     if len(audio.shape) > 1:
         audio = librosa.to_mono(audio.transpose(1, 0))
     if sampling_rate != HUBERT_SAMPLING_RATE:
-        audio = librosa.resample(audio, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE)
+        audio = librosa.resample(
+            audio, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE
+        )
     LOG.info(audio.shape)
     out_wav_path = "temp.wav"
     soundfile.write(out_wav_path, audio, HUBERT_SAMPLING_RATE, format="wav")

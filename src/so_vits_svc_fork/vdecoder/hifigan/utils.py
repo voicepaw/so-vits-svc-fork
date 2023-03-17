@@ -1,13 +1,14 @@
 import glob
 import os
+from logging import getLogger
 
 # matplotlib.use("Agg")
 import matplotlib.pylab as plt
 import torch
 from torch.nn.utils import weight_norm
-from logging import getLogger
 
 LOG = getLogger(__name__)
+
 
 def plot_spectrogram(spectrogram):
     fig, ax = plt.subplots(figsize=(10, 2))
@@ -57,7 +58,7 @@ def del_old_checkpoints(cp_dir, prefix, n_models=2):
     if len(cp_list) > n_models:  # if more than n_models models are found
         for cp in cp_list[
             :-n_models
-        ]:  # delete the oldest models other than lastest n_models
+        ]:  # delete the oldest models other than last n_models
             open(cp, "w").close()  # empty file contents
             os.unlink(cp)  # delete file (move to trash when using Colab)
 

@@ -56,6 +56,5 @@
     "ssl_dim": 256,
     "n_speakers": 200
   },
-  "spk": {
-  }
+  "spk": {}
 }

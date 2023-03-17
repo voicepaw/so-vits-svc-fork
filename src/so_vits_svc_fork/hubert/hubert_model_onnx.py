@@ -162,7 +162,8 @@ def _compute_mask(
 
     if mask_length > sequence_length:
         raise ValueError(
-            f"`mask_length` has to be smaller than `sequence_length`, but got `mask_length`: {mask_length} and `sequence_length`: {sequence_length}`"
+            "`mask_length` has to be smaller than `sequence_length`, "
+            f"but got `mask_length`: {mask_length} and `sequence_length`: {sequence_length}`"
         )
 
     # compute number of masked spans in batch
