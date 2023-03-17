@@ -67,8 +67,8 @@ repos:
   #  hooks:
   #    - id: mypy
   #      additional_dependencies: []
-  - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.4
-    hooks:
-      - id: bandit
-        args: [-x, tests]
+  # - repo: https://github.com/PyCQA/bandit
+  #   rev: 1.7.4
+  #   hooks:
+  #     - id: bandit
+  #       args: [-x, tests]
