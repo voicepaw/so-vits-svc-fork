@@ -35,7 +35,14 @@ LOG = getLogger(__name__)
 @click.help_option("--help", "-h")
 @click.group()
 def cli():
-    pass
+    """so-vits-svc allows any folder structure for training data.
+    However, it is recommended to place the training data in the following structure:
+
+        dataset_raw/{speaker_name}/{wav_name}.wav
+
+    To train a model, run pre-resample, pre-config, pre-hubert, train.
+    To infer a model, run infer.
+    """
 
 
 @click.help_option("--help", "-h")
@@ -55,6 +62,7 @@ def cli():
     default=Path("./logs/44k"),
 )
 def train(config_path: Path, model_path: Path):
+    """Train model"""
     from .train import main
 
     config_path = Path(config_path)
@@ -128,11 +136,12 @@ def infer(
     pad_seconds: float = 0.5,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
+    """Inference"""
     from .inference_main import infer
 
     input_path = Path(input_path)
     if output_path is None:
-        output_path = input_path.parent / f"{input_path.stem}.out.{input_path.suffix}"
+        output_path = input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
     output_path = Path(output_path)
     model_path = Path(model_path)
     config_path = Path(config_path)
@@ -172,7 +181,8 @@ def infer(
     help="path to output dir",
 )
 @click.option("-s", "--sampling_rate", type=int, default=44100, help="sampling rate")
-def preprocess(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
+def pre_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
+    """Preprocessing part 1: resample"""
     from .preprocess_resample import preprocess_resample
 
     input_dir = Path(input_dir)
@@ -203,11 +213,12 @@ def preprocess(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
     default=Path("./configs/44k/config.json"),
     help="path to config",
 )
-def preprocess_config(
+def pre_config(
     input_dir: Path,
     filelist_path: Path,
     config_path: Path,
 ):
+    """Preprocessing part 2: config"""
     from .preprocess_flist_config import preprocess_config
 
     input_dir = Path(input_dir)
@@ -238,7 +249,8 @@ def preprocess_config(
     help="path to config",
     default=Path("./configs/44k/config.json"),
 )
-def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
+def pre_hubert(input_dir: Path, config_path: Path) -> None:
+    """Preprocessing part 3: hubert"""
     from .preprocess_hubert_f0 import preprocess_hubert_f0
 
     input_dir = Path(input_dir)
@@ -246,8 +258,10 @@ def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
 
 
+@click.help_option("--help", "-h")
 @cli.command
 def clean():
+    """Clean up files, only useful if you are using the default file structure"""
     import shutil
 
     folders = ["dataset", "filelists", "logs"]
@@ -260,11 +274,13 @@ def clean():
 
 
 @cli.command
+@click.help_option("--help", "-h")
 @click.option("-i", "--input_path", type=click.Path(exists=True), help="model path")
 @click.option("-o", "--output_path", type=click.Path(), help="onnx model path to save")
 @click.option("-c", "--config_path", type=click.Path(), help="config path")
 @click.option("-d", "--device", type=str, default="cpu", help="torch device")
 def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
+    """Export model to onnx"""
     input_path = Path(input_path)
     output_path = Path(output_path)
     config_path = Path(config_path)
