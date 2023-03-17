@@ -30,7 +30,7 @@
   <img src="https://img.shields.io/pypi/l/so-vits-svc-fork.svg?style=flat-square" alt="License">
 </p>
 
-A fork of so-vits-svc.
+A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with a **greatly improved interface**. Based on branch `4.0` (v1). No differences in functionality and the models are compatible.
 
 ## Installation
 
@@ -39,6 +39,34 @@ Install this via pip (or your favourite package manager):
 ```shell
 pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
 pip install so-vits-svc-fork
+```
+
+## Features not available in the original repo
+
+- Unified command-line interface (no need to run Python scripts)
+- Ready to use just by installing with `pip`.
+- Automatically download pretrained base model and HuBERT model
+- Code completely formatted with black, isort, autoflake etc.
+
+## Usage
+
+### Training
+
+Colab notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
+
+Place your dataset like `dataset_raw/{speaker_id}/{wav_file}.wav` and run:
+
+```shell
+svc pre-resample
+svc pre-config
+svc pre-hubert
+svc train
+```
+
+### Inference
+
+```shell
+svc --model-path <model-path> source.wav
 ```
 
 ## Contributors ✨
