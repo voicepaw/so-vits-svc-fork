@@ -583,6 +583,21 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "cm-time"
+version = "0.1.2"
+description = "A simple context manager that measures time using perf_counter()"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "cm_time-0.1.2-py3-none-any.whl", hash = "sha256:8dfd172916a7b23f508fbca046157067ab9374fc38791d408278ce7288077cfa"},
+    {file = "cm_time-0.1.2.tar.gz", hash = "sha256:e2848efc5868884d0a7795408ec9b2c21d2d3e2cf399241e8e4531a29128b638"},
+]
+
+[package.dependencies]
+typing-extensions = {version = ">=4.4.0,<5.0.0", markers = "python_version < \"3.10\""}
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -2556,7 +2571,6 @@ files = [
 numpy = [
     {version = ">=1.20.3", markers = "python_version < \"3.10\""},
     {version = ">=1.21.0", markers = "python_version >= \"3.10\""},
-    {version = ">=1.23.2", markers = "python_version >= \"3.11\""},
 ]
 python-dateutil = ">=2.8.1"
 pytz = ">=2020.1"
@@ -4655,5 +4669,5 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.8"
-content-hash = "cfa6c5f171ac51aac49572a3ce0e664a51b47571349189816e66c9a17a63894a"
+python-versions = ">=3.8,<3.11"
+content-hash = "bd0a5148f6634dc9b2df2d30a8752d0de8dc72d509827ea6b4245e12bfb34060"
