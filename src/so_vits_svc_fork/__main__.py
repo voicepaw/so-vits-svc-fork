@@ -50,6 +50,7 @@ def cli():
 )
 def train(config_path: Path, model_path: Path):
     from .train import main
+
     config_path = Path(config_path)
     model_path = Path(model_path)
     main(config_path=config_path, model_path=model_path)
@@ -233,6 +234,7 @@ def preprocess_config(
 )
 def preprocess_hubert(input_dir: Path, config_path: Path) -> None:
     from .preprocess_hubert_f0 import preprocess_hubert_f0
+
     input_dir = Path(input_dir)
     config_path = Path(config_path)
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
@@ -252,3 +254,23 @@ def clean():
         LOG.info("Cleaned up files")
     else:
         LOG.info("Aborted")
+
+
+@cli.command
+@click.option("-i", "--input_path", type=click.Path(exists=True), help="model path")
+@click.option("-o", "--output_path", type=click.Path(), help="onnx model path to save")
+@click.option("-c", "--config_path", type=click.Path(), help="config path")
+@click.option("-d", "--device", type=str, default="cpu", help="torch device")
+def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+    config_path = Path(config_path)
+    device_ = torch.device(device)
+    from .onnx_export import onnx_export
+
+    onnx_export(
+        input_path=input_path,
+        output_path=output_path,
+        config_path=config_path,
+        device=device_,
+    )
