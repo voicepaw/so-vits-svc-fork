@@ -44,6 +44,7 @@ pip install so-vits-svc-fork
 ## Features not available in the original repo
 
 - **Realtime voice conversion**
+- GUI available
 - Unified command-line interface (no need to run Python scripts)
 - Ready to use just by installing with `pip`.
 - Automatically download pretrained base model and HuBERT model
@@ -51,7 +52,25 @@ pip install so-vits-svc-fork
 
 ## Usage
 
-### Realtime Voice conversion
+### Inference
+
+#### GUI
+
+![GUI](https://raw.githubusercontent.com/34j/so-vits-svc-fork/main/docs/_static/gui.png)
+
+```shell
+svcg
+```
+
+#### CLI
+
+- Realtime (from microphone)
+
+```shell
+svc --model-path <model-path> source.wav
+```
+
+- File
 
 ```shell
 svc vc --model-path <model-path>
@@ -70,11 +89,7 @@ svc pre-hubert
 svc train
 ```
 
-### Inference
-
-```shell
-svc --model-path <model-path> source.wav
-```
+### Further help
 
 For more details, run `svc -h` or `svc <subcommand> -h`.
 

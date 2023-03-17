@@ -119,13 +119,19 @@ class Svc:
     ):
         audio = audio.astype(np.float32)
         # get speaker id
-        speaker_id = self.spk2id.__dict__.get(speaker)
-        if not speaker_id and isinstance(speaker, int):
+        if isinstance(speaker, int):
             if len(self.spk2id.__dict__) >= speaker:
                 speaker_id = speaker
+            else:
+                raise ValueError(
+                    f"Speaker id {speaker} >= number of speakers {len(self.spk2id.__dict__)}"
+                )
         else:
-            LOG.warning(f"Speaker {speaker} is not found. Use speaker 0 instead.")
-            speaker_id = 0
+            if speaker in self.spk2id.__dict__:
+                speaker_id = self.spk2id.__dict__[speaker]
+            else:
+                LOG.warning(f"Speaker {speaker} is not found. Use speaker 0 instead.")
+                speaker_id = 0
         sid = torch.LongTensor([int(speaker_id)]).to(self.dev).unsqueeze(0)
 
         # get unit f0
@@ -167,7 +173,7 @@ class Svc:
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
-        fade_seconds: float = 0.04,
+        # fade_seconds: float = 0.0,
     ) -> np.ndarray[Any, np.dtype[np.float32]]:
         chunks = slicer.cut(audio, self.target_sample, db_thresh=db_thresh)
         LOG.info(f"Cut audio into chunks {chunks}")
@@ -197,9 +203,9 @@ class Svc:
                 _audio = _audio[pad_len:-pad_len]
 
                 # add fade
-                fade_len = int(self.target_sample * fade_seconds)
-                _audio[:fade_len] = _audio[:fade_len] * np.linspace(0, 1, fade_len)
-                _audio[-fade_len:] = _audio[-fade_len:] * np.linspace(1, 0, fade_len)
+                # fade_len = int(self.target_sample * fade_seconds)
+                # _audio[:fade_len] = _audio[:fade_len] * np.linspace(0, 1, fade_len)
+                # _audio[-fade_len:] = _audio[-fade_len:] * np.linspace(1, 0, fade_len)
             result_audio = np.concatenate([result_audio, pad_array(_audio, length)])
         result_audio = result_audio[: audio.shape[0]]
         return result_audio
@@ -238,6 +244,15 @@ class RealTimeVCBase:
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
     ):
+        """
+        chunks        : ■■■■■■□□□□□□
+        add last input:□■■■■■■
+                             ■□□□□□□
+        infer         :□■■■■■■
+                             ■□□□□□□
+        crossfade     :▲■■■■■
+                             ▲□□□□□
+        """
         if input_audio.ndim != 1:
             raise ValueError("Input audio must be 1-dimensional.")
         if input_audio.shape[0] < self.crossfade_len:
@@ -286,15 +301,14 @@ class RealTimeVCBase:
                     noise_scale=noise_scale,
                 )
                 infered_audio_c = infered_audio_c.cpu().numpy()
-        infered_audio_c = infered_audio_c
         LOG.info(f"Concentrated Inferred shape: {infered_audio_c.shape}")
         assert infered_audio_c.shape[0] == input_audio_c.shape[0]
 
         # crossfade
         result = maad.util.crossfade(
             self.last_infered, infered_audio_c, 1, self.crossfade_len
-        )[: input_audio.shape[0]]
+        )[-(input_audio.shape[0] + self.crossfade_len) : -self.crossfade_len]
         LOG.info(f"Result shape: {result.shape}")
         assert result.shape[0] == input_audio.shape[0]
-        self.last_infered = infered_audio_c
+        self.last_infered = infered_audio_c[-self.crossfade_len - 1 :].copy()
         return result
