@@ -36,10 +36,15 @@ LOG = getLogger(__name__)
 @click.group()
 def cli():
     """so-vits-svc allows any folder structure for training data.
-    However, it is recommended to place the training data in the following structure:
+    However, the following folder structure is recommended.
 
-        dataset_raw/{speaker_name}/{wav_name}.wav
+        When training: dataset_raw/{speaker_name}/{wav_name}.wav
 
+
+        When inference: configs/44k/config.json, logs/44k/G_XXXX.pth
+
+    If the folder structure is followed, you DO NOT NEED TO SPECIFY model path, config path, etc.
+    (The latest model will be automatically loaded.)
     To train a model, run pre-resample, pre-config, pre-hubert, train.
     To infer a model, run infer.
     """
@@ -62,7 +67,8 @@ def cli():
     default=Path("./logs/44k"),
 )
 def train(config_path: Path, model_path: Path):
-    """Train model"""
+    """Train model
+    If D_0.pth or G_0.pth not found, automatically download from hub."""
     from .train import main
 
     config_path = Path(config_path)
@@ -244,6 +250,7 @@ def vc(
     block_seconds: float,
     device: Literal["cpu", "cuda"],
 ) -> None:
+    """Realtime inference from microphone"""
     from .inference_main import realtime
 
     if auto_predict_f0:
@@ -366,7 +373,8 @@ def pre_config(
     default=Path("./configs/44k/config.json"),
 )
 def pre_hubert(input_dir: Path, config_path: Path) -> None:
-    """Preprocessing part 3: hubert"""
+    """Preprocessing part 3: hubert
+    If the HuBERT model is not found, it will be downloaded automatically."""
     from .preprocess_hubert_f0 import preprocess_hubert_f0
 
     input_dir = Path(input_dir)
