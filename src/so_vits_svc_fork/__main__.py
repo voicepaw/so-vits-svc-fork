@@ -87,7 +87,7 @@ def train(config_path: Path, model_path: Path):
     "-m",
     "--model_path",
     type=click.Path(exists=True),
-    default=Path("./logs/44k/G_800.pth"),
+    default=Path("./logs/44k/"),
     help="path to model",
 )
 @click.option(
@@ -107,7 +107,7 @@ def train(config_path: Path, model_path: Path):
 @click.option("-t", "--transpose", type=int, default=0, help="transpose")
 @click.option("-d", "--db_thresh", type=int, default=-40, help="db thresh")
 @click.option(
-    "-a", "--auto_predict_f0", type=bool, default=False, help="auto predict f0"
+    "-a", "--auto_predict_f0", type=bool, default=True, help="auto predict f0"
 )
 @click.option(
     "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
@@ -144,6 +144,9 @@ def infer(
         output_path = input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
     output_path = Path(output_path)
     model_path = Path(model_path)
+    if model_path.is_dir():
+        model_path = list(sorted(model_path.glob("*.pth")))[-1]
+        LOG.info(f"Since model_path is a directory, use {model_path}")
     config_path = Path(config_path)
     if cluster_model_path is not None:
         cluster_model_path = Path(cluster_model_path)
@@ -160,6 +163,90 @@ def infer(
         cluster_infer_ratio=cluster_infer_ratio,
         noise_scale=noise_scale,
         pad_seconds=pad_seconds,
+        device=device,
+    )
+
+
+@cli.command()
+@click.option(
+    "-m",
+    "--model_path",
+    type=click.Path(exists=True),
+    default=Path("./logs/44k/"),
+    help="path to model",
+)
+@click.option(
+    "-c",
+    "--config_path",
+    type=click.Path(exists=True),
+    default=Path("./configs/44k/config.json"),
+    help="path to config",
+)
+@click.option(
+    "-k",
+    "--cluster_model_path",
+    type=click.Path(exists=True),
+    default=None,
+    help="path to cluster model",
+)
+@click.option("-t", "--transpose", type=int, default=0, help="transpose")
+@click.option(
+    "-a", "--auto_predict_f0", type=bool, default=True, help="auto predict f0"
+)
+@click.option(
+    "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
+)
+@click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
+@click.option(
+    "-c",
+    "--crossfade_seconds",
+    type=float,
+    default=0.01,
+    help="crossfade seconds",
+)
+@click.option("-b", "--block_seconds", type=float, default=1, help="block seconds")
+@click.option(
+    "-d",
+    "--device",
+    type=str,
+    default="cuda" if torch.cuda.is_available() else "cpu",
+    help="device",
+)
+@click.option("-s", "--speaker", type=str, default=None, help="speaker name")
+def vc(
+    model_path: Path,
+    config_path: Path,
+    speaker: str,
+    cluster_model_path: Path | None,
+    transpose: int,
+    auto_predict_f0: bool,
+    cluster_infer_ratio: float,
+    noise_scale: float,
+    crossfade_seconds: float,
+    block_seconds: float,
+    device: Literal["cpu", "cuda"],
+) -> None:
+    from .inference_main import realtime
+
+    model_path = Path(model_path)
+    config_path = Path(config_path)
+    if cluster_model_path is not None:
+        cluster_model_path = Path(cluster_model_path)
+    if model_path.is_dir():
+        model_path = list(sorted(model_path.glob("*.pth")))[-1]
+        LOG.info(f"Since model_path is a directory, use {model_path}")
+
+    realtime(
+        model_path=model_path,
+        config_path=config_path,
+        speaker=speaker,
+        cluster_model_path=cluster_model_path,
+        transpose=transpose,
+        auto_predict_f0=auto_predict_f0,
+        cluster_infer_ratio=cluster_infer_ratio,
+        noise_scale=noise_scale,
+        crossfade_seconds=crossfade_seconds,
+        block_seconds=block_seconds,
         device=device,
     )
 

@@ -1,6 +1,4 @@
 import librosa
-import torch
-import torchaudio
 
 
 class Slicer:
@@ -172,22 +170,31 @@ class Slicer:
             return chunk_dict
 
 
-def cut(audio_path, db_thresh=-30, min_len=5000):
-    audio, sr = librosa.load(audio_path, sr=None)
+from typing import Any, Iterable
+
+from numpy import dtype, float32, ndarray
+
+
+def cut(
+    audio: "ndarray[Any, dtype[float32]]",
+    sr: int,
+    db_thresh: int = -30,
+    min_len: int = 5000,
+) -> "dict[str, dict[str, bool | str]]":
     slicer = Slicer(sr=sr, threshold=db_thresh, min_length=min_len)
     chunks = slicer.slice(audio)
     return chunks
 
 
-def chunks2audio(audio_path, chunks):
+def chunks2audio(
+    audio: "ndarray[Any, dtype[float32]]", chunks: "dict[str, dict[str, bool | str]]"
+) -> Iterable[tuple[bool, "ndarray[Any, dtype[float32]]"]]:
     chunks = dict(chunks)
-    audio, sr = torchaudio.load(audio_path)
-    if len(audio.shape) == 2 and audio.shape[1] >= 2:
-        audio = torch.mean(audio, dim=0).unsqueeze(0)
-    audio = audio.cpu().numpy()[0]
+    if audio.ndim == 2:
+        audio = audio.mean(axis=1)
     result = []
     for k, v in chunks.items():
         tag = v["split_time"].split(",")
         if tag[0] != tag[1]:
             result.append((v["slice"], audio[int(tag[0]) : int(tag[1])]))
-    return result, sr
+    return result
