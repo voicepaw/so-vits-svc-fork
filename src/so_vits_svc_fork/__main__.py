@@ -139,6 +139,12 @@ def infer(
     """Inference"""
     from .inference_main import infer
 
+    if not auto_predict_f0:
+        LOG.warning(
+            f"auto_predict_f0 = False, transpose = {transpose}. If you want to change the pitch, please set transpose."
+            "Generally transpose = 0 does not work because your voice pitch and target voice pitch are different."
+        )
+
     input_path = Path(input_path)
     if output_path is None:
         output_path = input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
@@ -189,14 +195,20 @@ def infer(
     default=None,
     help="path to cluster model",
 )
-@click.option("-t", "--transpose", type=int, default=0, help="transpose")
+@click.option("-t", "--transpose", type=int, default=12, help="transpose")
 @click.option(
-    "-a", "--auto_predict_f0", type=bool, default=True, help="auto predict f0"
+    "-a",
+    "--auto_predict_f0",
+    type=bool,
+    default=False,
+    help="auto predict f0 (not recommended for realtime since voice pitch will not be stable)",
 )
 @click.option(
     "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
 )
 @click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
+@click.option("-d", "--db_thresh", type=int, default=-20, help="db thresh")
+@click.option("-p", "--pad_seconds", type=float, default=0.02, help="pad seconds")
 @click.option(
     "-c",
     "--crossfade_seconds",
@@ -214,20 +226,35 @@ def infer(
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
 def vc(
+    # paths
     model_path: Path,
     config_path: Path,
+    # svc config
     speaker: str,
     cluster_model_path: Path | None,
     transpose: int,
     auto_predict_f0: bool,
     cluster_infer_ratio: float,
     noise_scale: float,
+    # slice config
+    db_thresh: int,
+    pad_seconds: float,
+    # realtime config
     crossfade_seconds: float,
     block_seconds: float,
     device: Literal["cpu", "cuda"],
 ) -> None:
     from .inference_main import realtime
 
+    if auto_predict_f0:
+        LOG.warning(
+            "auto_predict_f0 = True in realtime inference will cause unstable voice pitch, use with caution"
+        )
+    else:
+        LOG.warning(
+            f"auto_predict_f0 = False, transpose = {transpose}. If you want to change the pitch, please change the transpose value."
+            "Generally transpose = 0 does not work because your voice pitch and target voice pitch are different."
+        )
     model_path = Path(model_path)
     config_path = Path(config_path)
     if cluster_model_path is not None:
@@ -247,6 +274,8 @@ def vc(
         noise_scale=noise_scale,
         crossfade_seconds=crossfade_seconds,
         block_seconds=block_seconds,
+        db_thresh=db_thresh,
+        pad_seconds=pad_seconds,
         device=device,
     )
 

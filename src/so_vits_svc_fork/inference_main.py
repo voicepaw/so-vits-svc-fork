@@ -62,15 +62,20 @@ import sounddevice as sd
 
 def realtime(
     *,
+    # paths
     model_path: Path,
     config_path: Path,
+    # svc config
     speaker: str,
     cluster_model_path: Path | None = None,
     transpose: int = 0,
-    db_thresh: int = -40,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
+    # slice config
+    db_thresh: int = -40,
+    pad_seconds: float = 0.5,
+    # realtime config
     crossfade_seconds: float = 0.05,
     block_seconds: float = 0.5,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
@@ -96,21 +101,17 @@ def realtime(
         status: sd.CallbackFlags,
     ) -> None:
         LOG.info(f"Frames: {frames}, Status: {status}, Shape: {indata.shape}")
-        indata_ = indata.mean(axis=1)
-        rms = np.sqrt(np.mean(indata_**2))
-        if rms < 10 ** (db_thresh / 20):
-            LOG.info("Skip silence")
-            outdata[:] = indata
-        else:
-            LOG.info("Processing")
-            outdata[:] = model.process(
-                input_audio=indata.mean(axis=1),
-                speaker=speaker,
-                transpose=transpose,
-                auto_predict_f0=auto_predict_f0,
-                noise_scale=noise_scale,
-                cluster_infer_ratio=cluster_infer_ratio,
-            ).reshape(-1, 1)
+
+        outdata[:] = model.process(
+            input_audio=indata.mean(axis=1),
+            speaker=speaker,
+            transpose=transpose,
+            auto_predict_f0=auto_predict_f0,
+            noise_scale=noise_scale,
+            cluster_infer_ratio=cluster_infer_ratio,
+            db_thresh=db_thresh,
+            pad_seconds=pad_seconds,
+        ).reshape(-1, 1)
 
     with sd.Stream(
         channels=1,
