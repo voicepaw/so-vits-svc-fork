@@ -66,7 +66,13 @@ def main():
                 resolution=0.1,
             ),
         ],
-        [sg.Checkbox(key="auto_predict_f0", default=True, text="Auto predict F0")],
+        [
+            sg.Checkbox(
+                key="auto_predict_f0",
+                default=True,
+                text="Auto predict F0 (Pitch may become unstable when turned on in real-time inference.)",
+            )
+        ],
         [
             sg.Text("Pitch: "),
             sg.Slider(
