@@ -1,5 +1,6 @@
-from so_vits_svc_fork.main import add
+from unittest import TestCase
 
 
-def test_add():
-    assert add(1, 1) == 2
+class TestMain(TestCase):
+    def test_main(self):
+        pass
