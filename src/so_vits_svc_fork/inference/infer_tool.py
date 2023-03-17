@@ -116,7 +116,7 @@ class Svc:
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
-    ):
+    ) -> tuple[torch.Tensor, int]:
         audio = audio.astype(np.float32)
         # get speaker id
         if isinstance(speaker, int):
@@ -211,39 +211,18 @@ class Svc:
         return result_audio
 
 
-import maad
+from numpy import dtype, float32, ndarray
 
 
-class RealTimeVCBase:
-    def __init__(
-        self,
-        *,
-        svc_model: Svc,
-        crossfade_len: int = 3840,
-        use_slicer: bool = True,
-    ):
-        self.svc_model = svc_model
+class CrossFader:
+    def __init__(self, *, crossfade_len: int) -> None:
         self.crossfade_len = crossfade_len
-        self.last_input = np.zeros(crossfade_len * 2, dtype=np.float32)
-        self.last_infered = np.zeros(crossfade_len * 2, dtype=np.float32)
-        self.use_slicer = use_slicer
-
-    """The input and output are 1-dimensional numpy audio waveform arrays"""
+        self.last_input_left = np.zeros(crossfade_len, dtype=np.float32)
+        self.last_infered_left = np.zeros(crossfade_len, dtype=np.float32)
 
     def process(
-        self,
-        input_audio: np.ndarray[Any, np.dtype[np.float32]],
-        *,
-        # svc config
-        speaker: int | str,
-        transpose: int,
-        cluster_infer_ratio: float = 0,
-        auto_predict_f0: bool = False,
-        noise_scale: float = 0.4,
-        # slice config
-        db_thresh: int = -40,
-        pad_seconds: float = 0.5,
-    ):
+        self, input_audio: ndarray[Any, dtype[float32]], *args, **kwargs: Any
+    ) -> ndarray[Any, dtype[float32]]:
         """
         chunks        : ■■■■■■□□□□□□
         add last input:□■■■■■■
@@ -260,22 +239,67 @@ class RealTimeVCBase:
                 f"Input audio length ({len(input_audio)}) should be at least crossfade length ({self.crossfade_len})."
             )
         input_audio = input_audio.astype(np.float32)
-        input_audio = np.nan_to_num(input_audio)
-
-        # create input audio
-        input_audio_c = np.concatenate([self.last_input, input_audio])[
-            -(input_audio.shape[0] + self.crossfade_len) :
-        ]
-        self.last_input = input_audio.copy()
-        LOG.info(
-            f"Input shape: {input_audio.shape}, Concatenated shape: {input_audio_c.shape}, Crossfade length: {self.crossfade_len}"
+        input_audio_ = np.concatenate([self.last_input_left, input_audio])
+        infer_audio_ = self.infer(input_audio_, *args, **kwargs)
+        result_audio = np.concatenate(
+            [
+                (
+                    self.last_infered_left * np.linspace(1, 0, self.crossfade_len)
+                    + infer_audio_[: self.crossfade_len]
+                    * np.linspace(0, 1, self.crossfade_len)
+                )
+                / 2,
+                infer_audio_[self.crossfade_len : -self.crossfade_len],
+            ]
         )
-        assert input_audio_c.shape[0] == input_audio.shape[0] + self.crossfade_len
+        self.last_input_left = input_audio[-self.crossfade_len :]
+        self.last_infered_left = infer_audio_[-self.crossfade_len :]
+        assert len(result_audio) == len(input_audio)
+        return result_audio
 
+    def infer(
+        self, input_audio: ndarray[Any, dtype[float32]]
+    ) -> ndarray[Any, dtype[float32]]:
+        return input_audio
+
+
+class RealTimeVCBase(CrossFader):
+    def __init__(
+        self,
+        *,
+        svc_model: Svc,
+        crossfade_len: int = 3840,
+        use_slicer: bool = True,
+    ) -> None:
+        self.svc_model = svc_model
+        self.use_slicer = use_slicer
+        super().__init__(crossfade_len=crossfade_len)
+
+    def process(
+        self,
+        input_audio: ndarray[Any, dtype[float32]],
+        *args: Any,
+        **kwargs: Any,
+    ) -> ndarray[Any, dtype[float32]]:
+        return super().process(input_audio, *args, **kwargs)
+
+    def infer(
+        self,
+        input_audio: np.ndarray[Any, np.dtype[np.float32]],
+        # svc config
+        speaker: int | str,
+        transpose: int,
+        cluster_infer_ratio: float = 0,
+        auto_predict_f0: bool = False,
+        noise_scale: float = 0.4,
+        # slice config
+        db_thresh: int = -40,
+        pad_seconds: float = 0.5,
+    ) -> ndarray[Any, dtype[float32]]:
         # infer
         if self.use_slicer:
-            infered_audio_c = self.svc_model.infer_silence(
-                audio=input_audio_c,
+            return self.svc_model.infer_silence(
+                audio=input_audio,
                 speaker=speaker,
                 transpose=transpose,
                 cluster_infer_ratio=cluster_infer_ratio,
@@ -289,26 +313,15 @@ class RealTimeVCBase:
             min_rms = 10 ** (db_thresh / 20)
             if rms < min_rms:
                 LOG.info(f"Skip silence: RMS={rms:.2f} < {min_rms:.2f}")
-                infered_audio_c = input_audio_c.copy()
+                return input_audio.copy()
             else:
                 LOG.info(f"Start inference: RMS={rms:.2f} >= {min_rms:.2f}")
                 infered_audio_c, _ = self.svc_model.infer(
                     speaker=speaker,
                     transpose=transpose,
-                    audio=input_audio_c,
+                    audio=input_audio,
                     cluster_infer_ratio=cluster_infer_ratio,
                     auto_predict_f0=auto_predict_f0,
                     noise_scale=noise_scale,
                 )
-                infered_audio_c = infered_audio_c.cpu().numpy()
-        LOG.info(f"Concentrated Inferred shape: {infered_audio_c.shape}")
-        assert infered_audio_c.shape[0] == input_audio_c.shape[0]
-
-        # crossfade
-        result = maad.util.crossfade(
-            self.last_infered, infered_audio_c, 1, self.crossfade_len
-        )[-(input_audio.shape[0] + self.crossfade_len) : -self.crossfade_len]
-        LOG.info(f"Result shape: {result.shape}")
-        assert result.shape[0] == input_audio.shape[0]
-        self.last_infered = infered_audio_c[-self.crossfade_len - 1 :].copy()
-        return result
+                return infered_audio_c.cpu().numpy()
