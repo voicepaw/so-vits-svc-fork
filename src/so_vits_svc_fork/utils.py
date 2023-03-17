@@ -193,7 +193,7 @@ def f0_to_coarse(f0):
     return f0_coarse
 
 
-def download_file(url: str, filepath: "Path | str", chunk_size: int=32 * 1024, **kwargs):
+def download_file(url: str, filepath: "Path | str", chunk_size: int=4 * 1024, **kwargs):
     filepath = Path(filepath)
     filepath.parent.mkdir(parents=True, exist_ok=True)
     temppath = filepath.parent / f"{filepath.name}.download"
@@ -218,7 +218,7 @@ def download_file(url: str, filepath: "Path | str", chunk_size: int=32 * 1024, *
 def ensure_pretrained_model(folder_path: Path) -> None:
     model_urls = [
         #"https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
-        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth"
+        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
         #"https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/D_0.pth",
         "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth"
     ]
