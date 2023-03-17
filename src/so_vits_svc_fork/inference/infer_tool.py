@@ -119,13 +119,19 @@ class Svc:
     ):
         audio = audio.astype(np.float32)
         # get speaker id
-        speaker_id = self.spk2id.__dict__.get(speaker)
-        if not speaker_id and isinstance(speaker, int):
+        if isinstance(speaker, int):
             if len(self.spk2id.__dict__) >= speaker:
                 speaker_id = speaker
+            else:
+                raise ValueError(
+                    f"Speaker id {speaker} >= number of speakers {len(self.spk2id.__dict__)}"
+                )
         else:
-            LOG.warning(f"Speaker {speaker} is not found. Use speaker 0 instead.")
-            speaker_id = 0
+            if speaker in self.spk2id.__dict__:
+                speaker_id = self.spk2id.__dict__[speaker]
+            else:
+                LOG.warning(f"Speaker {speaker} is not found. Use speaker 0 instead.")
+                speaker_id = 0
         sid = torch.LongTensor([int(speaker_id)]).to(self.dev).unsqueeze(0)
 
         # get unit f0
