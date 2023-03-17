@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.1 (2023-03-17)
+### Fix
+* **notebook:** Fix notebook ([`3ed00cc`](https://github.com/34j/so-vits-svc-fork/commit/3ed00cc66d4f66e045f61fc14937cb9160eee556))
+
 ## v0.2.0 (2023-03-17)
 ### Feature
 * Realtime inference ([#2](https://github.com/34j/so-vits-svc-fork/issues/2)) ([`4dea1ae`](https://github.com/34j/so-vits-svc-fork/commit/4dea1ae51fe2e47a3f41556bdbe3fefd033d729a))
