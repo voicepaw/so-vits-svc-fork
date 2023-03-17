@@ -43,12 +43,19 @@ pip install so-vits-svc-fork
 
 ## Features not available in the original repo
 
+- **Realtime voice conversion**
 - Unified command-line interface (no need to run Python scripts)
 - Ready to use just by installing with `pip`.
 - Automatically download pretrained base model and HuBERT model
 - Code completely formatted with black, isort, autoflake etc.
 
 ## Usage
+
+### Realtime Voice conversion
+
+```shell
+svc vc --model-path <model-path>
+```
 
 ### Training
 
@@ -67,6 +74,34 @@ svc train
 
 ```shell
 svc --model-path <model-path> source.wav
+```
+
+For more details, run `svc -h` or `svc <subcommand> -h`.
+
+```shell
+svc -h
+Usage: svc [OPTIONS] COMMAND [ARGS]...
+
+  so-vits-svc allows any folder structure for training data. However, it is
+  recommended to place the training data in the following structure:
+
+      dataset_raw/{speaker_name}/{wav_name}.wav
+
+  To train a model, run pre-resample, pre-config, pre-hubert, train. To infer
+  a model, run infer.
+
+Options:
+  -h, --help  Show this message and exit.
+
+Commands:
+  clean         Clean up files, only useful if you are using the default...
+  infer         Inference
+  onnx          Export model to onnx
+  pre-config    Preprocessing part 2: config
+  pre-hubert    Preprocessing part 3: hubert
+  pre-resample  Preprocessing part 1: resample
+  train         Train model
+  vc            Realtime inference from microphone
 ```
 
 ## Contributors ✨
