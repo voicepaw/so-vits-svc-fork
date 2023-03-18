@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2023-03-18)
+### Feature
+* Enhance realtime algorythm ([#4](https://github.com/34j/so-vits-svc-fork/issues/4)) ([`d789a12`](https://github.com/34j/so-vits-svc-fork/commit/d789a12308784473ae5d09e0b73fa15bf7554de1))
+
 ## v0.3.0 (2023-03-17)
 ### Feature
 * Add gui ([#3](https://github.com/34j/so-vits-svc-fork/issues/3)) ([`34aec2b`](https://github.com/34j/so-vits-svc-fork/commit/34aec2b98ee4ef82ef488129b61a7952af5226a3))
