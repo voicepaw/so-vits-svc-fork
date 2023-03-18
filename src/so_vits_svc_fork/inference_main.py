@@ -66,9 +66,6 @@ def infer(
     soundfile.write(output_path, audio, svc_model.target_sample)
 
 
-import sounddevice as sd
-
-
 def realtime(
     *,
     # paths
@@ -91,6 +88,8 @@ def realtime(
     version: int = 2,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
+    import sounddevice as sd
+
     model_path = Path(model_path)
     config_path = Path(config_path)
     cluster_model_path = Path(cluster_model_path) if cluster_model_path else None
