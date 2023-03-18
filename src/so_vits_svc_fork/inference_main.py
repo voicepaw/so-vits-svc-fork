@@ -9,7 +9,7 @@ import numpy as np
 import soundfile
 import torch
 
-from .inference.infer_tool import RealTimeVCBase, Svc
+from .inference.infer_tool import RealtimeVC, RealtimeVC2, Svc
 
 LOG = getLogger(__name__)
 
@@ -17,13 +17,13 @@ LOG = getLogger(__name__)
 def infer(
     *,
     # paths
-    input_path: Path,
-    output_path: Path,
-    model_path: Path,
-    config_path: Path,
+    input_path: Path | str,
+    output_path: Path | str,
+    model_path: Path | str,
+    config_path: Path | str,
     # svc config
     speaker: str,
-    cluster_model_path: Path | None = None,
+    cluster_model_path: Path | str | None = None,
     transpose: int = 0,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
@@ -31,8 +31,15 @@ def infer(
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
+    chunk_seconds: float = 0.5,
+    absolute_thresh: bool = False,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
+    model_path = Path(model_path)
+    output_path = Path(output_path)
+    input_path = Path(input_path)
+    config_path = Path(config_path)
+    cluster_model_path = Path(cluster_model_path) if cluster_model_path else None
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
@@ -42,9 +49,9 @@ def infer(
         device=device,
     )
 
-    wav, sr = librosa.load(input_path, sr=svc_model.target_sample)
+    audio, _ = librosa.load(input_path, sr=svc_model.target_sample)
     audio = svc_model.infer_silence(
-        wav,
+        audio,
         speaker=speaker,
         db_thresh=db_thresh,
         pad_seconds=pad_seconds,
@@ -52,22 +59,21 @@ def infer(
         auto_predict_f0=auto_predict_f0,
         cluster_infer_ratio=cluster_infer_ratio,
         noise_scale=noise_scale,
+        chunk_seconds=chunk_seconds,
+        absolute_thresh=absolute_thresh,
     )
 
     soundfile.write(output_path, audio, svc_model.target_sample)
 
 
-import sounddevice as sd
-
-
 def realtime(
     *,
     # paths
-    model_path: Path,
-    config_path: Path,
+    model_path: Path | str,
+    config_path: Path | str,
     # svc config
     speaker: str,
-    cluster_model_path: Path | None = None,
+    cluster_model_path: Path | str | None = None,
     transpose: int = 0,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
@@ -75,11 +81,18 @@ def realtime(
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
+    chunk_seconds: float = 0.5,
     # realtime config
     crossfade_seconds: float = 0.05,
     block_seconds: float = 0.5,
+    version: int = 2,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
+    import sounddevice as sd
+
+    model_path = Path(model_path)
+    config_path = Path(config_path)
+    cluster_model_path = Path(cluster_model_path) if cluster_model_path else None
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
@@ -88,10 +101,15 @@ def realtime(
         else None,
         device=device,
     )
-    model = RealTimeVCBase(
-        svc_model=svc_model,
-        crossfade_len=int(crossfade_seconds * svc_model.target_sample),
-    )
+    if version == 1:
+        model = RealtimeVC(
+            svc_model=svc_model,
+            crossfade_len=int(crossfade_seconds * svc_model.target_sample),
+        )
+    else:
+        model = RealtimeVC2(
+            svc_model=svc_model,
+        )
 
     def callback(
         indata: np.ndarray,
@@ -100,9 +118,11 @@ def realtime(
         time: int,
         status: sd.CallbackFlags,
     ) -> None:
-        LOG.info(f"Frames: {frames}, Status: {status}, Shape: {indata.shape}")
+        LOG.debug(
+            f"Frames: {frames}, Status: {status}, Shape: {indata.shape}, Time: {time}"
+        )
 
-        outdata[:] = model.process(
+        kwargs = dict(
             input_audio=indata.mean(axis=1),
             speaker=speaker,
             transpose=transpose,
@@ -110,7 +130,12 @@ def realtime(
             noise_scale=noise_scale,
             cluster_infer_ratio=cluster_infer_ratio,
             db_thresh=db_thresh,
-            pad_seconds=pad_seconds,
+            chunk_seconds=chunk_seconds,
+        )
+        if version == 1:
+            kwargs["pad_seconds"] = pad_seconds
+        outdata[:] = model.process(
+            **kwargs,
         ).reshape(-1, 1)
 
     with sd.Stream(

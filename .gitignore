@@ -141,6 +141,7 @@ cython_debug/
 
 # additional files
 tests/**/*.wav
+!tests/dataset_raw/**/*.wav
 tests/**/*.npy
 tests/**/*.pt
 tests/**/*.txt
@@ -148,3 +149,4 @@ tests/**/*.json
 tests/**/*.pth
 tests/**/*.download
 *.tfevents.*
+*.pt

@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import multiprocessing
 import os
 import time
@@ -31,8 +33,10 @@ global_step = 0
 start_time = time.time()
 
 
-def main(config_path: Path, model_path: Path):
+def train(config_path: Path | str, model_path: Path | str):
     """Assume Single Node Multi GPUs Training Only"""
+    config_path = Path(config_path)
+    model_path = Path(model_path)
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
     utils.ensure_pretrained_model(model_path)
@@ -56,9 +60,9 @@ def run(rank, n_gpus, hps):
     global global_step
     if rank == 0:
         LOG.info(hps)
-        utils.check_git_hash(hps.model_dir)
+        # utils.check_git_hash(hps.model_dir)
         writer = SummaryWriter(log_dir=hps.model_dir)
-        writer_eval = SummaryWriter(log_dir=os.path.join(hps.model_dir, "eval"))
+        writer_eval = SummaryWriter(log_dir=Path(hps.model_dir) / "eval")
 
     # for pytorch on win, backend use gloo
     dist.init_process_group(
@@ -337,14 +341,14 @@ def train_and_evaluate(
                     optim_g,
                     hps.train.learning_rate,
                     epoch,
-                    os.path.join(hps.model_dir, f"G_{global_step}.pth"),
+                    Path(hps.model_dir) / f"G_{global_step}.pth",
                 )
                 utils.save_checkpoint(
                     net_d,
                     optim_d,
                     hps.train.learning_rate,
                     epoch,
-                    os.path.join(hps.model_dir, f"D_{global_step}.pth"),
+                    Path(hps.model_dir) / f"D_{global_step}.pth",
                 )
                 keep_ckpts = getattr(hps.train, "keep_ckpts", 0)
                 if keep_ckpts > 0:

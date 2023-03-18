@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from logging import (
+    DEBUG,
     INFO,
     FileHandler,
     StreamHandler,
@@ -20,9 +21,10 @@ from rich.logging import RichHandler
 
 def init_logger() -> None:
     IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
+    IS_TEST = "test" in Path(__file__).parent.stem
 
     basicConfig(
-        level=INFO,
+        level=DEBUG if IS_TEST else INFO,
         format="%(asctime)s %(message)s",
         datefmt="[%X]",
         handlers=[
@@ -31,31 +33,65 @@ def init_logger() -> None:
         ],
     )
     captureWarnings(True)
+    if IS_TEST:
+        LOG.debug("Test mode is on.")
 
 
 LOG = getLogger(__name__)
 
 
-@click.help_option("--help", "-h")
-@click.group()
+class RichHelpFormatter(click.HelpFormatter):
+    def __init__(
+        self,
+        indent_increment: int = 2,
+        width: int | None = None,
+        max_width: int | None = None,
+    ) -> None:
+        width = 100
+        super().__init__(indent_increment, width, max_width)
+
+
+def patch_wrap_text():
+    orig_wrap_text = click.formatting.wrap_text
+
+    def wrap_text(
+        text,
+        width=78,
+        initial_indent="",
+        subsequent_indent="",
+        preserve_paragraphs=False,
+    ):
+        return orig_wrap_text(
+            text.replace("\n", "\n\n"),
+            width=width,
+            initial_indent=initial_indent,
+            subsequent_indent=subsequent_indent,
+            preserve_paragraphs=True,
+        ).replace("\n\n", "\n")
+
+    click.formatting.wrap_text = wrap_text
+
+
+patch_wrap_text()
+
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+click.Context.formatter_class = RichHelpFormatter
+
+
+@click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     """so-vits-svc allows any folder structure for training data.
-    However, the following folder structure is recommended.
-
-        When training: dataset_raw/{speaker_name}/{wav_name}.wav
-
-
-        When inference: configs/44k/config.json, logs/44k/G_XXXX.pth
-
+    However, the following folder structure is recommended.\n
+        When training: dataset_raw/{speaker_name}/{wav_name}.wav\n
+        When inference: configs/44k/config.json, logs/44k/G_XXXX.pth\n
     If the folder structure is followed, you DO NOT NEED TO SPECIFY model path, config path, etc.
-    (The latest model will be automatically loaded.)
-    To train a model, run pre-resample, pre-config, pre-hubert, train.
+    (The latest model will be automatically loaded.)\n
+    To train a model, run pre-resample, pre-config, pre-hubert, train.\n
     To infer a model, run infer.
     """
     init_logger()
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-c",
@@ -74,14 +110,13 @@ def cli():
 def train(config_path: Path, model_path: Path):
     """Train model
     If D_0.pth or G_0.pth not found, automatically download from hub."""
-    from .train import main
+    from .train import train
 
     config_path = Path(config_path)
     model_path = Path(model_path)
-    main(config_path=config_path, model_path=model_path)
+    train(config_path=config_path, model_path=model_path)
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.argument(
     "input_path",
@@ -116,7 +151,9 @@ def train(config_path: Path, model_path: Path):
     help="path to cluster model",
 )
 @click.option("-t", "--transpose", type=int, default=0, help="transpose")
-@click.option("-d", "--db_thresh", type=int, default=-40, help="db thresh")
+@click.option(
+    "-d", "--db_thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)"
+)
 @click.option(
     "-a", "--auto_predict_f0", type=bool, default=True, help="auto predict f0"
 )
@@ -132,6 +169,10 @@ def train(config_path: Path, model_path: Path):
     default="cuda" if torch.cuda.is_available() else "cpu",
     help="device",
 )
+@click.option("-c", "--chunk_seconds", type=float, default=0.5, help="chunk seconds")
+@click.option(
+    "-a", "--absolute_thresh", type=bool, default=False, help="absolute thresh"
+)
 def infer(
     input_path: Path,
     output_path: Path,
@@ -145,6 +186,8 @@ def infer(
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
     pad_seconds: float = 0.5,
+    chunk_seconds: float = 0.5,
+    absolute_thresh: bool = False,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     """Inference"""
@@ -180,6 +223,8 @@ def infer(
         cluster_infer_ratio=cluster_infer_ratio,
         noise_scale=noise_scale,
         pad_seconds=pad_seconds,
+        chunk_seconds=chunk_seconds,
+        absolute_thresh=absolute_thresh,
         device=device,
     )
 
@@ -218,8 +263,11 @@ def infer(
     "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
 )
 @click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
-@click.option("-d", "--db_thresh", type=int, default=-20, help="db thresh")
+@click.option(
+    "-d", "--db_thresh", type=int, default=-30, help="threshold (DB) (ABSOLUTE)"
+)
 @click.option("-p", "--pad_seconds", type=float, default=0.02, help="pad seconds")
+@click.option("-c", "--chunk_seconds", type=float, default=0.5, help="chunk seconds")
 @click.option(
     "-c",
     "--crossfade_seconds",
@@ -236,6 +284,7 @@ def infer(
     help="device",
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
+@click.option("-v", "--version", type=int, default=2, help="version")
 def vc(
     # paths
     model_path: Path,
@@ -250,9 +299,11 @@ def vc(
     # slice config
     db_thresh: int,
     pad_seconds: float,
+    chunk_seconds: float,
     # realtime config
     crossfade_seconds: float,
     block_seconds: float,
+    version: int,
     device: Literal["cpu", "cuda"],
 ) -> None:
     """Realtime inference from microphone"""
@@ -286,13 +337,14 @@ def vc(
         noise_scale=noise_scale,
         crossfade_seconds=crossfade_seconds,
         block_seconds=block_seconds,
+        chunk_seconds=chunk_seconds,
         db_thresh=db_thresh,
         pad_seconds=pad_seconds,
+        version=version,
         device=device,
     )
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-i",
@@ -320,7 +372,6 @@ def pre_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
     )
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-i",
@@ -361,7 +412,6 @@ def pre_config(
     )
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-i",
@@ -387,7 +437,6 @@ def pre_hubert(input_dir: Path, config_path: Path) -> None:
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
 
 
-@click.help_option("--help", "-h")
 @cli.command
 def clean():
     """Clean up files, only useful if you are using the default file structure"""
@@ -403,7 +452,6 @@ def clean():
 
 
 @cli.command
-@click.help_option("--help", "-h")
 @click.option("-i", "--input_path", type=click.Path(exists=True), help="model path")
 @click.option("-o", "--output_path", type=click.Path(), help="onnx model path to save")
 @click.option("-c", "--config_path", type=click.Path(), help="config path")
@@ -422,3 +470,26 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
         config_path=config_path,
         device=device_,
     )
+
+
+@cli.command
+@click.option(
+    "-i",
+    "--input_dir",
+    type=click.Path(exists=True),
+    help="dataset directory",
+    default=Path("./dataset/44k"),
+)
+@click.option(
+    "-o",
+    "--output_path",
+    type=click.Path(),
+    help="model path to save",
+    default=Path("./models/44k/kmeans.pt"),
+)
+@click.option("-n", "--n_clusters", type=int, help="number of clusters", default=10000)
+def train_cluster(input_dir: Path, output_path: Path, n_clusters: int) -> None:
+    """Train k-means clustering"""
+    from .cluster.train_cluster import main
+
+    main(input_dir=input_dir, output_path=output_path, n_clusters=n_clusters)

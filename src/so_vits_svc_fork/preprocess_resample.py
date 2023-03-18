@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import librosa
@@ -16,12 +18,16 @@ from tqdm_joblib import tqdm_joblib
 # - save as 16-bit wav file
 
 
-def preprocess_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
+def preprocess_resample(
+    input_dir: Path | str, output_dir: Path | str, sampling_rate: int
+) -> None:
+    input_dir = Path(input_dir)
+    output_dir = Path(output_dir)
     """Preprocess audio files in input_dir and save them to output_dir."""
 
     def preprocess_one(input_path: Path, output_path: Path) -> None:
         """Preprocess one audio file."""
-        audio, sr = librosa.load(str(input_path), sr=None)
+        audio, sr = librosa.load(input_path)
 
         # Trim silence
         audio, _ = librosa.effects.trim(audio, top_db=20)
@@ -34,9 +40,7 @@ def preprocess_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -
         # Resample
         audio = librosa.resample(audio, orig_sr=sr, target_sr=sampling_rate)
         audio /= max(audio.max(), -audio.min())
-        soundfile.write(
-            str(output_path), audio, samplerate=sampling_rate, subtype="PCM_16"
-        )
+        soundfile.write(output_path, audio, samplerate=sampling_rate, subtype="PCM_16")
 
     in_and_out_paths = []
     for in_path in input_dir.rglob("*.wav"):

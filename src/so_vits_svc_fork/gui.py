@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from logging import getLogger
 from pathlib import Path
 
@@ -25,124 +27,200 @@ def main():
     model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
     layout = [
         [
-            sg.Text("Model path: "),
-            sg.InputText(
-                key="model_path",
-                default_text=model_candidates[-1].as_posix()
-                if model_candidates
-                else "",
-            ),
-            sg.FileBrowse(
-                initial_folder="./logs/44k/" if Path("./logs/44k/").exists() else "."
-            ),
-        ],
-        [
-            sg.Text("Config path: "),
-            sg.InputText(
-                key="config_path",
-                default_text="./configs/44k/config.json",
-                enable_events=True,
-            ),
-            sg.FileBrowse(
-                initial_folder="./configs/44k/"
-                if Path("./configs/44k/").exists()
-                else "."
-            ),
-        ],
-        [sg.Text("Speaker"), sg.Combo(values=[], key="speaker", size=(20, 1))],
-        [
-            sg.Text("Input audio path:"),
-            sg.InputText(key="input_path"),
-            sg.FileBrowse(initial_folder="."),
-            sg.Button("Play", key="play_input"),
-        ],
-        [
-            sg.Text("Silence threshold: "),
-            sg.Slider(
-                range=(-60.0, 0),
-                orientation="h",
-                key="silence_threshold",
-                default_value=-20,
-                resolution=0.1,
-            ),
-        ],
-        [
-            sg.Checkbox(
-                key="auto_predict_f0",
-                default=True,
-                text="Auto predict F0 (Pitch may become unstable when turned on in real-time inference.)",
+            sg.Frame(
+                "Paths",
+                [
+                    [
+                        sg.Text("Model path"),
+                        sg.Push(),
+                        sg.InputText(
+                            key="model_path",
+                            default_text=model_candidates[-1].as_posix()
+                            if model_candidates
+                            else "",
+                        ),
+                        sg.FileBrowse(
+                            initial_folder="./logs/44k/"
+                            if Path("./logs/44k/").exists()
+                            else "."
+                        ),
+                    ],
+                    [
+                        sg.Text("Config path"),
+                        sg.Push(),
+                        sg.InputText(
+                            key="config_path",
+                            default_text="./configs/44k/config.json",
+                            enable_events=True,
+                        ),
+                        sg.FileBrowse(
+                            initial_folder="./configs/44k/"
+                            if Path("./configs/44k/").exists()
+                            else "."
+                        ),
+                    ],
+                    [
+                        sg.Text("Cluster model path"),
+                        sg.Push(),
+                        sg.InputText(key="cluster_model_path"),
+                        sg.FileBrowse(),
+                    ],
+                ],
             )
         ],
         [
-            sg.Text("Pitch: "),
-            sg.Slider(
-                range=(-20, 20), orientation="h", key="transpose", default_value=0
-            ),
+            sg.Frame(
+                "Common",
+                [
+                    [
+                        sg.Text("Speaker"),
+                        sg.Combo(values=[], key="speaker", size=(20, 1)),
+                    ],
+                    [
+                        sg.Text("Silence threshold"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(-60.0, 0),
+                            orientation="h",
+                            key="silence_threshold",
+                            default_value=-30,
+                            resolution=0.1,
+                        ),
+                    ],
+                    [
+                        sg.Text("Pitch"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(-20, 20),
+                            orientation="h",
+                            key="transpose",
+                            default_value=0,
+                        ),
+                    ],
+                    [
+                        sg.Checkbox(
+                            key="auto_predict_f0",
+                            default=True,
+                            text="Auto predict F0 (Pitch may become unstable when turned on in real-time inference.)",
+                        )
+                    ],
+                    [
+                        sg.Text("Cluster infer ratio"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0, 1.0),
+                            orientation="h",
+                            key="cluster_infer_ratio",
+                            default_value=0,
+                            resolution=0.01,
+                        ),
+                    ],
+                    [
+                        sg.Text("Noise scale"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0.0, 1.0),
+                            orientation="h",
+                            key="noise_scale",
+                            default_value=0.4,
+                            resolution=0.01,
+                        ),
+                    ],
+                    [
+                        sg.Text("Pad seconds"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0.0, 1.0),
+                            orientation="h",
+                            key="pad_seconds",
+                            default_value=0.1,
+                            resolution=0.01,
+                        ),
+                    ],
+                    [
+                        sg.Text("Chunk seconds"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0.0, 3.0),
+                            orientation="h",
+                            key="chunk_seconds",
+                            default_value=0.5,
+                            resolution=0.01,
+                        ),
+                    ],
+                    [
+                        sg.Checkbox(
+                            key="absolute_thresh",
+                            default=False,
+                            text="Absolute threshold (ignored (True) in realtime inference)",
+                        )
+                    ],
+                ],
+            )
         ],
         [
-            sg.Text("Cluster infer ratio: "),
-            sg.Slider(
-                range=(0, 1.0),
-                orientation="h",
-                key="cluster_infer_ratio",
-                default_value=0,
-                resolution=0.01,
-            ),
+            sg.Frame(
+                "File",
+                [
+                    [
+                        sg.Text("Input audio path"),
+                        sg.Push(),
+                        sg.InputText(key="input_path"),
+                        sg.FileBrowse(initial_folder="."),
+                        sg.Button("Play", key="play_input"),
+                    ],
+                    [sg.Checkbox(key="auto_play", default=True, text="Auto play")],
+                ],
+            )
         ],
         [
-            sg.Text("Cluster model path: "),
-            sg.InputText(key="cluster_model_path"),
-            sg.FileBrowse(),
-        ],
-        [
-            sg.Text("Noise scale: "),
-            sg.Slider(
-                range=(0.0, 1.0),
-                orientation="h",
-                key="noise_scale",
-                default_value=0.4,
-                resolution=0.01,
-            ),
-        ],
-        [
-            sg.Text("Pad seconds"),
-            sg.Slider(
-                range=(0.0, 1.0),
-                orientation="h",
-                key="pad_seconds",
-                default_value=0.1,
-                resolution=0.01,
-            ),
-        ],
-        [
-            sg.Text("Crossfade seconds"),
-            sg.Slider(
-                range=(0, 0.6),
-                orientation="h",
-                key="crossfade_seconds",
-                default_value=0.1,
-                resolution=0.001,
-            ),
-        ],
-        [
-            sg.Text("Block seconds"),
-            sg.Slider(
-                range=(0, 3.0),
-                orientation="h",
-                key="block_seconds",
-                default_value=1,
-                resolution=0.01,
-            ),
+            sg.Frame(
+                "Realtime",
+                [
+                    [
+                        sg.Text("Crossfade seconds"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0, 0.6),
+                            orientation="h",
+                            key="crossfade_seconds",
+                            default_value=0.1,
+                            resolution=0.001,
+                        ),
+                    ],
+                    [
+                        sg.Text("Block seconds"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0, 3.0),
+                            orientation="h",
+                            key="block_seconds",
+                            default_value=1,
+                            resolution=0.01,
+                        ),
+                    ],
+                    [
+                        sg.Text("Realtime algorithm"),
+                        sg.Combo(
+                            ["2 (Divide by speech)", "1 (Divide constantly)"],
+                            default_value="2 (Divide by speech)",
+                            key="realtime_algorithm",
+                        ),
+                    ],
+                ],
+            )
         ],
         [sg.Checkbox(key="use_gpu", default=True, text="Use GPU")],
-        [sg.Checkbox(key="auto_play", default=True, text="Auto play")],
         [
             sg.Button("Infer", key="infer"),
             sg.Button("(Re)Start Voice Changer", key="start_vc"),
             sg.Button("Stop Voice Changer", key="stop_vc"),
         ],
     ]
-
+    for row in layout:
+        for frame in row:
+            if isinstance(frame, sg.Frame):
+                frame.expand_x = True
     window = sg.Window(
         f"{__name__.split('.')[0]}", layout
     )  # , use_custom_titlebar=True)
@@ -164,7 +242,7 @@ def main():
                     )
 
             if not event == sg.EVENT_TIMEOUT:
-                LOG.info(f"Event: {event}, values: {values}")
+                LOG.info(f"Event {event}, values {values}")
             if values["speaker"] == "":
                 update_combo()
 
@@ -177,6 +255,9 @@ def main():
                 output_path = (
                     input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
                 )
+                if not input_path.exists() or not input_path.is_file():
+                    LOG.warning(f"Input path {input_path} does not exist.")
+                    continue
                 infer(
                     model_path=Path(values["model_path"]),
                     config_path=Path(values["config_path"]),
@@ -192,6 +273,8 @@ def main():
                     noise_scale=values["noise_scale"],
                     db_thresh=values["silence_threshold"],
                     pad_seconds=values["pad_seconds"],
+                    absolute_thresh=values["absolute_thresh"],
+                    chunk_seconds=values["chunk_seconds"],
                     device="cuda" if values["use_gpu"] else "cpu",
                 )
                 if values["auto_play"]:
@@ -221,6 +304,8 @@ def main():
                         crossfade_seconds=values["crossfade_seconds"],
                         db_thresh=values["silence_threshold"],
                         pad_seconds=values["pad_seconds"],
+                        chunk_seconds=values["chunk_seconds"],
+                        version=int(values["realtime_algorithm"][0]),
                         device="cuda" if values["use_gpu"] else "cpu",
                         block_seconds=values["block_seconds"],
                     ),

@@ -1,4 +1,5 @@
-import os
+from __future__ import annotations
+
 from logging import getLogger
 from pathlib import Path
 from random import shuffle
@@ -16,7 +17,9 @@ from .utils import HUBERT_SAMPLING_RATE
 LOG = getLogger(__name__)
 
 
-def preprocess_hubert_f0(input_dir: Path, config_path: Path):
+def preprocess_hubert_f0(input_dir: Path | str, config_path: Path | str):
+    input_dir = Path(input_dir)
+    config_path = Path(config_path)
     utils.get_hubert_model()
     hps = utils.get_hparams_from_file(config_path)
     sampling_rate = hps.data.sampling_rate
@@ -25,7 +28,7 @@ def preprocess_hubert_f0(input_dir: Path, config_path: Path):
     def _process_one(filepath: Path, hmodel, device: Literal["cuda", "cpu"] = "cuda"):
         wav, sr = librosa.load(filepath, sr=sampling_rate)
         soft_path = filepath.parent / (filepath.name + ".soft.pt")
-        if not os.path.exists(soft_path):
+        if not soft_path.exists():
             wav16k = librosa.resample(
                 wav, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE
             )

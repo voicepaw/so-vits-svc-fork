@@ -1,16 +1,18 @@
 from __future__ import annotations
 
-import os
+from copy import deepcopy
 from logging import getLogger
-from typing import Any
+from pathlib import Path
+from typing import Any, Callable, Iterable
 
+import attrs
 import librosa
 import numpy as np
 import torch
 from cm_time import timer
+from numpy import dtype, float32, ndarray
 
 from so_vits_svc_fork import cluster, utils
-from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
 
 from ..utils import HUBERT_SAMPLING_RATE
@@ -18,10 +20,10 @@ from ..utils import HUBERT_SAMPLING_RATE
 LOG = getLogger(__name__)
 
 
-def pad_array(arr, target_length):
-    current_length = arr.shape[0]
+def pad_array(array_, target_length: int):
+    current_length = array_.shape[0]
     if current_length >= target_length:
-        return arr[
+        return array_[
             (current_length - target_length)
             // 2 : (current_length - target_length)
             // 2
@@ -33,9 +35,52 @@ def pad_array(arr, target_length):
         pad_left = pad_width // 2
         pad_right = pad_width - pad_left
         padded_arr = np.pad(
-            arr, (pad_left, pad_right), "constant", constant_values=(0, 0)
+            array_, (pad_left, pad_right), "constant", constant_values=(0, 0)
         )
         return padded_arr
+
+
+@attrs.frozen(kw_only=True)
+class Chunk:
+    is_speech: bool
+    audio: ndarray[Any, dtype[float32]]
+    start: int
+    end: int
+
+    @property
+    def duration(self) -> float32:
+        # return self.end - self.start
+        return float32(self.audio.shape[0])
+
+
+def split_silence(
+    audio: ndarray[Any, dtype[float32]],
+    top_db: int = 40,
+    ref: float | Callable[[ndarray[Any, dtype[float32]]], float] = 1,
+    frame_length: int = 2048,
+    hop_length: int = 512,
+    aggregate: Callable[[ndarray[Any, dtype[float32]]], float] = np.mean,
+) -> Iterable[Chunk]:
+    non_silence_indices = librosa.effects.split(
+        audio,
+        top_db=top_db,
+        ref=ref,
+        frame_length=frame_length,
+        hop_length=hop_length,
+        aggregate=aggregate,
+    )
+    last_end = 0
+    for start, end in non_silence_indices:
+        if start != last_end:
+            yield Chunk(
+                is_speech=False, audio=audio[last_end:start], start=last_end, end=start
+            )
+        yield Chunk(is_speech=True, audio=audio[start:end], start=start, end=end)
+        last_end = end
+    if last_end != len(audio):
+        yield Chunk(
+            is_speech=False, audio=audio[last_end:], start=last_end, end=len(audio)
+        )
 
 
 class Svc:
@@ -45,7 +90,7 @@ class Svc:
         net_g_path: str,
         config_path: str,
         device: torch.device | str | None = None,
-        cluster_model_path: str | None = None,
+        cluster_model_path: Path | str | None = None,
     ):
         self.net_g_path = net_g_path
         if device is None:
@@ -59,7 +104,7 @@ class Svc:
         self.spk2id = self.hps_ms.spk
         self.hubert_model = utils.get_hubert_model().to(self.dev)
         self.load_model()
-        if cluster_model_path is not None and os.path.exists(cluster_model_path):
+        if cluster_model_path is not None and Path(cluster_model_path).exists():
             self.cluster_model = cluster.get_cluster_model(cluster_model_path)
 
     def load_model(self):
@@ -112,11 +157,11 @@ class Svc:
         self,
         speaker: int | str,
         transpose: int,
-        audio: np.ndarray[Any, np.dtype[np.float32]],
+        audio: ndarray[Any, dtype[float32]],
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
-    ):
+    ) -> tuple[torch.Tensor, int]:
         audio = audio.astype(np.float32)
         # get speaker id
         if isinstance(speaker, int):
@@ -173,77 +218,74 @@ class Svc:
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
+        chunk_seconds: float = 0.5,
+        absolute_thresh: bool = False,
         # fade_seconds: float = 0.0,
     ) -> np.ndarray[Any, np.dtype[np.float32]]:
-        chunks = slicer.cut(audio, self.target_sample, db_thresh=db_thresh)
-        LOG.info(f"Cut audio into chunks {chunks}")
         sr = self.target_sample
-
-        result_audio = np.array([])
-        for slice_tag, data in slicer.chunks2audio(audio, chunks):
-            # segment length
-            length = int(np.ceil(len(data) / sr * self.target_sample))
-            if slice_tag:
-                LOG.info("Skip silence")
-                _audio = np.zeros(length)
+        result_audio = np.array([], dtype=np.float32)
+        chunk_length_min = chunk_length_min = (
+            int(
+                min(
+                    sr / utils.f0_min * 20 + 1,
+                    chunk_seconds * sr,
+                )
+            )
+            // 2
+        )
+        for chunk in split_silence(
+            audio,
+            top_db=-db_thresh,
+            frame_length=chunk_length_min * 2,
+            hop_length=chunk_length_min,
+            ref=1 if absolute_thresh else np.max,
+        ):
+            LOG.info(f"Chunk: {chunk}")
+            if not chunk.is_speech:
+                audio_chunk_infer = np.zeros_like(chunk.audio)
             else:
                 # pad
                 pad_len = int(sr * pad_seconds)
-                data = np.concatenate([np.zeros([pad_len]), data, np.zeros([pad_len])])
-                out_audio, out_sr = self.infer(
+                audio_chunk_pad = np.concatenate(
+                    [
+                        np.zeros([pad_len], dtype=np.float32),
+                        chunk.audio,
+                        np.zeros([pad_len], dtype=np.float32),
+                    ]
+                )
+                audio_chunk_pad_infer_tensor, _ = self.infer(
                     speaker,
                     transpose,
-                    audio,
+                    audio_chunk_pad,
                     cluster_infer_ratio=cluster_infer_ratio,
                     auto_predict_f0=auto_predict_f0,
                     noise_scale=noise_scale,
                 )
-                _audio = out_audio.cpu().numpy()
+                audio_chunk_pad_infer = audio_chunk_pad_infer_tensor.cpu().numpy()
                 pad_len = int(self.target_sample * pad_seconds)
-                _audio = _audio[pad_len:-pad_len]
+                cut_len_2 = (len(audio_chunk_pad_infer) - len(chunk.audio)) // 2
+                audio_chunk_infer = audio_chunk_pad_infer[
+                    cut_len_2 : cut_len_2 + len(chunk.audio)
+                ]
 
                 # add fade
                 # fade_len = int(self.target_sample * fade_seconds)
                 # _audio[:fade_len] = _audio[:fade_len] * np.linspace(0, 1, fade_len)
                 # _audio[-fade_len:] = _audio[-fade_len:] * np.linspace(1, 0, fade_len)
-            result_audio = np.concatenate([result_audio, pad_array(_audio, length)])
+            result_audio = np.concatenate([result_audio, audio_chunk_infer])
         result_audio = result_audio[: audio.shape[0]]
         return result_audio
 
 
-import maad
-
-
-class RealTimeVCBase:
-    def __init__(
-        self,
-        *,
-        svc_model: Svc,
-        crossfade_len: int = 3840,
-        use_slicer: bool = True,
-    ):
-        self.svc_model = svc_model
+class Crossfader:
+    def __init__(self, *, crossfade_len: int) -> None:
         self.crossfade_len = crossfade_len
-        self.last_input = np.zeros(crossfade_len * 2, dtype=np.float32)
-        self.last_infered = np.zeros(crossfade_len * 2, dtype=np.float32)
-        self.use_slicer = use_slicer
-
-    """The input and output are 1-dimensional numpy audio waveform arrays"""
+        self.last_input_left = np.zeros(crossfade_len, dtype=np.float32)
+        self.last_infered_left = np.zeros(crossfade_len, dtype=np.float32)
 
     def process(
-        self,
-        input_audio: np.ndarray[Any, np.dtype[np.float32]],
-        *,
-        # svc config
-        speaker: int | str,
-        transpose: int,
-        cluster_infer_ratio: float = 0,
-        auto_predict_f0: bool = False,
-        noise_scale: float = 0.4,
-        # slice config
-        db_thresh: int = -40,
-        pad_seconds: float = 0.5,
-    ):
+        self, input_audio: ndarray[Any, dtype[float32]], *args, **kwargs: Any
+    ) -> ndarray[Any, dtype[float32]]:
         """
         chunks        : ■■■■■■□□□□□□
         add last input:□■■■■■■
@@ -260,22 +302,72 @@ class RealTimeVCBase:
                 f"Input audio length ({len(input_audio)}) should be at least crossfade length ({self.crossfade_len})."
             )
         input_audio = input_audio.astype(np.float32)
-        input_audio = np.nan_to_num(input_audio)
-
-        # create input audio
-        input_audio_c = np.concatenate([self.last_input, input_audio])[
-            -(input_audio.shape[0] + self.crossfade_len) :
-        ]
-        self.last_input = input_audio.copy()
-        LOG.info(
-            f"Input shape: {input_audio.shape}, Concatenated shape: {input_audio_c.shape}, Crossfade length: {self.crossfade_len}"
+        input_audio_ = np.concatenate([self.last_input_left, input_audio])
+        infer_audio_ = self.infer(input_audio_, *args, **kwargs)
+        if len(infer_audio_) != len(input_audio_):
+            raise ValueError(
+                f"Inferred audio length ({len(infer_audio_)}) should be equal to input audio length ({len(input_audio_)})."
+            )
+        result_audio = np.concatenate(
+            [
+                (
+                    self.last_infered_left * np.linspace(1, 0, self.crossfade_len)
+                    + infer_audio_[: self.crossfade_len]
+                    * np.linspace(0, 1, self.crossfade_len)
+                )
+                / 2,
+                infer_audio_[self.crossfade_len : -self.crossfade_len],
+            ]
         )
-        assert input_audio_c.shape[0] == input_audio.shape[0] + self.crossfade_len
+        self.last_input_left = input_audio[-self.crossfade_len :]
+        self.last_infered_left = infer_audio_[-self.crossfade_len :]
+        assert len(result_audio) == len(input_audio)
+        return result_audio
 
+    def infer(
+        self, input_audio: ndarray[Any, dtype[float32]]
+    ) -> ndarray[Any, dtype[float32]]:
+        return input_audio
+
+
+class RealtimeVC(Crossfader):
+    def __init__(
+        self,
+        *,
+        svc_model: Svc,
+        crossfade_len: int = 3840,
+        split: bool = True,
+    ) -> None:
+        self.svc_model = svc_model
+        self.split = split
+        super().__init__(crossfade_len=crossfade_len)
+
+    def process(
+        self,
+        input_audio: ndarray[Any, dtype[float32]],
+        *args: Any,
+        **kwargs: Any,
+    ) -> ndarray[Any, dtype[float32]]:
+        return super().process(input_audio, *args, **kwargs)
+
+    def infer(
+        self,
+        input_audio: np.ndarray[Any, np.dtype[np.float32]],
+        # svc config
+        speaker: int | str,
+        transpose: int,
+        cluster_infer_ratio: float = 0,
+        auto_predict_f0: bool = False,
+        noise_scale: float = 0.4,
+        # slice config
+        db_thresh: int = -40,
+        pad_seconds: float = 0.5,
+        chunk_seconds: float = 0.5,
+    ) -> ndarray[Any, dtype[float32]]:
         # infer
-        if self.use_slicer:
-            infered_audio_c = self.svc_model.infer_silence(
-                audio=input_audio_c,
+        if self.split:
+            return self.svc_model.infer_silence(
+                audio=input_audio,
                 speaker=speaker,
                 transpose=transpose,
                 cluster_infer_ratio=cluster_infer_ratio,
@@ -283,32 +375,154 @@ class RealTimeVCBase:
                 noise_scale=noise_scale,
                 db_thresh=db_thresh,
                 pad_seconds=pad_seconds,
+                chunk_seconds=chunk_seconds,
+                absolute_thresh=True,
             )
         else:
             rms = np.sqrt(np.mean(input_audio**2))
             min_rms = 10 ** (db_thresh / 20)
             if rms < min_rms:
                 LOG.info(f"Skip silence: RMS={rms:.2f} < {min_rms:.2f}")
-                infered_audio_c = input_audio_c.copy()
+                return input_audio.copy()
             else:
                 LOG.info(f"Start inference: RMS={rms:.2f} >= {min_rms:.2f}")
                 infered_audio_c, _ = self.svc_model.infer(
                     speaker=speaker,
                     transpose=transpose,
-                    audio=input_audio_c,
+                    audio=input_audio,
                     cluster_infer_ratio=cluster_infer_ratio,
                     auto_predict_f0=auto_predict_f0,
                     noise_scale=noise_scale,
                 )
-                infered_audio_c = infered_audio_c.cpu().numpy()
-        LOG.info(f"Concentrated Inferred shape: {infered_audio_c.shape}")
-        assert infered_audio_c.shape[0] == input_audio_c.shape[0]
+                return infered_audio_c.cpu().numpy()
 
-        # crossfade
-        result = maad.util.crossfade(
-            self.last_infered, infered_audio_c, 1, self.crossfade_len
-        )[-(input_audio.shape[0] + self.crossfade_len) : -self.crossfade_len]
-        LOG.info(f"Result shape: {result.shape}")
-        assert result.shape[0] == input_audio.shape[0]
-        self.last_infered = infered_audio_c[-self.crossfade_len - 1 :].copy()
-        return result
+
+class RealtimeVC2:
+    chunk_store: list[Chunk]
+
+    def __init__(self, svc_model: Svc) -> None:
+        self.input_audio_store = np.array([], dtype=np.float32)
+        self.chunk_store = []
+        self.svc_model = svc_model
+
+    def process(
+        self,
+        input_audio: np.ndarray[Any, np.dtype[np.float32]],
+        # svc config
+        speaker: int | str,
+        transpose: int,
+        cluster_infer_ratio: float = 0,
+        auto_predict_f0: bool = False,
+        noise_scale: float = 0.4,
+        # slice config
+        db_thresh: int = -40,
+        chunk_seconds: float = 0.5,
+    ) -> ndarray[Any, dtype[float32]]:
+        def infer(audio: ndarray[Any, dtype[float32]]) -> ndarray[Any, dtype[float32]]:
+            infered_audio_c, _ = self.svc_model.infer(
+                speaker=speaker,
+                transpose=transpose,
+                audio=audio,
+                cluster_infer_ratio=cluster_infer_ratio,
+                auto_predict_f0=auto_predict_f0,
+                noise_scale=noise_scale,
+            )
+            return infered_audio_c.cpu().numpy()
+
+        self.input_audio_store = np.concatenate([self.input_audio_store, input_audio])
+        LOG.info(f"input_audio_store: {self.input_audio_store.shape}")
+        sr = self.svc_model.target_sample
+        chunk_length_min = int(min(sr / utils.f0_min * 20 + 1, chunk_seconds * sr)) // 2
+        LOG.info(f"Chunk length min: {chunk_length_min}")
+        chunk_list = list(
+            split_silence(
+                self.input_audio_store,
+                -db_thresh,
+                frame_length=chunk_length_min * 2,
+                hop_length=chunk_length_min,
+                ref=1,  # use absolute threshold
+            )
+        )
+        assert len(chunk_list) > 0
+        LOG.info(f"Chunk list: {chunk_list}")
+        # do not infer LAST incomplete is_speech chunk and save to store
+        if chunk_list[-1].is_speech:
+            self.input_audio_store = chunk_list.pop().audio
+        else:
+            self.input_audio_store = np.array([], dtype=np.float32)
+
+        # infer complete is_speech chunk and save to store
+        self.chunk_store.extend(
+            [
+                attrs.evolve(c, audio=infer(c.audio) if c.is_speech else c.audio)
+                for c in chunk_list
+            ]
+        )
+
+        # calculate lengths and determine compress rate
+        total_speech_len = sum(
+            [c.duration if c.is_speech else 0 for c in self.chunk_store]
+        )
+        total_silence_len = sum(
+            [c.duration if not c.is_speech else 0 for c in self.chunk_store]
+        )
+        input_audio_len = input_audio.shape[0]
+        silence_compress_rate = total_silence_len / max(
+            0, input_audio_len - total_speech_len
+        )
+        LOG.info(
+            f"Total speech len: {total_speech_len}, silence len: {total_silence_len}, silence compress rate: {silence_compress_rate}"
+        )
+
+        # generate output audio
+        output_audio = np.array([], dtype=np.float32)
+        break_flag = False
+        LOG.info(f"Chunk store: {self.chunk_store}")
+        for chunk in deepcopy(self.chunk_store):
+            compress_rate = 1 if chunk.is_speech else silence_compress_rate
+            left_len = input_audio_len - output_audio.shape[0]
+            # calculate chunk duration
+            chunk_duration_output = int(min(chunk.duration / compress_rate, left_len))
+            chunk_duration_input = int(min(chunk.duration, left_len * compress_rate))
+            LOG.info(
+                f"Chunk duration output: {chunk_duration_output}, input: {chunk_duration_input}, left len: {left_len}"
+            )
+
+            # remove chunk from store
+            self.chunk_store.pop(0)
+            if chunk.duration > chunk_duration_input:
+                left_chunk = attrs.evolve(
+                    chunk, audio=chunk.audio[chunk_duration_input:]
+                )
+                chunk = attrs.evolve(chunk, audio=chunk.audio[:chunk_duration_input])
+
+                self.chunk_store.insert(0, left_chunk)
+                break_flag = True
+
+            if chunk.is_speech:
+                # if is_speech, just concat
+                output_audio = np.concatenate([output_audio, chunk.audio])
+            else:
+                # if is_silence, concat with zeros and compress with silence_compress_rate
+                output_audio = np.concatenate(
+                    [
+                        output_audio,
+                        np.zeros(
+                            chunk_duration_output,
+                            dtype=np.float32,
+                        ),
+                    ]
+                )
+
+            if break_flag:
+                break
+        LOG.info(f"Chunk store: {self.chunk_store}, output_audio: {output_audio.shape}")
+        # make same length (errors)
+        output_audio = output_audio[:input_audio_len]
+        output_audio = np.concatenate(
+            [
+                output_audio,
+                np.zeros(input_audio_len - output_audio.shape[0], dtype=np.float32),
+            ]
+        )
+        return output_audio
