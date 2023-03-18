@@ -67,18 +67,24 @@ svcg
 - Realtime (from microphone)
 
 ```shell
-svc --model-path <model-path> source.wav
+svc vc --model-path <model-path>
 ```
 
 - File
 
 ```shell
-svc vc --model-path <model-path>
+svc --model-path <model-path> source.wav
 ```
 
 ### Training
 
-Colab notebook: [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
+#### Google Colab
+
+Use of Google Colab is recommended. (Note: > 12GB VRAM may be required)
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
+
+#### Local
 
 Place your dataset like `dataset_raw/{speaker_id}/{wav_file}.wav` and run:
 
@@ -94,29 +100,31 @@ svc train
 For more details, run `svc -h` or `svc <subcommand> -h`.
 
 ```shell
-svc -h
+> svc -h
 Usage: svc [OPTIONS] COMMAND [ARGS]...
 
-  so-vits-svc allows any folder structure for training data. However, it is
-  recommended to place the training data in the following structure:
-
-      dataset_raw/{speaker_name}/{wav_name}.wav
-
-  To train a model, run pre-resample, pre-config, pre-hubert, train. To infer
-  a model, run infer.
+  so-vits-svc allows any folder structure for training data.
+  However, the following folder structure is recommended.
+      When training: dataset_raw/{speaker_name}/{wav_name}.wav
+      When inference: configs/44k/config.json, logs/44k/G_XXXX.pth
+  If the folder structure is followed, you DO NOT NEED TO SPECIFY model path, config path, etc.
+  (The latest model will be automatically loaded.)
+  To train a model, run pre-resample, pre-config, pre-hubert, train.
+  To infer a model, run infer.
 
 Options:
   -h, --help  Show this message and exit.
 
 Commands:
-  clean         Clean up files, only useful if you are using the default...
-  infer         Inference
-  onnx          Export model to onnx
-  pre-config    Preprocessing part 2: config
-  pre-hubert    Preprocessing part 3: hubert
-  pre-resample  Preprocessing part 1: resample
-  train         Train model
-  vc            Realtime inference from microphone
+  clean          Clean up files, only useful if you are using the default file structure
+  infer          Inference
+  onnx           Export model to onnx
+  pre-config     Preprocessing part 2: config
+  pre-hubert     Preprocessing part 3: hubert If the HuBERT model is not found, it will be...
+  pre-resample   Preprocessing part 1: resample
+  train          Train model If D_0.pth or G_0.pth not found, automatically download from hub.
+  train-cluster  Train k-means clustering
+  vc             Realtime inference from microphone
 ```
 
 ## Contributors ✨
