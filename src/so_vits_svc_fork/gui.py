@@ -35,14 +35,16 @@ def main():
                         sg.Push(),
                         sg.InputText(
                             key="model_path",
-                            default_text=model_candidates[-1].as_posix()
+                            default_text=model_candidates[-1].absolute().as_posix()
                             if model_candidates
                             else "",
                         ),
                         sg.FileBrowse(
-                            initial_folder="./logs/44k/"
+                            initial_folder=Path("./logs/44k/").absolute
                             if Path("./logs/44k/").exists()
-                            else "."
+                            else Path(".").absolute().as_posix(),
+                            key="model_path_browse",
+                            file_types=(("PyTorch", "*.pth"),),
                         ),
                     ],
                     [
@@ -50,20 +52,32 @@ def main():
                         sg.Push(),
                         sg.InputText(
                             key="config_path",
-                            default_text="./configs/44k/config.json",
+                            default_text=Path("./configs/44k/config.json")
+                            .absolute()
+                            .as_posix()
+                            if Path("./configs/44k/config.json").exists()
+                            else "",
                             enable_events=True,
                         ),
                         sg.FileBrowse(
-                            initial_folder="./configs/44k/"
+                            initial_folder=Path("./configs/44k/").as_posix()
                             if Path("./configs/44k/").exists()
-                            else "."
+                            else Path(".").absolute().as_posix(),
+                            key="config_path_browse",
+                            file_types=(("JSON", "*.json"),),
                         ),
                     ],
                     [
                         sg.Text("Cluster model path"),
                         sg.Push(),
                         sg.InputText(key="cluster_model_path"),
-                        sg.FileBrowse(),
+                        sg.FileBrowse(
+                            initial_folder="./logs/44k/"
+                            if Path("./logs/44k/").exists()
+                            else ".",
+                            key="cluster_model_path_browse",
+                            file_types=(("PyTorch", "*.pth"),),
+                        ),
                     ],
                 ],
             )
@@ -234,7 +248,8 @@ def main():
             def update_combo() -> None:
                 from . import utils
 
-                if Path(values["config_path"]).exists():
+                config_path = Path(values["config_path"])
+                if config_path.exists() and config_path.is_file():
                     hp = utils.get_hparams_from_file(values["config_path"])
                     LOG.info(f"Loaded config from {values['config_path']}")
                     window["speaker"].update(
@@ -245,7 +260,16 @@ def main():
                 LOG.info(f"Event {event}, values {values}")
             if values["speaker"] == "":
                 update_combo()
-
+            if event.endswith("_path"):
+                browser = window[f"{event}_browse"]
+                if isinstance(browser, sg.Button):
+                    LOG.info(
+                        f"Updating browser {browser} to {Path(values[event]).parent}"
+                    )
+                    browser.InitialFolder = Path(values[event]).parent
+                    browser.update()
+                else:
+                    LOG.warning(f"Browser {browser} is not a FileBrowse")
             if event == "config_path":
                 update_combo()
             elif event == "infer":
