@@ -37,6 +37,8 @@ def init_logger() -> None:
         LOG.debug("Test mode is on.")
 
 
+init_logger()
+
 LOG = getLogger(__name__)
 
 
