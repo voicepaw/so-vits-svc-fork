@@ -78,9 +78,9 @@ svc --model-path <model-path> source.wav
 
 ### Training
 
-#### Google Colab
+Use of Google Colab is recommended. (To train locally, you need at least 12GB of VRAM.)
 
-Use of Google Colab is recommended. (Note: > 12GB VRAM may be required)
+#### Google Colab
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
 
