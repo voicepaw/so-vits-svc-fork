@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import os
+import queue
 from logging import getLogger
-from typing import Any
+from typing import Any, Iterable
 
 import librosa
 import numpy as np
 import torch
 from cm_time import timer
+from numpy import dtype, float32, ndarray
 
 from so_vits_svc_fork import cluster, utils
-from so_vits_svc_fork.inference import slicer
 from so_vits_svc_fork.models import SynthesizerTrn
 
 from ..utils import HUBERT_SAMPLING_RATE
@@ -36,6 +37,26 @@ def pad_array(arr, target_length):
             arr, (pad_left, pad_right), "constant", constant_values=(0, 0)
         )
         return padded_arr
+
+
+def split_silence2(
+    audio: ndarray[Any, dtype[float32]],
+    top_db: int = 40,
+    ref: float = np.max,
+    frame_length: int = 2048,
+    hop_length: int = 512,
+    aggregate: bool = True,
+    pad_seconds: float = 0.5,
+) -> Iterable[tuple[bool, ndarray[Any, dtype[float32]]]]:
+    non_silence_indices = librosa.effects.split(
+        audio, top_db=top_db, ref=ref, frame_length=frame_length, hop_length=hop_length
+    )
+    last_end = 0
+    for start, end in non_silence_indices:
+        if start - last_end > 0:
+            yield False, audio[last_end:start]
+        yield True, audio[start:end]
+        last_end = end
 
 
 class Svc:
@@ -175,12 +196,9 @@ class Svc:
         pad_seconds: float = 0.5,
         # fade_seconds: float = 0.0,
     ) -> np.ndarray[Any, np.dtype[np.float32]]:
-        chunks = slicer.cut(audio, self.target_sample, db_thresh=db_thresh)
-        LOG.info(f"Cut audio into chunks {chunks}")
         sr = self.target_sample
-
         result_audio = np.array([])
-        for slice_tag, data in slicer.chunks2audio(audio, chunks):
+        for slice_tag, data in split_silence2(audio):
             # segment length
             length = int(np.ceil(len(data) / sr * self.target_sample))
             if slice_tag:
@@ -211,10 +229,7 @@ class Svc:
         return result_audio
 
 
-from numpy import dtype, float32, ndarray
-
-
-class CrossFader:
+class Crossfader:
     def __init__(self, *, crossfade_len: int) -> None:
         self.crossfade_len = crossfade_len
         self.last_input_left = np.zeros(crossfade_len, dtype=np.float32)
@@ -263,7 +278,7 @@ class CrossFader:
         return input_audio
 
 
-class RealTimeVCBase(CrossFader):
+class RealtimeVC(Crossfader):
     def __init__(
         self,
         *,
@@ -325,3 +340,133 @@ class RealTimeVCBase(CrossFader):
                     noise_scale=noise_scale,
                 )
                 return infered_audio_c.cpu().numpy()
+
+
+def split_silence(
+    audio: ndarray[Any, dtype[float32]], resolution: int, db_thresh: int = -40
+) -> Iterable[tuple[bool, ndarray[Any, dtype[float32]]]]:
+    abs_ = np.abs(audio)
+    abs_ma = np.array(
+        [np.mean(chunk) for chunk in np.array_split(abs_, abs_.shape[0] // resolution)]
+    )
+    is_silence_array = abs_ma < 10 ** (db_thresh / 20)
+
+    # yield
+    is_silence_prev = None
+    is_silence_changed = 0
+    for i, is_silence in enumerate(is_silence_array):
+        if is_silence != is_silence_prev:
+            yield is_silence, audio[
+                is_silence_changed
+                * resolution : min(i * resolution, audio.shape[0] - 1)
+            ]
+            is_silence_changed = i
+        is_silence_prev = is_silence
+
+
+class RealtimeVC2:
+    def __init__(self, svc_model: Svc, **kwargs) -> None:
+        self.input_audio_store = np.array([], dtype=np.float32)
+        self.output_queue = queue.Queue()
+        self.svc_model = svc_model
+
+    def process(
+        self,
+        input_audio: np.ndarray[Any, np.dtype[np.float32]],
+        # svc config
+        speaker: int | str,
+        transpose: int,
+        cluster_infer_ratio: float = 0,
+        auto_predict_f0: bool = False,
+        noise_scale: float = 0.4,
+        # slice config
+        db_thresh: int = -40,
+        resolution_seconds: float = 0.1,
+        **kwargs: Any,
+    ) -> ndarray[Any, dtype[float32]]:
+        def infer(audio: ndarray[Any, dtype[float32]]) -> ndarray[Any, dtype[float32]]:
+            infered_audio_c, _ = self.svc_model.infer(
+                speaker=speaker,
+                transpose=transpose,
+                audio=audio,
+                cluster_infer_ratio=cluster_infer_ratio,
+                auto_predict_f0=auto_predict_f0,
+                noise_scale=noise_scale,
+            )
+            return infered_audio_c.cpu().numpy()
+
+        self.input_audio_store = np.concatenate([self.input_audio_store, input_audio])
+        LOG.debug(f"input_audio_store: {self.input_audio_store.shape}")
+        non_silent_intervals = librosa.effects.split(
+            self.input_audio_store, top_db=db_thresh
+        )
+        LOG.info(f"slice_silences: {non_silent_intervals}")
+        assert len(non_silent_intervals) > 0
+        if non_silent_intervals[-1][0] is False:
+            # last is not silence
+            self.input_audio_store = self.input_audio_store[
+                -non_silent_intervals[-1][1].shape[0] :
+            ]
+        else:
+            self.input_audio_store = np.array([], dtype=np.float32)
+
+        last_silence_len = 0
+        for i, (is_silence, slice_audio) in enumerate(non_silent_intervals):
+            if i == len(non_silent_intervals) - 1:
+                continue
+            if not is_silence:
+                slice_audio = infer(slice_audio)
+                self.output_queue.put((last_silence_len, slice_audio))
+                last_silence_len = 0
+            else:
+                last_silence_len += slice_audio.shape[0]
+        LOG.info(f"Output queue: {self.output_queue.queue}")
+
+        if self.output_queue.empty():
+            return np.zeros_like(input_audio)
+        total_output_queue_active_len = sum(
+            [q[1].shape[0] for q in self.output_queue.queue]
+        )
+        input_audio_len = input_audio.shape[0]
+        output_audio = np.array([], dtype=np.float32)
+        if total_output_queue_active_len < input_audio_len:
+            # not enough audio, use interpolation
+            LOG.info("Not enough audio, use interpolation")
+            total_silence_len = input_audio_len - total_output_queue_active_len
+            total_output_queue_silence_len = sum(
+                [q[0] for q in self.output_queue.queue]
+            )
+            silence_rate = total_silence_len / total_output_queue_silence_len
+
+            for i, (silence_len, audio) in enumerate(self.output_queue.queue):
+                output_audio = np.concatenate(
+                    [
+                        output_audio,
+                        np.zeros(int(silence_len * silence_rate), dtype=np.float32),
+                        audio,
+                    ]
+                )
+            # clear queue
+            self.output_queue = queue.Queue()
+        else:
+            # too much audio
+            LOG.info("Too much audio, no silence")
+            temp_len = 0
+            audio = np.array([], dtype=np.float32)
+            while temp_len < input_audio_len:
+                silence_len, audio = self.output_queue.get()
+                temp_len += silence_len
+                output_audio = np.concatenate([output_audio, audio])
+            else:
+                self.output_queue.put(
+                    (temp_len - input_audio_len, audio[-(temp_len - input_audio_len) :])
+                )
+        # fill
+        output_audio = output_audio[:input_audio_len]
+        output_audio = np.concatenate(
+            [
+                output_audio,
+                np.repeat(output_audio[-1], output_audio.shape[0] - input_audio_len),
+            ]
+        )
+        return output_audio
