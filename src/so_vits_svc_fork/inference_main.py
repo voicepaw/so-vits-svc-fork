@@ -9,7 +9,7 @@ import numpy as np
 import soundfile
 import torch
 
-from .inference.infer_tool import RealTimeVCBase, Svc
+from .inference.infer_tool import RealtimeVC2, Svc
 
 LOG = getLogger(__name__)
 
@@ -88,7 +88,7 @@ def realtime(
         else None,
         device=device,
     )
-    model = RealTimeVCBase(
+    model = RealtimeVC2(
         svc_model=svc_model,
         crossfade_len=int(crossfade_seconds * svc_model.target_sample),
     )
