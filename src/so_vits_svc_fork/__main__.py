@@ -76,7 +76,7 @@ def patch_wrap_text():
 
 patch_wrap_text()
 
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"], show_default=True)
 click.Context.formatter_class = RichHelpFormatter
 
 
