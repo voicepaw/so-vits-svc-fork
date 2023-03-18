@@ -30,7 +30,7 @@
   <img src="https://img.shields.io/pypi/l/so-vits-svc-fork.svg?style=flat-square" alt="License">
 </p>
 
-A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with a **greatly improved interface**. Based on branch `4.0` (v1). No differences in functionality and the models are compatible.
+A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with **realtime support** and **greatly improved interface**. Based on branch `4.0` (v1) and the models are compatible.
 
 ## Installation
 
@@ -49,6 +49,7 @@ pip install so-vits-svc-fork
 - Ready to use just by installing with `pip`.
 - Automatically download pretrained base model and HuBERT model
 - Code completely formatted with black, isort, autoflake etc.
+- Other minor differences
 
 ## Usage
 
@@ -57,6 +58,8 @@ pip install so-vits-svc-fork
 #### GUI
 
 ![GUI](https://raw.githubusercontent.com/34j/so-vits-svc-fork/main/docs/_static/gui.png)
+
+GUI launches with the following command:
 
 ```shell
 svcg
