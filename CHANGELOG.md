@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2023-03-18)
+### Fix
+* Call init_logger() ([#5](https://github.com/34j/so-vits-svc-fork/issues/5)) ([`e6378f1`](https://github.com/34j/so-vits-svc-fork/commit/e6378f12e747e618ff90ece1552d09c0d0714d41))
+
 ## v0.4.0 (2023-03-18)
 ### Feature
 * Enhance realtime algorythm ([#4](https://github.com/34j/so-vits-svc-fork/issues/4)) ([`d789a12`](https://github.com/34j/so-vits-svc-fork/commit/d789a12308784473ae5d09e0b73fa15bf7554de1))
