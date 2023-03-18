@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-import os
 from copy import deepcopy
 from logging import getLogger
+from pathlib import Path
 from typing import Any, Callable, Iterable
 
+import attrs
 import librosa
 import numpy as np
 import torch
@@ -37,9 +38,6 @@ def pad_array(array_, target_length: int):
             array_, (pad_left, pad_right), "constant", constant_values=(0, 0)
         )
         return padded_arr
-
-
-import attrs
 
 
 @attrs.frozen(kw_only=True)
@@ -92,7 +90,7 @@ class Svc:
         net_g_path: str,
         config_path: str,
         device: torch.device | str | None = None,
-        cluster_model_path: str | None = None,
+        cluster_model_path: Path | str | None = None,
     ):
         self.net_g_path = net_g_path
         if device is None:
@@ -106,7 +104,7 @@ class Svc:
         self.spk2id = self.hps_ms.spk
         self.hubert_model = utils.get_hubert_model().to(self.dev)
         self.load_model()
-        if cluster_model_path is not None and os.path.exists(cluster_model_path):
+        if cluster_model_path is not None and Path(cluster_model_path).exists():
             self.cluster_model = cluster.get_cluster_model(cluster_model_path)
 
     def load_model(self):
@@ -159,7 +157,7 @@ class Svc:
         self,
         speaker: int | str,
         transpose: int,
-        audio: np.ndarray[Any, np.dtype[np.float32]],
+        audio: ndarray[Any, dtype[float32]],
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
