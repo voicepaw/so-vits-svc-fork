@@ -147,7 +147,9 @@ def train(config_path: Path, model_path: Path):
     help="path to cluster model",
 )
 @click.option("-t", "--transpose", type=int, default=0, help="transpose")
-@click.option("-d", "--db_thresh", type=int, default=-40, help="db thresh")
+@click.option(
+    "-d", "--db_thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)"
+)
 @click.option(
     "-a", "--auto_predict_f0", type=bool, default=True, help="auto predict f0"
 )
@@ -163,6 +165,10 @@ def train(config_path: Path, model_path: Path):
     default="cuda" if torch.cuda.is_available() else "cpu",
     help="device",
 )
+@click.option("-c", "--chunk_seconds", type=float, default=0.5, help="chunk seconds")
+@click.option(
+    "-a", "--absolute_thresh", type=bool, default=False, help="absolute thresh"
+)
 def infer(
     input_path: Path,
     output_path: Path,
@@ -176,6 +182,8 @@ def infer(
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
     pad_seconds: float = 0.5,
+    chunk_seconds: float = 0.5,
+    absolute_thresh: bool = False,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     """Inference"""
@@ -211,6 +219,8 @@ def infer(
         cluster_infer_ratio=cluster_infer_ratio,
         noise_scale=noise_scale,
         pad_seconds=pad_seconds,
+        chunk_seconds=chunk_seconds,
+        absolute_thresh=absolute_thresh,
         device=device,
     )
 
@@ -249,8 +259,11 @@ def infer(
     "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
 )
 @click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
-@click.option("-d", "--db_thresh", type=int, default=-20, help="db thresh")
+@click.option(
+    "-d", "--db_thresh", type=int, default=-30, help="threshold (DB) (ABSOLUTE)"
+)
 @click.option("-p", "--pad_seconds", type=float, default=0.02, help="pad seconds")
+@click.option("-c", "--chunk_seconds", type=float, default=0.5, help="chunk seconds")
 @click.option(
     "-c",
     "--crossfade_seconds",
@@ -267,6 +280,7 @@ def infer(
     help="device",
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
+@click.option("-v", "--version", type=int, default=2, help="version")
 def vc(
     # paths
     model_path: Path,
@@ -281,9 +295,11 @@ def vc(
     # slice config
     db_thresh: int,
     pad_seconds: float,
+    chunk_seconds: float,
     # realtime config
     crossfade_seconds: float,
     block_seconds: float,
+    version: int,
     device: Literal["cpu", "cuda"],
 ) -> None:
     """Realtime inference from microphone"""
@@ -317,8 +333,10 @@ def vc(
         noise_scale=noise_scale,
         crossfade_seconds=crossfade_seconds,
         block_seconds=block_seconds,
+        chunk_seconds=chunk_seconds,
         db_thresh=db_thresh,
         pad_seconds=pad_seconds,
+        version=version,
         device=device,
     )
 
