@@ -110,11 +110,11 @@ def cli():
 def train(config_path: Path, model_path: Path):
     """Train model
     If D_0.pth or G_0.pth not found, automatically download from hub."""
-    from .train import main
+    from .train import train
 
     config_path = Path(config_path)
     model_path = Path(model_path)
-    main(config_path=config_path, model_path=model_path)
+    train(config_path=config_path, model_path=model_path)
 
 
 @cli.command()

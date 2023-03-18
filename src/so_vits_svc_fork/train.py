@@ -31,7 +31,7 @@ global_step = 0
 start_time = time.time()
 
 
-def main(config_path: Path, model_path: Path):
+def train(config_path: Path | str, model_path: Path | str):
     """Assume Single Node Multi GPUs Training Only"""
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
