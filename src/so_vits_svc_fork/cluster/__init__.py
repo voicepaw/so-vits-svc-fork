@@ -1,8 +1,13 @@
+from __future__ import annotations
+
+from pathlib import Path
+from typing import Any
+
 import torch
 from sklearn.cluster import KMeans
 
 
-def get_cluster_model(ckpt_path):
+def get_cluster_model(ckpt_path: Path | str):
     checkpoint = torch.load(ckpt_path)
     kmeans_dict = {}
     for spk, ckpt in checkpoint.items():
@@ -14,7 +19,7 @@ def get_cluster_model(ckpt_path):
     return kmeans_dict
 
 
-def get_cluster_result(model, x, speaker):
+def get_cluster_result(model: Any, x: Any, speaker: Any):
     """
     x: np.array [t, 256]
     return cluster class result
@@ -22,11 +27,11 @@ def get_cluster_result(model, x, speaker):
     return model[speaker].predict(x)
 
 
-def get_cluster_center_result(model, x, speaker):
+def get_cluster_center_result(model: Any, x: Any, speaker: Any):
     """x: np.array [t, 256]"""
     predict = model[speaker].predict(x)
     return model[speaker].cluster_centers_[predict]
 
 
-def get_center(model, x, speaker):
+def get_center(model: Any, x: Any, speaker: Any):
     return model[speaker].cluster_centers_[x]

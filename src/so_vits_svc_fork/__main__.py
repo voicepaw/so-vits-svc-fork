@@ -422,3 +422,26 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
         config_path=config_path,
         device=device_,
     )
+
+
+@cli.command
+@click.help_option("--help", "-h")
+@click.option(
+    "-i",
+    "--input_dir",
+    type=click.Path(exists=True),
+    help="dataset directory",
+    default=Path("./dataset/44k"),
+)
+@click.option(
+    "-o",
+    "--output_path",
+    type=click.Path(),
+    help="model path to save",
+    default=Path("./models/44k/kmeans.pt"),
+)
+@click.option("-n", "--n_clusters", type=int, help="number of clusters", default=10000)
+def train_cluster(input_dir: Path, output_path: Path, n_clusters: int) -> None:
+    from .cluster.train_cluster import main
+
+    main(input_dir=input_dir, output_path=output_path, n_clusters=n_clusters)
