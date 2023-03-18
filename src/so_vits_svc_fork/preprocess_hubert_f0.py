@@ -8,7 +8,7 @@ from typing import Iterable, Literal
 import librosa
 import numpy as np
 import torch
-from joblib import Parallel, cpu_count, delayed
+from joblib import Parallel, cpu_count, delayed, parallel_backend
 from tqdm import tqdm
 
 from . import utils
@@ -23,10 +23,11 @@ def _process_one(
     sampling_rate: int,
     hop_length: int,
     device: Literal["cuda", "cpu"] = "cuda",
+    force_rebuild=False,
 ):
     wav, sr = librosa.load(filepath, sr=sampling_rate)
     soft_path = filepath.parent / (filepath.name + ".soft.pt")
-    if not soft_path.exists():
+    if not soft_path.exists() or force_rebuild:
         wav16k = librosa.resample(
             wav, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE
         )
@@ -34,7 +35,7 @@ def _process_one(
         c = utils.get_hubert_content(hubert_model, wav_16k_tensor=wav16k)
         torch.save(c.cpu(), soft_path)
     f0_path = filepath.parent / (filepath.name + ".f0.npy")
-    if not f0_path.exists():
+    if not f0_path.exists() or force_rebuild:
         f0 = utils.compute_f0_dio(
             wav, sampling_rate=sampling_rate, hop_length=hop_length
         )
@@ -64,7 +65,8 @@ def preprocess_hubert_f0(input_dir: Path | str, config_path: Path | str):
     n_jobs = min(cpu_count(), len(filepaths) // 32 + 1, 2)
     shuffle(filepaths)
     filepath_chunks = np.array_split(filepaths, n_jobs)
-    Parallel(n_jobs=n_jobs)(
-        delayed(_process_batch)(chunk, sampling_rate, hop_length, pos)
-        for (pos, chunk) in enumerate(filepath_chunks)
-    )
+    with parallel_backend("threading", n_jobs=n_jobs):
+        Parallel(n_jobs=n_jobs)(
+            delayed(_process_batch)(chunk, sampling_rate, hop_length, pos)
+            for (pos, chunk) in enumerate(filepath_chunks)
+        )
