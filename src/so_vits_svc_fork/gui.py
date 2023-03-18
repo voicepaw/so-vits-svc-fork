@@ -25,6 +25,13 @@ def play_audio(path: Path | str):
 def main():
     sg.theme("Dark")
     model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
+
+    devices = sd.query_devices()
+    input_devices = [d["name"] for d in devices if d["max_input_channels"] > 0]
+    output_devices = [d["name"] for d in devices if d["max_output_channels"] > 0]
+    devices[sd.default.device[0]]["name"]
+    devices[sd.default.device[1]]["name"]
+
     layout = [
         [
             sg.Frame(
@@ -221,6 +228,24 @@ def main():
                             key="realtime_algorithm",
                         ),
                     ],
+                    [
+                        sg.Text("Input device"),
+                        sg.Combo(
+                            key="input_device",
+                            values=input_devices,
+                            size=(20, 1),
+                            default_value=input_devices[0],
+                        ),
+                    ],
+                    [
+                        sg.Text("Output device"),
+                        sg.Combo(
+                            key="output_device",
+                            values=output_devices,
+                            size=(20, 1),
+                            default_value=output_devices[0],
+                        ),
+                    ],
                 ],
             )
         ],
@@ -332,6 +357,8 @@ def main():
                         version=int(values["realtime_algorithm"][0]),
                         device="cuda" if values["use_gpu"] else "cpu",
                         block_seconds=values["block_seconds"],
+                        input_device=values["input_device"],
+                        output_device=values["output_device"],
                     ),
                 )
             elif event == "stop_vc":

@@ -86,6 +86,8 @@ def realtime(
     crossfade_seconds: float = 0.05,
     block_seconds: float = 0.5,
     version: int = 2,
+    input_device: int | str | None = None,
+    output_device: int | str | None = None,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     import sounddevice as sd
@@ -110,6 +112,35 @@ def realtime(
         model = RealtimeVC2(
             svc_model=svc_model,
         )
+
+    # LOG all device info
+    devices = sd.query_devices()
+    LOG.info(f"Device: {devices}")
+    if isinstance(input_device, str):
+        input_device_candidates = [
+            i for i, d in enumerate(devices) if d["name"] == input_device
+        ]
+        if len(input_device_candidates) == 0:
+            LOG.warning(f"Input device {input_device} not found, using default")
+            input_device = None
+        else:
+            input_device = input_device_candidates[0]
+    if isinstance(output_device, str):
+        output_device_candidates = [
+            i for i, d in enumerate(devices) if d["name"] == output_device
+        ]
+        if len(output_device_candidates) == 0:
+            LOG.warning(f"Output device {output_device} not found, using default")
+            output_device = None
+        else:
+            output_device = output_device_candidates[0]
+    if input_device is None or input_device >= len(devices):
+        input_device = sd.default.device[0]
+    if output_device is None or output_device >= len(devices):
+        output_device = sd.default.device[1]
+    LOG.info(
+        f"Input Device: {devices[input_device]['name']}, Output Device: {devices[output_device]['name']}"
+    )
 
     def callback(
         indata: np.ndarray,
@@ -139,6 +170,7 @@ def realtime(
         ).reshape(-1, 1)
 
     with sd.Stream(
+        device=(input_device, output_device),
         channels=1,
         callback=callback,
         samplerate=svc_model.target_sample,
