@@ -56,7 +56,7 @@ def run(rank, n_gpus, hps):
     global global_step
     if rank == 0:
         LOG.info(hps)
-        utils.check_git_hash(hps.model_dir)
+        # utils.check_git_hash(hps.model_dir)
         writer = SummaryWriter(log_dir=hps.model_dir)
         writer_eval = SummaryWriter(log_dir=os.path.join(hps.model_dir, "eval"))
 

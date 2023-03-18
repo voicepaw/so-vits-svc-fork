@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-import glob
 import json
-import os
 import re
-import subprocess
+from itertools import groupby
 from logging import getLogger
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import requests
 import torch
+from numpy import dtype, float32, ndarray
 from scipy.io.wavfile import read
+from torch import FloatTensor
 from tqdm import tqdm
 
 LOG = getLogger(__name__)
@@ -43,7 +44,9 @@ HUBERT_SAMPLING_RATE = 16000
 #         factor = torch.ones(f0.shape[0], 1, 1).to(f0.device)
 #     f0_norm = (f0 - means.unsqueeze(-1)) * factor.unsqueeze(-1)
 #     return f0_norm
-def normalize_f0(f0, x_mask, uv, random_scale=True):
+def normalize_f0(
+    f0: FloatTensor, x_mask: FloatTensor, uv: FloatTensor, random_scale=True
+) -> FloatTensor:
     # calculate means based on x_mask
     uv_sum = torch.sum(uv, dim=1, keepdim=True)
     uv_sum[uv_sum == 0] = 9999
@@ -60,7 +63,7 @@ def normalize_f0(f0, x_mask, uv, random_scale=True):
     return f0_norm * x_mask
 
 
-def plot_data_to_numpy(x, y):
+def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
     global MATPLOTLIB_FLAG
     if not MATPLOTLIB_FLAG:
         import matplotlib
@@ -82,7 +85,9 @@ def plot_data_to_numpy(x, y):
     return data
 
 
-def interpolate_f0(f0):
+def interpolate_f0(
+    f0: ndarray[Any, dtype[float32]]
+) -> tuple[ndarray[Any, dtype[float32]], ndarray[Any, dtype[float32]]]:
     data = np.reshape(f0, (f0.size, 1))
 
     vuv_vector = np.zeros((data.size, 1), dtype=np.float32)
@@ -145,7 +150,9 @@ def compute_f0_parselmouth(wav_numpy, p_len=None, sampling_rate=44100, hop_lengt
     return f0
 
 
-def resize_f0(x, target_len):
+def resize_f0(
+    x: ndarray[Any, dtype[float32]], target_len: int
+) -> ndarray[Any, dtype[float32]]:
     source = np.array(x)
     source[source < 0.001] = np.nan
     target = np.interp(
@@ -157,7 +164,12 @@ def resize_f0(x, target_len):
     return res
 
 
-def compute_f0_dio(wav_numpy, p_len=None, sampling_rate=44100, hop_length=512):
+def compute_f0_dio(
+    wav_numpy: ndarray[Any, dtype[float32]],
+    p_len: None | int = None,
+    sampling_rate: int = 44100,
+    hop_length: int = 512,
+):
     import pyworld
 
     if p_len is None:
@@ -174,7 +186,7 @@ def compute_f0_dio(wav_numpy, p_len=None, sampling_rate=44100, hop_length=512):
     return resize_f0(f0, p_len)
 
 
-def f0_to_coarse(f0):
+def f0_to_coarse(f0: torch.Tensor | float):
     is_torch = isinstance(f0, torch.Tensor)
     f0_mel = 1127 * (1 + f0 / 700).log() if is_torch else 1127 * np.log(1 + f0 / 700)
     f0_mel[f0_mel > 0] = (f0_mel[f0_mel > 0] - f0_mel_min) * (f0_bin - 2) / (
@@ -267,15 +279,21 @@ def get_hubert_content(hmodel, wav_16k_tensor):
     return feats.transpose(1, 2)
 
 
-def get_content(cmodel, y):
+def get_content(cmodel: Any, y: ndarray) -> ndarray:
     with torch.no_grad():
         c = cmodel.extract_features(y.squeeze(1))[0]
     c = c.transpose(1, 2)
     return c
 
 
-def load_checkpoint(checkpoint_path, model, optimizer=None, skip_optimizer=False):
-    assert os.path.isfile(checkpoint_path)
+def load_checkpoint(
+    checkpoint_path: Any,
+    model: Any,
+    optimizer: Any = None,
+    skip_optimizer: bool = False,
+):
+    if not Path(checkpoint_path).is_file():
+        raise FileNotFoundError(f"File {checkpoint_path} not found")
     checkpoint_dict = torch.load(checkpoint_path, map_location="cpu")
     iteration = checkpoint_dict["iteration"]
     learning_rate = checkpoint_dict["learning_rate"]
@@ -300,9 +318,9 @@ def load_checkpoint(checkpoint_path, model, optimizer=None, skip_optimizer=False
                 saved_state_dict[k].shape,
                 v.shape,
             )
-        except Exception:
-            LOG.error("error, %s is not in the checkpoint" % k)
-            LOG.info("%s is not in the checkpoint" % k)
+        except Exception as e:
+            LOG.exception(e)
+            LOG.error("%s is not in the checkpoint" % k)
             new_state_dict[k] = v
     if hasattr(model, "module"):
         model.module.load_state_dict(new_state_dict)
@@ -312,7 +330,9 @@ def load_checkpoint(checkpoint_path, model, optimizer=None, skip_optimizer=False
     return model, optimizer, learning_rate, iteration
 
 
-def save_checkpoint(model, optimizer, learning_rate, iteration, checkpoint_path):
+def save_checkpoint(
+    model, optimizer, learning_rate, iteration, checkpoint_path
+) -> None:
     LOG.info(
         "Saving model and optimizer state at iteration {} to {}".format(
             iteration, checkpoint_path
@@ -333,7 +353,9 @@ def save_checkpoint(model, optimizer, learning_rate, iteration, checkpoint_path)
     )
 
 
-def clean_checkpoints(path_to_models="logs/44k/", n_ckpts_to_keep=2, sort_by_time=True):
+def clean_checkpoints(
+    path_to_models: Path | str, n_ckpts_to_keep: int = 2, sort_by_time: bool = True
+):
     """Freeing up space by deleting saved ckpts
 
     Arguments:
@@ -342,25 +364,20 @@ def clean_checkpoints(path_to_models="logs/44k/", n_ckpts_to_keep=2, sort_by_tim
     sort_by_time      --  True -> chronologically delete ckpts
                           False -> lexicographically delete ckpts
     """
-    ckpts_files = [
-        f
-        for f in os.listdir(path_to_models)
-        if os.path.isfile(os.path.join(path_to_models, f))
-    ]
-    name_key = lambda _f: int(re.compile(r"._(\d+)\.pth").match(_f).group(1))
-    time_key = lambda _f: os.path.getmtime(os.path.join(path_to_models, _f))
-    sort_key = time_key if sort_by_time else name_key
-    x_sorted = lambda _x: sorted(
-        [f for f in ckpts_files if f.startswith(_x) and not f.endswith("_0.pth")],
-        key=sort_key,
+    path_to_models = Path(path_to_models)
+    name_key = lambda p: int(re.match(r"._(\d+)\.pth", p.name).group(1))
+    time_key = lambda p: p.stat().st_mtime
+    models_sorted = sorted(
+        path_to_models.glob(r"._(\d+).pth"), key=time_key if sort_by_time else name_key
     )
-    to_del = [
-        os.path.join(path_to_models, fn)
-        for fn in (x_sorted("G")[:-n_ckpts_to_keep] + x_sorted("D")[:-n_ckpts_to_keep])
-    ]
-    del_info = lambda fn: LOG.info(f".. Free up space by deleting ckpt {fn}")
-    del_routine = lambda x: [os.remove(x), del_info(x)]
-    [del_routine(fn) for fn in to_del]
+    models_sorted_grouped = groupby(models_sorted, lambda p: p.name[0])
+    for k, g in models_sorted_grouped:
+        to_dels = list(g)[n_ckpts_to_keep:]
+        for to_del in to_dels:
+            if to_del.stem.endswith("_0"):
+                continue
+            LOG.warning(f"Removing {to_del}")
+            to_del.unlink()
 
 
 def summarize(
@@ -382,11 +399,8 @@ def summarize(
         writer.add_audio(k, v, global_step, audio_sampling_rate)
 
 
-def latest_checkpoint_path(dir_path, regex="G_*.pth"):
-    f_list = glob.glob(os.path.join(dir_path, regex))
-    f_list.sort(key=lambda f: int("".join(filter(str.isdigit, f))))
-    x = f_list[-1]
-    return x
+def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth"):
+    return list(sorted(Path(dir_path).glob(regex)))[-1]
 
 
 def plot_spectrogram_to_numpy(spectrogram):
@@ -413,41 +427,12 @@ def plot_spectrogram_to_numpy(spectrogram):
     return data
 
 
-def plot_alignment_to_numpy(alignment, info=None):
-    global MATPLOTLIB_FLAG
-    if not MATPLOTLIB_FLAG:
-        import matplotlib
-
-        matplotlib.use("Agg")
-        MATPLOTLIB_FLAG = True
-    import matplotlib.pylab as plt
-    import numpy as np
-
-    fig, ax = plt.subplots(figsize=(6, 4))
-    im = ax.imshow(
-        alignment.transpose(), aspect="auto", origin="lower", interpolation="none"
-    )
-    fig.colorbar(im, ax=ax)
-    xlabel = "Decoder timestep"
-    if info is not None:
-        xlabel += "\n\n" + info
-    plt.xlabel(xlabel)
-    plt.ylabel("Encoder timestep")
-    plt.tight_layout()
-
-    fig.canvas.draw()
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep="")
-    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
-    plt.close()
-    return data
-
-
-def load_wav_to_torch(full_path):
+def load_wav_to_torch(full_path: Path | str):
     sampling_rate, data = read(full_path)
     return torch.FloatTensor(data.astype(np.float32)), sampling_rate
 
 
-def load_filepaths_and_text(filename, split="|"):
+def load_filepaths_and_text(filename: Path | str, split="|"):
     with open(filename, encoding="utf-8") as f:
         filepaths_and_text = [line.strip().split(split) for line in f]
     return filepaths_and_text
@@ -455,14 +440,14 @@ def load_filepaths_and_text(filename, split="|"):
 
 def get_hparams(config_path: Path, model_path: Path, init: bool = True) -> HParams:
     model_path.mkdir(parents=True, exist_ok=True)
-    config_save_path = os.path.join(model_path, "config.json")
+    config_save_path = model_path / "config.json"
     if init:
-        with open(config_path) as f:
+        with config_path.open() as f:
             data = f.read()
-        with open(config_save_path, "w") as f:
+        with config_save_path.open("w") as f:
             f.write(data)
     else:
-        with open(config_save_path) as f:
+        with config_save_path.open() as f:
             data = f.read()
     config = json.loads(data)
 
@@ -471,52 +456,13 @@ def get_hparams(config_path: Path, model_path: Path, init: bool = True) -> HPara
     return hparams
 
 
-def get_hparams_from_dir(model_dir):
-    config_save_path = os.path.join(model_dir, "config.json")
-    with open(config_save_path) as f:
-        data = f.read()
-    config = json.loads(data)
-
-    hparams = HParams(**config)
-    hparams.model_dir = model_dir
-    return hparams
-
-
-def get_hparams_from_file(config_path):
-    with open(config_path) as f:
-        data = f.read()
-    config = json.loads(data)
-
+def get_hparams_from_file(config_path: Path | str) -> HParams:
+    config = json.loads(Path(config_path).read_text())
     hparams = HParams(**config)
     return hparams
 
 
-def check_git_hash(model_dir):
-    source_dir = os.path.dirname(os.path.realpath(__file__))
-    if not os.path.exists(os.path.join(source_dir, ".git")):
-        LOG.warn(
-            "{} is not a git repository, therefore hash value comparison will be ignored.".format(
-                source_dir
-            )
-        )
-        return
-
-    cur_hash = subprocess.getoutput("git rev-parse HEAD")
-
-    path = os.path.join(model_dir, "githash")
-    if os.path.exists(path):
-        saved_hash = open(path).read()
-        if saved_hash != cur_hash:
-            LOG.warn(
-                "git hash values are different. {}(saved) != {}(current)".format(
-                    saved_hash[:8], cur_hash[:8]
-                )
-            )
-    else:
-        open(path, "w").write(cur_hash)
-
-
-def repeat_expand_2d(content, target_len):
+def repeat_expand_2d(content: ndarray, target_len: int) -> ndarray:
     # content : [h, t]
 
     src_len = content.shape[-1]
