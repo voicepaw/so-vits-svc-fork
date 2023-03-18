@@ -90,6 +90,8 @@ def preprocess_config(
         )
     )
     config["spk"] = spk_dict
+    config["data"]["training_files"] = train_list_path.as_posix()
+    config["data"]["validation_files"] = val_list_path.as_posix()
     LOG.info(f"Writing {config_path}")
     config_path.parent.mkdir(parents=True, exist_ok=True)
     with config_path.open("w") as f:
