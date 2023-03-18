@@ -9,7 +9,9 @@ IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
 
 class TestMain(TestCase):
     def test_import(self):
+        import so_vits_svc_fork.cluster.train_cluster  # noqa
         import so_vits_svc_fork.inference_main  # noqa
+        import so_vits_svc_fork.onnx_export  # noqa
         import so_vits_svc_fork.preprocess_flist_config  # noqa
         import so_vits_svc_fork.preprocess_hubert_f0  # noqa
         import so_vits_svc_fork.preprocess_resample  # noqa

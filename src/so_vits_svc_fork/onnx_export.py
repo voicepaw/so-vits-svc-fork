@@ -9,11 +9,14 @@ from .onnxexport.model_onnx import SynthesizerTrn
 
 
 def onnx_export(
-    input_path: Path,
-    output_path: Path,
-    config_path: Path,
+    input_path: Path | str,
+    output_path: Path | str,
+    config_path: Path | str,
     device: str | torch.device = "cpu",
 ):
+    input_path = Path(input_path)
+    output_path = Path(output_path)
+    config_path = Path(config_path)
     hps = utils.get_hparams_from_file(config_path.as_posix())
     SVCVITS = SynthesizerTrn(
         hps.data.filter_length // 2 + 1,

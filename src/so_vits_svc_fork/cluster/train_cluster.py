@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from logging import getLogger
 from pathlib import Path
 from typing import Any
@@ -13,8 +15,12 @@ LOG = getLogger(__name__)
 
 
 def train_cluster(
-    input_dir: Path, n_clusters: int, use_minibatch: bool = True, verbose: bool = False
+    input_dir: Path | str,
+    n_clusters: int,
+    use_minibatch: bool = True,
+    verbose: bool = False,
 ) -> dict:
+    input_dir = Path(input_dir)
     LOG.info(f"Loading features from {input_dir}")
     features = []
     nums = 0
@@ -41,7 +47,12 @@ def train_cluster(
     return x
 
 
-def main(input_dir: Path, output_path: Path, n_clusters: int = 10000) -> None:
+def main(
+    input_dir: Path | str, output_path: Path | str, n_clusters: int = 10000
+) -> None:
+    input_dir = Path(input_dir)
+    output_path = Path(output_path)
+
     def train_cluster_(input_path: Path, **kwargs: Any) -> tuple[str, dict]:
         return input_path.stem, train_cluster(input_path, **kwargs)
 
