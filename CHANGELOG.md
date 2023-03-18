@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2023-03-18)
+### Feature
+* **gui:** Remember last directory (misc) ([`92558da`](https://github.com/34j/so-vits-svc-fork/commit/92558da2f0e4eb24a8de412fb7e22dc3530b648a))
+* **__main__:** Show defaults ([`3d298df`](https://github.com/34j/so-vits-svc-fork/commit/3d298df91bdfca230959603da74331b5eef4d487))
+
+### Fix
+* **__main__:** Fix option names ([`7ff34fe`](https://github.com/34j/so-vits-svc-fork/commit/7ff34fe623dde6b0a684c45cf33dc54118f9a800))
+
+### Documentation
+* **readme:** Update README.md ([#6](https://github.com/34j/so-vits-svc-fork/issues/6)) ([`b988101`](https://github.com/34j/so-vits-svc-fork/commit/b98810194703b6bb0ede03a00c460eeecdab5131))
+
 ## v0.4.1 (2023-03-18)
 ### Fix
 * Call init_logger() ([#5](https://github.com/34j/so-vits-svc-fork/issues/5)) ([`e6378f1`](https://github.com/34j/so-vits-svc-fork/commit/e6378f12e747e618ff90ece1552d09c0d0714d41))
