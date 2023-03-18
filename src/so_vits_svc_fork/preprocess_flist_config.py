@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import re
@@ -22,12 +24,17 @@ def _get_wav_duration(filepath: Path):
 
 
 def preprocess_config(
-    input_dir: Path,
-    train_list_path: Path,
-    val_list_path: Path,
-    test_list_path: Path,
-    config_path: Path,
+    input_dir: Path | str,
+    train_list_path: Path | str,
+    val_list_path: Path | str,
+    test_list_path: Path | str,
+    config_path: Path | str,
 ):
+    input_dir = Path(input_dir)
+    train_list_path = Path(train_list_path)
+    val_list_path = Path(val_list_path)
+    test_list_path = Path(test_list_path)
+    config_path = Path(config_path)
     train = []
     val = []
     test = []

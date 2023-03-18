@@ -17,13 +17,13 @@ LOG = getLogger(__name__)
 def infer(
     *,
     # paths
-    input_path: Path,
-    output_path: Path,
-    model_path: Path,
-    config_path: Path,
+    input_path: Path | str,
+    output_path: Path | str,
+    model_path: Path | str,
+    config_path: Path | str,
     # svc config
     speaker: str,
-    cluster_model_path: Path | None = None,
+    cluster_model_path: Path | str | None = None,
     transpose: int = 0,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
@@ -35,6 +35,11 @@ def infer(
     absolute_thresh: bool = False,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
+    model_path = Path(model_path)
+    output_path = Path(output_path)
+    input_path = Path(input_path)
+    config_path = Path(config_path)
+    cluster_model_path = Path(cluster_model_path) if cluster_model_path else None
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
@@ -67,11 +72,11 @@ import sounddevice as sd
 def realtime(
     *,
     # paths
-    model_path: Path,
-    config_path: Path,
+    model_path: Path | str,
+    config_path: Path | str,
     # svc config
     speaker: str,
-    cluster_model_path: Path | None = None,
+    cluster_model_path: Path | str | None = None,
     transpose: int = 0,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
@@ -86,6 +91,9 @@ def realtime(
     version: int = 2,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
+    model_path = Path(model_path)
+    config_path = Path(config_path)
+    cluster_model_path = Path(cluster_model_path) if cluster_model_path else None
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
