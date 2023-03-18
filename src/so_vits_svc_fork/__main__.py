@@ -36,26 +36,58 @@ def init_logger() -> None:
 LOG = getLogger(__name__)
 
 
-@click.help_option("--help", "-h")
-@click.group()
+class RichHelpFormatter(click.HelpFormatter):
+    def __init__(
+        self,
+        indent_increment: int = 2,
+        width: int | None = None,
+        max_width: int | None = None,
+    ) -> None:
+        width = 100
+        super().__init__(indent_increment, width, max_width)
+
+
+def patch_wrap_text():
+    orig_wrap_text = click.formatting.wrap_text
+
+    def wrap_text(
+        text,
+        width=78,
+        initial_indent="",
+        subsequent_indent="",
+        preserve_paragraphs=False,
+    ):
+        return orig_wrap_text(
+            text.replace("\n", "\n\n"),
+            width=width,
+            initial_indent=initial_indent,
+            subsequent_indent=subsequent_indent,
+            preserve_paragraphs=True,
+        ).replace("\n\n", "\n")
+
+    click.formatting.wrap_text = wrap_text
+
+
+patch_wrap_text()
+
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+click.Context.formatter_class = RichHelpFormatter
+
+
+@click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
     """so-vits-svc allows any folder structure for training data.
-    However, the following folder structure is recommended.
-
-        When training: dataset_raw/{speaker_name}/{wav_name}.wav
-
-
-        When inference: configs/44k/config.json, logs/44k/G_XXXX.pth
-
+    However, the following folder structure is recommended.\n
+        When training: dataset_raw/{speaker_name}/{wav_name}.wav\n
+        When inference: configs/44k/config.json, logs/44k/G_XXXX.pth\n
     If the folder structure is followed, you DO NOT NEED TO SPECIFY model path, config path, etc.
-    (The latest model will be automatically loaded.)
-    To train a model, run pre-resample, pre-config, pre-hubert, train.
+    (The latest model will be automatically loaded.)\n
+    To train a model, run pre-resample, pre-config, pre-hubert, train.\n
     To infer a model, run infer.
     """
     init_logger()
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-c",
@@ -81,7 +113,6 @@ def train(config_path: Path, model_path: Path):
     main(config_path=config_path, model_path=model_path)
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.argument(
     "input_path",
@@ -292,7 +323,6 @@ def vc(
     )
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-i",
@@ -320,7 +350,6 @@ def pre_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
     )
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-i",
@@ -361,7 +390,6 @@ def pre_config(
     )
 
 
-@click.help_option("--help", "-h")
 @cli.command()
 @click.option(
     "-i",
@@ -387,7 +415,6 @@ def pre_hubert(input_dir: Path, config_path: Path) -> None:
     preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
 
 
-@click.help_option("--help", "-h")
 @cli.command
 def clean():
     """Clean up files, only useful if you are using the default file structure"""
@@ -403,7 +430,6 @@ def clean():
 
 
 @cli.command
-@click.help_option("--help", "-h")
 @click.option("-i", "--input_path", type=click.Path(exists=True), help="model path")
 @click.option("-o", "--output_path", type=click.Path(), help="onnx model path to save")
 @click.option("-c", "--config_path", type=click.Path(), help="config path")
@@ -425,7 +451,6 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
 
 
 @cli.command
-@click.help_option("--help", "-h")
 @click.option(
     "-i",
     "--input_dir",
@@ -442,6 +467,7 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
 )
 @click.option("-n", "--n_clusters", type=int, help="number of clusters", default=10000)
 def train_cluster(input_dir: Path, output_path: Path, n_clusters: int) -> None:
+    """Train k-means clustering"""
     from .cluster.train_cluster import main
 
     main(input_dir=input_dir, output_path=output_path, n_clusters=n_clusters)
