@@ -287,6 +287,8 @@ def infer(
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
 @click.option("-v", "--version", type=int, default=2, help="version")
+@click.option("-i", "--input-device", type=int, default=None, help="input device")
+@click.option("-o", "--output-device", type=int, default=None, help="output device")
 def vc(
     # paths
     model_path: Path,
@@ -306,6 +308,8 @@ def vc(
     crossfade_seconds: float,
     block_seconds: float,
     version: int,
+    input_device: int | str | None,
+    output_device: int | str | None,
     device: Literal["cpu", "cuda"],
 ) -> None:
     """Realtime inference from microphone"""
@@ -343,6 +347,8 @@ def vc(
         db_thresh=db_thresh,
         pad_seconds=pad_seconds,
         version=version,
+        input_device=input_device,
+        output_device=output_device,
         device=device,
     )
 
