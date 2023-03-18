@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import itertools
 from pathlib import Path
 
 import librosa
@@ -43,9 +44,10 @@ def preprocess_resample(
         soundfile.write(output_path, audio, samplerate=sampling_rate, subtype="PCM_16")
 
     in_and_out_paths = []
-    for in_path in input_dir.rglob("*.wav"):
-        out_path = output_dir / in_path.relative_to(input_dir)
+    for in_path in itertools.chain(input_dir.rglob("*.wav"), input_dir.rglob("*.flac")):
+        out_path = output_dir / in_path.relative_to(input_dir).with_suffix(".wav")
         out_path.parent.mkdir(parents=True, exist_ok=True)
         in_and_out_paths.append((in_path, out_path))
+
     with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
         Parallel(n_jobs=-1)(delayed(preprocess_one)(*args) for args in in_and_out_paths)

@@ -53,7 +53,7 @@ def preprocess_config(
                 continue
             paths.append(path)
         shuffle(paths)
-        if len(paths) <= 4:
+        if len(paths) < 4:
             raise ValueError(
                 f"too few files in {input_dir / speaker} (expected at least 4)."
             )
