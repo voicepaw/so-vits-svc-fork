@@ -17,8 +17,13 @@ from .utils import HUBERT_SAMPLING_RATE
 LOG = getLogger(__name__)
 
 
-def _process_one(filepath: Path, hubert_model, sampling_rate: int, hop_length: int,
-                 device: Literal["cuda", "cpu"] = "cuda"):
+def _process_one(
+    filepath: Path,
+    hubert_model,
+    sampling_rate: int,
+    hop_length: int,
+    device: Literal["cuda", "cpu"] = "cuda",
+):
     wav, sr = librosa.load(filepath, sr=sampling_rate)
     soft_path = filepath.parent / (filepath.name + ".soft.pt")
     if not soft_path.exists():
@@ -36,7 +41,9 @@ def _process_one(filepath: Path, hubert_model, sampling_rate: int, hop_length: i
         np.save(f0_path, f0)
 
 
-def _process_batch(filepaths: Iterable[Path], sampling_rate: int, hop_length: int, pos: int):
+def _process_batch(
+    filepaths: Iterable[Path], sampling_rate: int, hop_length: int, pos: int
+):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     hubert_model = utils.get_hubert_model().to(device)
 
@@ -47,6 +54,7 @@ def _process_batch(filepaths: Iterable[Path], sampling_rate: int, hop_length: in
 def preprocess_hubert_f0(input_dir: Path | str, config_path: Path | str):
     input_dir = Path(input_dir)
     config_path = Path(config_path)
+    utils.ensure_hubert_model()
     hps = utils.get_hparams_from_file(config_path)
     sampling_rate = hps.data.sampling_rate
     hop_length = hps.data.hop_length
@@ -57,5 +65,6 @@ def preprocess_hubert_f0(input_dir: Path | str, config_path: Path | str):
     shuffle(filepaths)
     filepath_chunks = np.array_split(filepaths, n_jobs)
     Parallel(n_jobs=n_jobs)(
-        delayed(_process_batch)(chunk, sampling_rate, hop_length, pos) for (pos, chunk) in enumerate(filepath_chunks)
+        delayed(_process_batch)(chunk, sampling_rate, hop_length, pos)
+        for (pos, chunk) in enumerate(filepath_chunks)
     )

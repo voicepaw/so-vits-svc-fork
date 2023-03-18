@@ -238,8 +238,9 @@ def ensure_pretrained_model(folder_path: Path) -> None:
             download_file(model_url, model_path, desc=f"Downloading {model_path.name}")
 
 
-def ensure_hurbert_model() -> Path:
-    vec_path = Path("checkpoint_best_legacy_500.pt")
+def ensure_hubert_model() -> Path:
+    vec_path = Path("hubert/checkpoint_best_legacy_500.pt")
+    vec_path.parent.mkdir(parents=True, exist_ok=True)
     if not vec_path.exists():
         # url = "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
         # url = "https://huggingface.co/innnky/contentvec/resolve/main/checkpoint_best_legacy_500.pt"
@@ -249,7 +250,7 @@ def ensure_hurbert_model() -> Path:
 
 
 def get_hubert_model():
-    vec_path = ensure_hurbert_model()
+    vec_path = ensure_hubert_model()
     from fairseq import checkpoint_utils
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
