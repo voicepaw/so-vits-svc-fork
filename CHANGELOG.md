@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2023-03-18)
+### Feature
+* Configurable input and output devices ([#11](https://github.com/34j/so-vits-svc-fork/issues/11)) ([`a822a60`](https://github.com/34j/so-vits-svc-fork/commit/a822a6098d322ff37725eee19d17758f72a6db49))
+
+### Documentation
+* **notebook:** Fix notebook ([#9](https://github.com/34j/so-vits-svc-fork/issues/9)) ([`427b4c1`](https://github.com/34j/so-vits-svc-fork/commit/427b4c1c6e0482345b17fedb018f7a18db68ccc5))
+* Update notebook ([#8](https://github.com/34j/so-vits-svc-fork/issues/8)) ([`ae3e471`](https://github.com/34j/so-vits-svc-fork/commit/ae3e4710aac41555f00ddcdfbcf5a5e925afb718))
+
 ## v0.5.0 (2023-03-18)
 ### Feature
 * **gui:** Remember last directory (misc) ([`92558da`](https://github.com/34j/so-vits-svc-fork/commit/92558da2f0e4eb24a8de412fb7e22dc3530b648a))
