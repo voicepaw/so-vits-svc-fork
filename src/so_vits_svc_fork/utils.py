@@ -239,7 +239,7 @@ def ensure_pretrained_model(folder_path: Path) -> None:
 
 
 def ensure_hubert_model() -> Path:
-    vec_path = Path("hubert/checkpoint_best_legacy_500.pt")
+    vec_path = Path("checkpoint_best_legacy_500.pt")
     vec_path.parent.mkdir(parents=True, exist_ok=True)
     if not vec_path.exists():
         # url = "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
