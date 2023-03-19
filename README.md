@@ -81,8 +81,6 @@ svc --model-path <model-path> source.wav
 
 ### Training
 
-Use of Google Colab is recommended. (To train locally, you need at least 12GB of VRAM.)
-
 #### Google Colab
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
@@ -97,6 +95,8 @@ svc pre-config
 svc pre-hubert
 svc train
 ```
+
+It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. As tested, the default requires about 14 GB.
 
 ### Further help
 
