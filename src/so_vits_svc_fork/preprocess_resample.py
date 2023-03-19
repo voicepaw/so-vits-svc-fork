@@ -56,7 +56,12 @@ def preprocess_resample(
 
     in_and_out_paths = []
     for in_path in input_dir.rglob("*.*"):
-        out_path = output_dir / in_path.relative_to(input_dir).with_suffix(".wav")
+        in_path_relative = in_path.relative_to(input_dir)
+        if len(in_path_relative.parts) < 2:
+            continue
+        speaker_name = in_path_relative.parts[0]
+        file_name = in_path_relative.with_suffix(".wav").name
+        out_path = output_dir / speaker_name / file_name
         out_path.parent.mkdir(parents=True, exist_ok=True)
         in_and_out_paths.append((in_path, out_path))
 
