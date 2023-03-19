@@ -20,6 +20,15 @@
         "ideas",
         "doc"
       ]
+    },
+    {
+      "login": "GarrettConway",
+      "name": "GarrettConway",
+      "avatar_url": "https://avatars.githubusercontent.com/u/22782004?v=4",
+      "profile": "https://github.com/GarrettConway",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
