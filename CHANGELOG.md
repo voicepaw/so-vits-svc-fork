@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.2 (2023-03-19)
+### Fix
+* Use hubert preprocess force_rebuild argument ([#15](https://github.com/34j/so-vits-svc-fork/issues/15)) ([`87cf807`](https://github.com/34j/so-vits-svc-fork/commit/87cf807496248e2c7b859069f81aa040e86aec59))
+
+### Documentation
+* Add GarrettConway as a contributor for bug ([#17](https://github.com/34j/so-vits-svc-fork/issues/17)) ([`31d9671`](https://github.com/34j/so-vits-svc-fork/commit/31d9671207143fd06b8db148802d1e27874151ce))
+* **notebook:** Launch tensorboard ([#16](https://github.com/34j/so-vits-svc-fork/issues/16)) ([`52229ba`](https://github.com/34j/so-vits-svc-fork/commit/52229ba0fe9458e37b45287c0a716c7cd36adbd6))
+* Add 34j as a contributor for example, infra, and 6 more ([#14](https://github.com/34j/so-vits-svc-fork/issues/14)) ([`1b90378`](https://github.com/34j/so-vits-svc-fork/commit/1b903783b4b89f2f5a4fc2e1b47f3eade0c0402f))
+* Add GarrettConway as a contributor for code ([#13](https://github.com/34j/so-vits-svc-fork/issues/13)) ([`716813f`](https://github.com/34j/so-vits-svc-fork/commit/716813fbff85ab4609d8ec3f374b78c6551877e5))
+
 ## v0.6.1 (2023-03-19)
 ### Performance
 * **preprocessing:** Better performance ([#12](https://github.com/34j/so-vits-svc-fork/issues/12)) ([`668c8e1`](https://github.com/34j/so-vits-svc-fork/commit/668c8e1f18cefb0ebd2fb2f1d6572ce4d37d1102))
