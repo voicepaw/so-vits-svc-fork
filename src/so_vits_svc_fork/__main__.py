@@ -437,14 +437,35 @@ def pre_config(
     help="path to config",
     default=Path("./configs/44k/config.json"),
 )
-def pre_hubert(input_dir: Path, config_path: Path) -> None:
+@click.option(
+    "-n",
+    "--n_jobs",
+    type=int,
+    default=4,
+    help="number of jobs (optimal value may depend on your VRAM capacity and audio duration per file)",
+)
+@click.option(
+    "-f",
+    "--force_rebuild",
+    type=bool,
+    default=True,
+    help="force rebuild existing preprocessed files",
+)
+def pre_hubert(
+    input_dir: Path, config_path: Path, n_jobs: bool, force_rebuild: bool
+) -> None:
     """Preprocessing part 3: hubert
     If the HuBERT model is not found, it will be downloaded automatically."""
     from .preprocess_hubert_f0 import preprocess_hubert_f0
 
     input_dir = Path(input_dir)
     config_path = Path(config_path)
-    preprocess_hubert_f0(input_dir=input_dir, config_path=config_path)
+    preprocess_hubert_f0(
+        input_dir=input_dir,
+        config_path=config_path,
+        n_jobs=n_jobs,
+        force_rebuild=force_rebuild,
+    )
 
 
 @cli.command
