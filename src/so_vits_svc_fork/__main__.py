@@ -476,7 +476,8 @@ def clean():
     folders = ["dataset", "filelists", "logs"]
     if pyip.inputYesNo(f"Are you sure you want to delete files in {folders}?") == "yes":
         for folder in folders:
-            shutil.rmtree(folder)
+            if Path(folder).exists():
+                shutil.rmtree(folder)
         LOG.info("Cleaned up files")
     else:
         LOG.info("Aborted")
