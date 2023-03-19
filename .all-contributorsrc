@@ -18,7 +18,15 @@
       "contributions": [
         "code",
         "ideas",
-        "doc"
+        "doc",
+        "example",
+        "infra",
+        "maintenance",
+        "review",
+        "test",
+        "tutorial",
+        "promotion",
+        "bug"
       ]
     },
     {
