@@ -58,7 +58,7 @@ def _process_batch(
     hubert_model = utils.get_hubert_model().to(device)
 
     for filepath in tqdm(filepaths, position=pbar_position):
-        _process_one(filepath, hubert_model, sampling_rate, hop_length, device)
+        _process_one(filepath, hubert_model, sampling_rate, hop_length, device, force_rebuild)
 
 
 def preprocess_hubert_f0(
