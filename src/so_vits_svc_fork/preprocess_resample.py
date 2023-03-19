@@ -51,7 +51,7 @@ def preprocess_resample(
         soundfile.write(output_path, audio, samplerate=sampling_rate, subtype="PCM_16")
 
     in_and_out_paths = []
-    for in_path in input_dir.rglob("**/*.*"):
+    for in_path in input_dir.rglob("*.*"):
         out_path = output_dir / in_path.relative_to(input_dir).with_suffix(".wav")
         out_path.parent.mkdir(parents=True, exist_ok=True)
         in_and_out_paths.append((in_path, out_path))
