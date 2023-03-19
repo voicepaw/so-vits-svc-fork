@@ -8,7 +8,7 @@ from typing import Iterable, Literal
 import librosa
 import numpy as np
 import torch
-from joblib import Parallel, cpu_count, delayed, parallel_backend
+from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
 from . import utils
@@ -23,7 +23,7 @@ def _process_one(
     sampling_rate: int,
     hop_length: int,
     device: Literal["cuda", "cpu"] = "cuda",
-    force_rebuild=False,
+    force_rebuild: bool = False,
 ):
     wav, sr = librosa.load(filepath, sr=sampling_rate)
     soft_path = filepath.parent / (filepath.name + ".soft.pt")
@@ -44,12 +44,12 @@ def _process_one(
 
 
 def _process_batch(
-    filepaths: Iterable[Path], sampling_rate: int, hop_length: int, pos: int
+    filepaths: Iterable[Path], sampling_rate: int, hop_length: int, pbar_position: int
 ):
     device = "cuda" if torch.cuda.is_available() else "cpu"
     hubert_model = utils.get_hubert_model().to(device)
 
-    for filepath in tqdm(filepaths, position=pos):
+    for filepath in tqdm(filepaths, position=pbar_position):
         _process_one(filepath, hubert_model, sampling_rate, hop_length, device)
 
 
@@ -61,13 +61,11 @@ def preprocess_hubert_f0(input_dir: Path | str, config_path: Path | str):
     sampling_rate = hps.data.sampling_rate
     hop_length = hps.data.hop_length
 
-    filepaths = list(input_dir.glob("**/*.wav"))
-    # Dual threading this until I can determine why this causes memory usage to explode and leak
-    n_jobs = min(cpu_count(), len(filepaths) // 32 + 1, 2)
+    filepaths = list(input_dir.rglob("*.wav"))
+    n_jobs = min(cpu_count(), len(filepaths) // 32 + 1, 4)
     shuffle(filepaths)
     filepath_chunks = np.array_split(filepaths, n_jobs)
-    with parallel_backend("threading", n_jobs=n_jobs):
-        Parallel(n_jobs=n_jobs)(
-            delayed(_process_batch)(chunk, sampling_rate, hop_length, pos)
-            for (pos, chunk) in enumerate(filepath_chunks)
-        )
+    Parallel(n_jobs=n_jobs)(
+        delayed(_process_batch)(chunk, sampling_rate, hop_length, pbar_position)
+        for (pbar_position, chunk) in enumerate(filepath_chunks)
+    )
