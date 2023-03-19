@@ -1,12 +1,16 @@
 from __future__ import annotations
 
+from logging import getLogger
 from pathlib import Path
 
+import audioread.exceptions
 import librosa
 import numpy as np
 import soundfile
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
+
+LOG = getLogger(__name__)
 
 # input_dir and output_dir exists.
 # write code to convert input dir audio files to output dir audio files,
@@ -27,7 +31,15 @@ def preprocess_resample(
 
     def preprocess_one(input_path: Path, output_path: Path) -> None:
         """Preprocess one audio file."""
-        audio, sr = librosa.load(input_path)
+
+        try:
+            audio, sr = librosa.load(input_path)
+
+        # Audioread is the last backend it will attempt, so this is the exception thrown on failure
+        except audioread.exceptions.NoBackendError as e:
+            # Failure due to attempting to load a file that is not audio, so return early
+            LOG.warning(f"Failed to load {input_path} due to {e}")
+            return
 
         # Trim silence
         audio, _ = librosa.effects.trim(audio, top_db=20)
@@ -43,9 +55,10 @@ def preprocess_resample(
         soundfile.write(output_path, audio, samplerate=sampling_rate, subtype="PCM_16")
 
     in_and_out_paths = []
-    for in_path in input_dir.rglob("*.wav"):
-        out_path = output_dir / in_path.relative_to(input_dir)
+    for in_path in input_dir.rglob("*.*"):
+        out_path = output_dir / in_path.relative_to(input_dir).with_suffix(".wav")
         out_path.parent.mkdir(parents=True, exist_ok=True)
         in_and_out_paths.append((in_path, out_path))
+
     with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
         Parallel(n_jobs=-1)(delayed(preprocess_one)(*args) for args in in_and_out_paths)

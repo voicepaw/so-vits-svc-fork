@@ -55,7 +55,7 @@ def preprocess_config(
         shuffle(paths)
         if len(paths) <= 4:
             raise ValueError(
-                f"too few files in {input_dir / speaker} (expected at least 4)."
+                f"too few files in {input_dir / speaker} (expected at least 5)."
             )
         train += paths[2:-2]
         val += paths[:2]
