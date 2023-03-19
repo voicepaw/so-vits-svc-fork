@@ -76,7 +76,7 @@ def patch_wrap_text():
 
 patch_wrap_text()
 
-CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"])
+CONTEXT_SETTINGS = dict(help_option_names=["-h", "--help"], show_default=True)
 click.Context.formatter_class = RichHelpFormatter
 
 
@@ -121,49 +121,49 @@ def train(config_path: Path, model_path: Path):
 
 @cli.command()
 @click.argument(
-    "input_path",
+    "input-path",
     type=click.Path(exists=True),
 )
 @click.option(
     "-o",
-    "--output_path",
+    "--output-path",
     type=click.Path(),
     help="path to output dir",
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
 @click.option(
     "-m",
-    "--model_path",
+    "--model-path",
     type=click.Path(exists=True),
     default=Path("./logs/44k/"),
     help="path to model",
 )
 @click.option(
     "-c",
-    "--config_path",
+    "--config-path",
     type=click.Path(exists=True),
     default=Path("./configs/44k/config.json"),
     help="path to config",
 )
 @click.option(
     "-k",
-    "--cluster_model_path",
+    "--cluster-model-path",
     type=click.Path(exists=True),
     default=None,
     help="path to cluster model",
 )
 @click.option("-t", "--transpose", type=int, default=0, help="transpose")
 @click.option(
-    "-d", "--db_thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)"
+    "-db", "--db-thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)"
 )
 @click.option(
-    "-a", "--auto_predict_f0", type=bool, default=True, help="auto predict f0"
+    "-a", "--auto-predict-f0", type=bool, default=True, help="auto predict f0"
 )
 @click.option(
-    "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
+    "-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio"
 )
-@click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
-@click.option("-p", "--pad_seconds", type=float, default=0.5, help="pad seconds")
+@click.option("-n", "--noise-scale", type=float, default=0.4, help="noise scale")
+@click.option("-p", "--pad-seconds", type=float, default=0.5, help="pad seconds")
 @click.option(
     "-d",
     "--device",
@@ -171,9 +171,9 @@ def train(config_path: Path, model_path: Path):
     default="cuda" if torch.cuda.is_available() else "cpu",
     help="device",
 )
-@click.option("-c", "--chunk_seconds", type=float, default=0.5, help="chunk seconds")
+@click.option("-ch", "--chunk-seconds", type=float, default=0.5, help="chunk seconds")
 @click.option(
-    "-a", "--absolute_thresh", type=bool, default=False, help="absolute thresh"
+    "-ab", "--absolute-thresh", type=bool, default=False, help="absolute thresh"
 )
 def infer(
     input_path: Path,
@@ -234,21 +234,21 @@ def infer(
 @cli.command()
 @click.option(
     "-m",
-    "--model_path",
+    "--model-path",
     type=click.Path(exists=True),
     default=Path("./logs/44k/"),
     help="path to model",
 )
 @click.option(
     "-c",
-    "--config_path",
+    "--config-path",
     type=click.Path(exists=True),
     default=Path("./configs/44k/config.json"),
     help="path to config",
 )
 @click.option(
     "-k",
-    "--cluster_model_path",
+    "--cluster-model-path",
     type=click.Path(exists=True),
     default=None,
     help="path to cluster model",
@@ -256,28 +256,28 @@ def infer(
 @click.option("-t", "--transpose", type=int, default=12, help="transpose")
 @click.option(
     "-a",
-    "--auto_predict_f0",
+    "--auto-predict-f0",
     type=bool,
     default=False,
     help="auto predict f0 (not recommended for realtime since voice pitch will not be stable)",
 )
 @click.option(
-    "-r", "--cluster_infer_ratio", type=float, default=0, help="cluster infer ratio"
+    "-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio"
 )
-@click.option("-n", "--noise_scale", type=float, default=0.4, help="noise scale")
+@click.option("-n", "--noise-scale", type=float, default=0.4, help="noise scale")
 @click.option(
-    "-d", "--db_thresh", type=int, default=-30, help="threshold (DB) (ABSOLUTE)"
+    "-db", "--db-thresh", type=int, default=-30, help="threshold (DB) (ABSOLUTE)"
 )
-@click.option("-p", "--pad_seconds", type=float, default=0.02, help="pad seconds")
-@click.option("-c", "--chunk_seconds", type=float, default=0.5, help="chunk seconds")
+@click.option("-p", "--pad-seconds", type=float, default=0.02, help="pad seconds")
+@click.option("-ch", "--chunk-seconds", type=float, default=0.5, help="chunk seconds")
 @click.option(
-    "-c",
-    "--crossfade_seconds",
+    "-cr",
+    "--crossfade-seconds",
     type=float,
     default=0.01,
     help="crossfade seconds",
 )
-@click.option("-b", "--block_seconds", type=float, default=1, help="block seconds")
+@click.option("-b", "--block-seconds", type=float, default=1, help="block seconds")
 @click.option(
     "-d",
     "--device",
@@ -287,6 +287,8 @@ def infer(
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
 @click.option("-v", "--version", type=int, default=2, help="version")
+@click.option("-i", "--input-device", type=int, default=None, help="input device")
+@click.option("-o", "--output-device", type=int, default=None, help="output device")
 def vc(
     # paths
     model_path: Path,
@@ -306,6 +308,8 @@ def vc(
     crossfade_seconds: float,
     block_seconds: float,
     version: int,
+    input_device: int | str | None,
+    output_device: int | str | None,
     device: Literal["cpu", "cuda"],
 ) -> None:
     """Realtime inference from microphone"""
@@ -343,6 +347,8 @@ def vc(
         db_thresh=db_thresh,
         pad_seconds=pad_seconds,
         version=version,
+        input_device=input_device,
+        output_device=output_device,
         device=device,
     )
 
@@ -350,19 +356,19 @@ def vc(
 @cli.command()
 @click.option(
     "-i",
-    "--input_dir",
+    "--input-dir",
     type=click.Path(exists=True),
     default=Path("./dataset_raw/44k"),
     help="path to source dir",
 )
 @click.option(
     "-o",
-    "--output_dir",
+    "--output-dir",
     type=click.Path(),
     default=Path("./dataset/44k"),
     help="path to output dir",
 )
-@click.option("-s", "--sampling_rate", type=int, default=44100, help="sampling rate")
+@click.option("-s", "--sampling-rate", type=int, default=44100, help="sampling rate")
 def pre_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
     """Preprocessing part 1: resample"""
     from .preprocess_resample import preprocess_resample
@@ -377,19 +383,21 @@ def pre_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
 @cli.command()
 @click.option(
     "-i",
-    "--input_dir",
+    "--input-dir",
     type=click.Path(exists=True),
     default=Path("./dataset/44k"),
     help="path to source dir",
 )
 @click.option(
-    "--filelist_path",
+    "-f",
+    "--filelist-path",
     type=click.Path(),
     default=Path("./filelists/44k"),
     help="path to filelist dir",
 )
 @click.option(
-    "--config_path",
+    "-c",
+    "--config-path",
     type=click.Path(),
     default=Path("./configs/44k/config.json"),
     help="path to config",
@@ -417,14 +425,14 @@ def pre_config(
 @cli.command()
 @click.option(
     "-i",
-    "--input_dir",
+    "--input-dir",
     type=click.Path(exists=True),
     default=Path("./dataset/44k"),
     help="path to source dir",
 )
 @click.option(
     "-c",
-    "--config_path",
+    "--config-path",
     type=click.Path(exists=True),
     help="path to config",
     default=Path("./configs/44k/config.json"),
@@ -454,9 +462,9 @@ def clean():
 
 
 @cli.command
-@click.option("-i", "--input_path", type=click.Path(exists=True), help="model path")
-@click.option("-o", "--output_path", type=click.Path(), help="onnx model path to save")
-@click.option("-c", "--config_path", type=click.Path(), help="config path")
+@click.option("-i", "--input-path", type=click.Path(exists=True), help="model path")
+@click.option("-o", "--output-path", type=click.Path(), help="onnx model path to save")
+@click.option("-c", "--config-path", type=click.Path(), help="config path")
 @click.option("-d", "--device", type=str, default="cpu", help="torch device")
 def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
     """Export model to onnx"""
@@ -477,19 +485,19 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
 @cli.command
 @click.option(
     "-i",
-    "--input_dir",
+    "--input-dir",
     type=click.Path(exists=True),
     help="dataset directory",
     default=Path("./dataset/44k"),
 )
 @click.option(
     "-o",
-    "--output_path",
+    "--output-path",
     type=click.Path(),
     help="model path to save",
     default=Path("./models/44k/kmeans.pt"),
 )
-@click.option("-n", "--n_clusters", type=int, help="number of clusters", default=10000)
+@click.option("-n", "--n-clusters", type=int, help="number of clusters", default=10000)
 def train_cluster(input_dir: Path, output_path: Path, n_clusters: int) -> None:
     """Train k-means clustering"""
     from .cluster.train_cluster import main
