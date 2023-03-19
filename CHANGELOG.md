@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2023-03-19)
+### Performance
+* **preprocessing:** Better performance ([#12](https://github.com/34j/so-vits-svc-fork/issues/12)) ([`668c8e1`](https://github.com/34j/so-vits-svc-fork/commit/668c8e1f18cefb0ebd2fb2f1d6572ce4d37d1102))
+
 ## v0.6.0 (2023-03-18)
 ### Feature
 * Configurable input and output devices ([#11](https://github.com/34j/so-vits-svc-fork/issues/11)) ([`a822a60`](https://github.com/34j/so-vits-svc-fork/commit/a822a6098d322ff37725eee19d17758f72a6db49))
