@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from logging import getLogger
 from pathlib import Path
 
 import audioread.exceptions
@@ -8,6 +9,8 @@ import numpy as np
 import soundfile
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
+
+LOG = getLogger(__name__)
 
 # input_dir and output_dir exists.
 # write code to convert input dir audio files to output dir audio files,
@@ -33,8 +36,9 @@ def preprocess_resample(
             audio, sr = librosa.load(input_path)
 
         # Audioread is the last backend it will attempt, so this is the exception thrown on failure
-        except audioread.exceptions.NoBackendError:
+        except audioread.exceptions.NoBackendError as e:
             # Failure due to attempting to load a file that is not audio, so return early
+            LOG.warning(f"Failed to load {input_path} due to {e}")
             return
 
         # Trim silence
