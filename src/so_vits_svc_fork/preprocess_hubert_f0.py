@@ -40,6 +40,7 @@ def _process_one(
             wav, sampling_rate=sampling_rate, hop_length=hop_length
         )
         np.save(f0_path, f0)
+    torch.cuda.empty_cache()
 
 
 def _process_batch(
