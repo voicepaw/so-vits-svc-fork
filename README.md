@@ -44,11 +44,13 @@ pip install so-vits-svc-fork
 ## Features not available in the original repo
 
 - **Realtime voice conversion**
+- More accurate pitch estimation using CREPE
 - GUI available
 - Unified command-line interface (no need to run Python scripts)
 - Ready to use just by installing with `pip`.
 - Automatically download pretrained base model and HuBERT model
 - Code completely formatted with black, isort, autoflake etc.
+- Volume normalization in preprocessing
 - Other minor differences
 
 ## Usage
@@ -79,6 +81,10 @@ svc vc --model-path <model-path>
 svc --model-path <model-path> source.wav
 ```
 
+#### Notes
+
+- In real-time inference, if there is noise on the inputs, the HuBERT model will react to those as well. Consider using realtime noise reduction applications such as [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/) in this case.
+
 ### Training
 
 #### Google Colab
@@ -96,7 +102,10 @@ svc pre-hubert
 svc train
 ```
 
-It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. As tested, the default requires about 14 GB.
+#### Notes
+
+- Dataset audio duration per file should be <~ 10s or VRAM will run out.
+- It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. As tested, the default requires about 14 GB.
 
 ### Further help
 

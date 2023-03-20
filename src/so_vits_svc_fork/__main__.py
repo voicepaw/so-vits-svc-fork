@@ -268,6 +268,13 @@ def infer(
 @click.option(
     "-db", "--db-thresh", type=int, default=-30, help="threshold (DB) (ABSOLUTE)"
 )
+@click.option(
+    "-fm",
+    "--f0-method",
+    type=click.Choice(["crepe", "parselmouth", "dio", "harvest"]),
+    default="crepe",
+    help="f0 prediction method",
+)
 @click.option("-p", "--pad-seconds", type=float, default=0.02, help="pad seconds")
 @click.option("-ch", "--chunk-seconds", type=float, default=0.5, help="chunk seconds")
 @click.option(
@@ -300,6 +307,7 @@ def vc(
     auto_predict_f0: bool,
     cluster_infer_ratio: float,
     noise_scale: float,
+    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"],
     # slice config
     db_thresh: int,
     pad_seconds: float,
@@ -333,19 +341,24 @@ def vc(
         LOG.info(f"Since model_path is a directory, use {model_path}")
 
     realtime(
+        # paths
         model_path=model_path,
         config_path=config_path,
+        # svc config
         speaker=speaker,
         cluster_model_path=cluster_model_path,
         transpose=transpose,
         auto_predict_f0=auto_predict_f0,
         cluster_infer_ratio=cluster_infer_ratio,
         noise_scale=noise_scale,
-        crossfade_seconds=crossfade_seconds,
-        block_seconds=block_seconds,
-        chunk_seconds=chunk_seconds,
+        f0_method=f0_method,
+        # slice config
         db_thresh=db_thresh,
         pad_seconds=pad_seconds,
+        chunk_seconds=chunk_seconds,
+        # realtime config
+        crossfade_seconds=crossfade_seconds,
+        block_seconds=block_seconds,
         version=version,
         input_device=input_device,
         output_device=output_device,
@@ -446,13 +459,23 @@ def pre_config(
 )
 @click.option(
     "-f",
-    "--force_rebuild",
+    "--force-rebuild",
     type=bool,
     default=True,
     help="force rebuild existing preprocessed files",
 )
+@click.option(
+    "-fm",
+    "--f0-method",
+    type=click.Choice(["crepe", "parselmouth", "dio", "harvest"]),
+    default="crepe",
+)
 def pre_hubert(
-    input_dir: Path, config_path: Path, n_jobs: bool, force_rebuild: bool
+    input_dir: Path,
+    config_path: Path,
+    n_jobs: bool,
+    force_rebuild: bool,
+    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"],
 ) -> None:
     """Preprocessing part 3: hubert
     If the HuBERT model is not found, it will be downloaded automatically."""
@@ -465,6 +488,7 @@ def pre_hubert(
         config_path=config_path,
         n_jobs=n_jobs,
         force_rebuild=force_rebuild,
+        f0_method=f0_method,
     )
 
 

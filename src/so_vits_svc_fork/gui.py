@@ -126,6 +126,14 @@ def main():
                         )
                     ],
                     [
+                        sg.Text("F0 prediction method"),
+                        sg.Combo(
+                            ["crepe", "parselmouth", "dio", "harvest"],
+                            key="f0_method",
+                            default_value="crepe",
+                        ),
+                    ],
+                    [
                         sg.Text("Cluster infer ratio"),
                         sg.Push(),
                         sg.Slider(
@@ -350,6 +358,7 @@ def main():
                         auto_predict_f0=values["auto_predict_f0"],
                         cluster_infer_ratio=values["cluster_infer_ratio"],
                         noise_scale=values["noise_scale"],
+                        f0_method=values["f0_method"],
                         crossfade_seconds=values["crossfade_seconds"],
                         db_thresh=values["silence_threshold"],
                         pad_seconds=values["pad_seconds"],

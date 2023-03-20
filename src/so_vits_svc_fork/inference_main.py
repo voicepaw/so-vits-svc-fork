@@ -22,12 +22,13 @@ def infer(
     model_path: Path | str,
     config_path: Path | str,
     # svc config
-    speaker: str,
+    speaker: int | str,
     cluster_model_path: Path | str | None = None,
     transpose: int = 0,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
+    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
@@ -51,14 +52,15 @@ def infer(
 
     audio, _ = librosa.load(input_path, sr=svc_model.target_sample)
     audio = svc_model.infer_silence(
-        audio,
+        audio.astype(np.float32),
         speaker=speaker,
-        db_thresh=db_thresh,
-        pad_seconds=pad_seconds,
         transpose=transpose,
         auto_predict_f0=auto_predict_f0,
         cluster_infer_ratio=cluster_infer_ratio,
         noise_scale=noise_scale,
+        f0_method=f0_method,
+        db_thresh=db_thresh,
+        pad_seconds=pad_seconds,
         chunk_seconds=chunk_seconds,
         absolute_thresh=absolute_thresh,
     )
@@ -78,6 +80,7 @@ def realtime(
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
+    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
@@ -154,13 +157,17 @@ def realtime(
         )
 
         kwargs = dict(
-            input_audio=indata.mean(axis=1),
+            input_audio=indata.mean(axis=1).astype(np.float32),
+            # svc config
             speaker=speaker,
             transpose=transpose,
             auto_predict_f0=auto_predict_f0,
-            noise_scale=noise_scale,
             cluster_infer_ratio=cluster_infer_ratio,
+            noise_scale=noise_scale,
+            f0_method=f0_method,
+            # slice config
             db_thresh=db_thresh,
+            # pad_seconds=pad_seconds,
             chunk_seconds=chunk_seconds,
         )
         if version == 1:
