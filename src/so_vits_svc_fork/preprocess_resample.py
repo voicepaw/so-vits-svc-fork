@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from logging import getLogger
 from pathlib import Path
 from typing import Iterable
@@ -71,6 +72,17 @@ def preprocess_resample(
     out_paths = []
     for in_path in input_dir.rglob("*.*"):
         in_path_relative = in_path.relative_to(input_dir)
+        if not in_path.is_absolute() and in_path.is_relative_to(
+            Path("dataset_raw") / "44k"
+        ):
+            new_in_path_relative = in_path_relative.relative_to("44k")
+            warnings.warn(
+                f"Recommended folder structure has changed since v1.0.0. "
+                "Please move your dataset directly under dataset_raw folder. "
+                f"Recoginzed {in_path_relative} as {new_in_path_relative}"
+            )
+            in_path_relative = new_in_path_relative
+
         if len(in_path_relative.parts) < 2:
             continue
         speaker_name = in_path_relative.parts[0]
