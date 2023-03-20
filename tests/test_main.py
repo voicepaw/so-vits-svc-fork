@@ -22,14 +22,13 @@ class TestMain(TestCase):
             raise SkipTest("Skip inference test on CI")
         from so_vits_svc_fork.inference_main import infer  # noqa
 
-        # infer("tests/dataset_raw/44k/34j/1.wav", "tests/configs/config.json", "tests/logs/44k")
+        # infer("tests/dataset_raw/34j/1.wav", "tests/configs/config.json", "tests/logs/44k")
 
     def test_preprocess(self):
         from so_vits_svc_fork.preprocess_resample import preprocess_resample
 
-        preprocess_resample("tests/dataset_raw/44k", "tests/dataset/44k", 44100)
+        preprocess_resample("tests/dataset_raw", "tests/dataset/44k", 44100)
 
-    def test_preprocess_config(self):
         from so_vits_svc_fork.preprocess_flist_config import preprocess_config
 
         preprocess_config(
@@ -40,9 +39,8 @@ class TestMain(TestCase):
             "tests/configs/config.json",
         )
 
-    def test_preprocess_hubert(self):
         if IS_CI:
-            raise SkipTest("Skip preprocessing test on CI")
+            raise SkipTest("Skip hubert and f0 test on CI")
         from so_vits_svc_fork.preprocess_hubert_f0 import preprocess_hubert_f0
 
         preprocess_hubert_f0("tests/dataset/44k", "tests/configs/44k/config.json")
