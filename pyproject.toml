@@ -65,7 +65,7 @@ pebble = "^5.0.3"
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"
 pytest = "^7.0"
-pytest-cov = "^3.0"
+pytest-cov = "^4.0.0"
 
 [tool.poetry.group.docs]
 optional = true
