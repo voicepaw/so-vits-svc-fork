@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.3 (2023-03-20)
+### Fix
+* **deps:** Update dependency torch to v1.13.1 ([#27](https://github.com/34j/so-vits-svc-fork/issues/27)) ([`8826d68`](https://github.com/34j/so-vits-svc-fork/commit/8826d6870e223e7969baa069bf12235e0deec0b7))
+* **deps:** Update dependency torchaudio to v0.13.1 ([#28](https://github.com/34j/so-vits-svc-fork/issues/28)) ([`989f5d9`](https://github.com/34j/so-vits-svc-fork/commit/989f5d903b47ba9b0ea1d0fe37cbfe76edf0a811))
+
+### Documentation
+* **readme:** Update notes about VRAM caps ([#18](https://github.com/34j/so-vits-svc-fork/issues/18)) ([`0a245f4`](https://github.com/34j/so-vits-svc-fork/commit/0a245f4ee69bd0d4371836367becf0fe409431e2))
+
 ## v0.6.2 (2023-03-19)
 ### Fix
 * Use hubert preprocess force_rebuild argument ([#15](https://github.com/34j/so-vits-svc-fork/issues/15)) ([`87cf807`](https://github.com/34j/so-vits-svc-fork/commit/87cf807496248e2c7b859069f81aa040e86aec59))
