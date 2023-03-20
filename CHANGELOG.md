@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.0 (2023-03-20)
+### Feature
+* **preprocessing:** Allow nested dataset ([#19](https://github.com/34j/so-vits-svc-fork/issues/19)) ([`0433151`](https://github.com/34j/so-vits-svc-fork/commit/0433151d94c4da8e84a0183bdd47f1e08ea3c462))
+
 ## v0.6.3 (2023-03-20)
 ### Fix
 * **deps:** Update dependency torch to v1.13.1 ([#27](https://github.com/34j/so-vits-svc-fork/issues/27)) ([`8826d68`](https://github.com/34j/so-vits-svc-fork/commit/8826d6870e223e7969baa069bf12235e0deec0b7))
