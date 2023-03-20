@@ -371,7 +371,7 @@ def vc(
     "-i",
     "--input-dir",
     type=click.Path(exists=True),
-    default=Path("./dataset_raw/44k"),
+    default=Path("./dataset_raw"),
     help="path to source dir",
 )
 @click.option(
