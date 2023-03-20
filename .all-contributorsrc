@@ -47,6 +47,15 @@
       "contributions": [
         "ideas"
       ]
+    },
+    {
+      "login": "ThrowawayAccount01",
+      "name": "ThrowawayAccount01",
+      "avatar_url": "https://avatars.githubusercontent.com/u/125531852?v=4",
+      "profile": "https://github.com/ThrowawayAccount01",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
