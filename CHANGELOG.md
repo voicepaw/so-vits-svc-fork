@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.7.1 (2023-03-20)
+### Fix
+* **deps:** Update dependency gradio to v3.22.1 ([#33](https://github.com/34j/so-vits-svc-fork/issues/33)) ([`f09fc23`](https://github.com/34j/so-vits-svc-fork/commit/f09fc23ca82519cc095509d4d4760561424a17ec))
+
 ## v0.7.0 (2023-03-20)
 ### Feature
 * **preprocessing:** Allow nested dataset ([#19](https://github.com/34j/so-vits-svc-fork/issues/19)) ([`0433151`](https://github.com/34j/so-vits-svc-fork/commit/0433151d94c4da8e84a0183bdd47f1e08ea3c462))
