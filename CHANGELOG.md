@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.2 (2023-03-20)
+### Fix
+* Fix compute_f0_crepe returning wrong length ([#42](https://github.com/34j/so-vits-svc-fork/issues/42)) ([`afb42b0`](https://github.com/34j/so-vits-svc-fork/commit/afb42b019ccd133876a2c55cf01007950a733d8c))
+
 ## v0.8.1 (2023-03-20)
 ### Fix
 * **deps:** Update dependency librosa to v0.10.0 ([#40](https://github.com/34j/so-vits-svc-fork/issues/40)) ([`8e92f71`](https://github.com/34j/so-vits-svc-fork/commit/8e92f71b2820628f0f8583e6bc455d8f753f4302))
