@@ -36,6 +36,17 @@ def _get_unique_filename(path: Path, existing_paths: Iterable[Path]) -> Path:
         i += 1
 
 
+def is_relative_to(path: Path, *other):
+    """Return True if the path is relative to another path or False.
+    Python 3.9+ has Path.is_relative_to() method, but we need to support Python 3.8.
+    """
+    try:
+        path.relative_to(*other)
+        return True
+    except ValueError:
+        return False
+
+
 def preprocess_resample(
     input_dir: Path | str, output_dir: Path | str, sampling_rate: int
 ) -> None:
@@ -72,8 +83,8 @@ def preprocess_resample(
     out_paths = []
     for in_path in input_dir.rglob("*.*"):
         in_path_relative = in_path.relative_to(input_dir)
-        if not in_path.is_absolute() and in_path.is_relative_to(
-            Path("dataset_raw") / "44k"
+        if not in_path.is_absolute() and is_relative_to(
+            in_path, Path("dataset_raw") / "44k"
         ):
             new_in_path_relative = in_path_relative.relative_to("44k")
             warnings.warn(
