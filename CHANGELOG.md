@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.1 (2023-03-20)
+### Documentation
+* Add ThrowawayAccount01 as a contributor for bug ([#47](https://github.com/34j/so-vits-svc-fork/issues/47)) ([`15e31fa`](https://github.com/34j/so-vits-svc-fork/commit/15e31fa806249d45235918fa62a48a86c43538cb))
+* Add BlueAmulet as a contributor for ideas ([#46](https://github.com/34j/so-vits-svc-fork/issues/46)) ([`a3bcb2b`](https://github.com/34j/so-vits-svc-fork/commit/a3bcb2be2992c98bcc2485082c19009c74cb3194))
+
+### Performance
+* **inference_main:** Do dummy inference before running vc ([#45](https://github.com/34j/so-vits-svc-fork/issues/45)) ([`4066c43`](https://github.com/34j/so-vits-svc-fork/commit/4066c4334b107062d2daa7c9dc00600a56c6e553))
+
 ## v1.0.0 (2023-03-20)
 ### Fix
 * Fix default dataset path ([#43](https://github.com/34j/so-vits-svc-fork/issues/43)) ([`ac47fed`](https://github.com/34j/so-vits-svc-fork/commit/ac47fede2581d375c2be9c28102961f19f5a9aa1))
