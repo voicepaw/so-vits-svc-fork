@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "so-vits-svc-fork"
-version = "0.6.3"
+version = "0.7.1"
 description = "A fork of so-vits-svc."
 authors = ["34j <34j.95a2p@simplelogin.com>"]
 license = "MIT"
@@ -66,7 +66,7 @@ torchcrepe = ">=0.0.17"
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"
 pytest = "^7.0"
-pytest-cov = "^3.0"
+pytest-cov = "^4.0.0"
 
 [tool.poetry.group.docs]
 optional = true
