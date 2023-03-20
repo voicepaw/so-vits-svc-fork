@@ -141,7 +141,7 @@ cython_debug/
 
 # additional files
 tests/**/*.wav
-!tests/dataset_raw/34j/**/*.wav
+!tests/dataset_raw/44k/34j/**/*.wav
 tests/**/*.npy
 tests/**/*.pt
 tests/**/*.txt
