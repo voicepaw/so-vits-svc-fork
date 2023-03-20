@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.0 (2023-03-20)
+### Feature
+* Add more f0 calculation methods ([#39](https://github.com/34j/so-vits-svc-fork/issues/39)) ([`6b3b20d`](https://github.com/34j/so-vits-svc-fork/commit/6b3b20dfd609d81cb1184b7c8e8865a58f8d45f9))
+
 ## v0.7.1 (2023-03-20)
 ### Fix
 * **deps:** Update dependency gradio to v3.22.1 ([#33](https://github.com/34j/so-vits-svc-fork/issues/33)) ([`f09fc23`](https://github.com/34j/so-vits-svc-fork/commit/f09fc23ca82519cc095509d4d4760561424a17ec))
