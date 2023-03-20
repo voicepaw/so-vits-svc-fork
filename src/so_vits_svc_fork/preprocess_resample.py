@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from logging import getLogger
 from pathlib import Path
+from typing import Iterable
 
 import audioread.exceptions
 import librosa
@@ -20,6 +21,18 @@ LOG = getLogger(__name__)
 # - trim silence
 # - adjust volume in a smart way
 # - save as 16-bit wav file
+
+
+def _get_unique_filename(path: Path, existing_paths: Iterable[Path]) -> Path:
+    """Return a unique path by appending a number to the original path."""
+    if path not in existing_paths:
+        return path
+    i = 1
+    while True:
+        new_path = path.parent / f"{path.stem}_{i}{path.suffix}"
+        if new_path not in existing_paths:
+            return new_path
+        i += 1
 
 
 def preprocess_resample(
@@ -54,11 +67,21 @@ def preprocess_resample(
         audio /= max(audio.max(), -audio.min())
         soundfile.write(output_path, audio, samplerate=sampling_rate, subtype="PCM_16")
 
-    in_and_out_paths = []
+    in_paths = []
+    out_paths = []
     for in_path in input_dir.rglob("*.*"):
-        out_path = output_dir / in_path.relative_to(input_dir).with_suffix(".wav")
+        in_path_relative = in_path.relative_to(input_dir)
+        if len(in_path_relative.parts) < 2:
+            continue
+        speaker_name = in_path_relative.parts[0]
+        file_name = in_path_relative.with_suffix(".wav").name
+        out_path = output_dir / speaker_name / file_name
+        out_path = _get_unique_filename(out_path, out_paths)
         out_path.parent.mkdir(parents=True, exist_ok=True)
-        in_and_out_paths.append((in_path, out_path))
+        in_paths.append(in_path)
+        out_paths.append(out_path)
+
+    in_and_out_paths = list(zip(in_paths, out_paths))
 
     with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
         Parallel(n_jobs=-1)(delayed(preprocess_one)(*args) for args in in_and_out_paths)

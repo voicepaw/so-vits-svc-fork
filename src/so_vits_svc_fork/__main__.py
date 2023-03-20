@@ -84,7 +84,7 @@ click.Context.formatter_class = RichHelpFormatter
 def cli():
     """so-vits-svc allows any folder structure for training data.
     However, the following folder structure is recommended.\n
-        When training: dataset_raw/{speaker_name}/{wav_name}.wav\n
+        When training: dataset_raw/{speaker_name}/**/{wav_name}.{any_format}\n
         When inference: configs/44k/config.json, logs/44k/G_XXXX.pth\n
     If the folder structure is followed, you DO NOT NEED TO SPECIFY model path, config path, etc.
     (The latest model will be automatically loaded.)\n
@@ -476,7 +476,8 @@ def clean():
     folders = ["dataset", "filelists", "logs"]
     if pyip.inputYesNo(f"Are you sure you want to delete files in {folders}?") == "yes":
         for folder in folders:
-            shutil.rmtree(folder)
+            if Path(folder).exists():
+                shutil.rmtree(folder)
         LOG.info("Cleaned up files")
     else:
         LOG.info("Aborted")

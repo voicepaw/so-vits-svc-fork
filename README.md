@@ -87,7 +87,7 @@ svc --model-path <model-path> source.wav
 
 #### Local
 
-Place your dataset like `dataset_raw/{speaker_id}/{wav_file}.wav` and run:
+Place your dataset like `dataset_raw/{speaker_id}/**/{wav_file}.{any_format}` (subfolders are acceptable) and run:
 
 ```shell
 svc pre-resample
