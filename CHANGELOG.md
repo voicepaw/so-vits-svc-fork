@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.1 (2023-03-20)
+### Fix
+* **deps:** Update dependency librosa to v0.10.0 ([#40](https://github.com/34j/so-vits-svc-fork/issues/40)) ([`8e92f71`](https://github.com/34j/so-vits-svc-fork/commit/8e92f71b2820628f0f8583e6bc455d8f753f4302))
+
 ## v0.8.0 (2023-03-20)
 ### Feature
 * Add more f0 calculation methods ([#39](https://github.com/34j/so-vits-svc-fork/issues/39)) ([`6b3b20d`](https://github.com/34j/so-vits-svc-fork/commit/6b3b20dfd609d81cb1184b7c8e8865a58f8d45f9))
