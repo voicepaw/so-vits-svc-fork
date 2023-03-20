@@ -3,7 +3,7 @@ from __future__ import annotations
 from copy import deepcopy
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Callable, Iterable
+from typing import Any, Callable, Iterable, Literal
 
 import attrs
 import librosa
@@ -121,13 +121,17 @@ class Svc:
 
     def get_unit_f0(
         self,
-        audio: np.ndarray[Any, np.dtype[np.float64]],
+        audio: ndarray[Any, dtype[float32]],
         tran: int,
         cluster_infer_ratio: float,
         speaker: int | str,
+        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
     ):
-        f0 = utils.compute_f0_parselmouth(
-            audio, sampling_rate=self.target_sample, hop_length=self.hop_size
+        f0 = utils.compute_f0(
+            audio,
+            sampling_rate=self.target_sample,
+            hop_length=self.hop_size,
+            method=f0_method,
         )
         f0, uv = utils.interpolate_f0(f0)
         f0 = torch.FloatTensor(f0)
@@ -161,6 +165,7 @@ class Svc:
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
+        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
     ) -> tuple[torch.Tensor, int]:
         audio = audio.astype(np.float32)
         # get speaker id
@@ -180,7 +185,9 @@ class Svc:
         sid = torch.LongTensor([int(speaker_id)]).to(self.dev).unsqueeze(0)
 
         # get unit f0
-        c, f0, uv = self.get_unit_f0(audio, transpose, cluster_infer_ratio, speaker)
+        c, f0, uv = self.get_unit_f0(
+            audio, transpose, cluster_infer_ratio, speaker, f0_method
+        )
         if "half" in self.net_g_path and torch.cuda.is_available():
             c = c.half()
 
@@ -215,6 +222,7 @@ class Svc:
         auto_predict_f0: bool = False,
         cluster_infer_ratio: float = 0,
         noise_scale: float = 0.4,
+        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
@@ -260,6 +268,7 @@ class Svc:
                     cluster_infer_ratio=cluster_infer_ratio,
                     auto_predict_f0=auto_predict_f0,
                     noise_scale=noise_scale,
+                    f0_method=f0_method,
                 )
                 audio_chunk_pad_infer = audio_chunk_pad_infer_tensor.cpu().numpy()
                 pad_len = int(self.target_sample * pad_seconds)
@@ -359,6 +368,7 @@ class RealtimeVC(Crossfader):
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
+        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
@@ -373,6 +383,7 @@ class RealtimeVC(Crossfader):
                 cluster_infer_ratio=cluster_infer_ratio,
                 auto_predict_f0=auto_predict_f0,
                 noise_scale=noise_scale,
+                f0_method=f0_method,
                 db_thresh=db_thresh,
                 pad_seconds=pad_seconds,
                 chunk_seconds=chunk_seconds,
@@ -393,6 +404,7 @@ class RealtimeVC(Crossfader):
                     cluster_infer_ratio=cluster_infer_ratio,
                     auto_predict_f0=auto_predict_f0,
                     noise_scale=noise_scale,
+                    f0_method=f0_method,
                 )
                 return infered_audio_c.cpu().numpy()
 
@@ -414,6 +426,7 @@ class RealtimeVC2:
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
+        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
         # slice config
         db_thresh: int = -40,
         chunk_seconds: float = 0.5,
@@ -426,6 +439,7 @@ class RealtimeVC2:
                 cluster_infer_ratio=cluster_infer_ratio,
                 auto_predict_f0=auto_predict_f0,
                 noise_scale=noise_scale,
+                f0_method=f0_method,
             )
             return infered_audio_c.cpu().numpy()
 

@@ -5,11 +5,12 @@ import re
 from itertools import groupby
 from logging import getLogger
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import requests
 import torch
+import torchcrepe
 from numpy import dtype, float32, ndarray
 from scipy.io.wavfile import read
 from torch import FloatTensor
@@ -122,7 +123,12 @@ def interpolate_f0(
     return ip_data[:, 0], vuv_vector[:, 0]
 
 
-def compute_f0_parselmouth(wav_numpy, p_len=None, sampling_rate=44100, hop_length=512):
+def compute_f0_parselmouth(
+    wav_numpy: ndarray[Any, dtype[float32]],
+    p_len: None | int = None,
+    sampling_rate: int = 44100,
+    hop_length: int = 512,
+):
     import parselmouth
 
     x = wav_numpy
@@ -150,7 +156,7 @@ def compute_f0_parselmouth(wav_numpy, p_len=None, sampling_rate=44100, hop_lengt
     return f0
 
 
-def resize_f0(
+def _resize_f0(
     x: ndarray[Any, dtype[float32]], target_len: int
 ) -> ndarray[Any, dtype[float32]]:
     source = np.array(x)
@@ -164,26 +170,88 @@ def resize_f0(
     return res
 
 
-def compute_f0_dio(
+def compute_f0_pyworld(
     wav_numpy: ndarray[Any, dtype[float32]],
     p_len: None | int = None,
     sampling_rate: int = 44100,
     hop_length: int = 512,
+    type_: Literal["dio", "harvest"] = "dio",
 ):
     import pyworld
 
     if p_len is None:
         p_len = wav_numpy.shape[0] // hop_length
-    f0, t = pyworld.dio(
-        wav_numpy.astype(np.double),
-        fs=sampling_rate,
-        f0_ceil=800,
-        frame_period=1000 * hop_length / sampling_rate,
-    )
+    if type_ == "dio":
+        f0, t = pyworld.dio(
+            wav_numpy.astype(np.double),
+            fs=sampling_rate,
+            f0_ceil=f0_max,
+            f0_floor=f0_min,
+            frame_period=1000 * hop_length / sampling_rate,
+        )
+    elif type_ == "harvest":
+        f0, t = pyworld.harvest(
+            wav_numpy.astype(np.double),
+            fs=sampling_rate,
+            f0_ceil=f0_max,
+            f0_floor=f0_min,
+            frame_period=1000 * hop_length / sampling_rate,
+        )
     f0 = pyworld.stonemask(wav_numpy.astype(np.double), f0, t, sampling_rate)
     for index, pitch in enumerate(f0):
         f0[index] = round(pitch, 1)
-    return resize_f0(f0, p_len)
+    return _resize_f0(f0, p_len)
+
+
+def compute_f0_crepe(
+    wav_numpy: ndarray[Any, dtype[float32]],
+    p_len: None | int = None,
+    sampling_rate: int = 44100,
+    hop_length: int = 512,
+    device: str = "cuda" if torch.cuda.is_available() else "cpu",
+    model: Literal["full", "tiny"] = "full",
+):
+    audio = torch.from_numpy(wav_numpy).to(device, copy=True)
+    audio = torch.unsqueeze(audio, dim=0)
+
+    if audio.ndim == 2 and audio.shape[0] > 1:
+        audio = torch.mean(audio, dim=0, keepdim=True).detach()
+    # (T) -> (1, T)
+    audio = audio.detach()
+
+    pitch = torchcrepe.predict(
+        audio,
+        sampling_rate,
+        hop_length,
+        f0_min,
+        f0_max,
+        model,
+        batch_size=hop_length * 2,
+        device=device,
+        pad=True,
+    )
+
+    return pitch.detach().cpu().numpy()[0]
+
+
+def compute_f0(
+    wav_numpy: ndarray[Any, dtype[float32]],
+    p_len: None | int = None,
+    sampling_rate: int = 44100,
+    hop_length: int = 512,
+    method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+    **kwargs,
+):
+    wav_numpy = wav_numpy.astype(np.float32)
+    wav_numpy /= np.quantile(np.abs(wav_numpy), 0.999)
+    if method in ["dio", "harvest"]:
+        return compute_f0_pyworld(wav_numpy, p_len, sampling_rate, hop_length, method)
+    elif method == "crepe":
+        return compute_f0_crepe(wav_numpy, p_len, sampling_rate, hop_length, **kwargs)
+    elif method == "parselmouth":
+        return compute_f0_parselmouth(wav_numpy, p_len, sampling_rate, hop_length)
+    else:
+        raise ValueError("type must be dio, crepe, harvest or parselmouth")
 
 
 def f0_to_coarse(f0: torch.Tensor | float):
