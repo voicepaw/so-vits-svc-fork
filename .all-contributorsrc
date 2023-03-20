@@ -38,6 +38,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "BlueAmulet",
+      "name": "BlueAmulet",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43395286?v=4",
+      "profile": "https://github.com/BlueAmulet",
+      "contributions": [
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
