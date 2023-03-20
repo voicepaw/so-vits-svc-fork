@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.0 (2023-03-20)
+### Fix
+* Fix default dataset path ([#43](https://github.com/34j/so-vits-svc-fork/issues/43)) ([`ac47fed`](https://github.com/34j/so-vits-svc-fork/commit/ac47fede2581d375c2be9c28102961f19f5a9aa1))
+
+### Breaking
+* the behaviour of preprocess_resample changes when there is a folder ./dataset_raw/44k and "44k" is no longer allowed as a speaker name in some conditions ([`ac47fed`](https://github.com/34j/so-vits-svc-fork/commit/ac47fede2581d375c2be9c28102961f19f5a9aa1))
+
 ## v0.8.2 (2023-03-20)
 ### Fix
 * Fix compute_f0_crepe returning wrong length ([#42](https://github.com/34j/so-vits-svc-fork/issues/42)) ([`afb42b0`](https://github.com/34j/so-vits-svc-fork/commit/afb42b019ccd133876a2c55cf01007950a733d8c))
