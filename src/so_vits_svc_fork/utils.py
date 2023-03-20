@@ -13,7 +13,7 @@ import torch
 import torchcrepe
 from numpy import dtype, float32, ndarray
 from scipy.io.wavfile import read
-from torch import FloatTensor
+from torch import FloatTensor, Tensor
 from tqdm import tqdm
 
 LOG = getLogger(__name__)
@@ -219,7 +219,7 @@ def compute_f0_crepe(
     # (T) -> (1, T)
     audio = audio.detach()
 
-    pitch = torchcrepe.predict(
+    pitch: Tensor = torchcrepe.predict(
         audio,
         sampling_rate,
         hop_length,
@@ -231,7 +231,10 @@ def compute_f0_crepe(
         pad=True,
     )
 
-    return pitch.detach().cpu().numpy()[0]
+    f0 = pitch.squeeze(0).cpu().numpy()
+    p_len = p_len or wav_numpy.shape[0] // hop_length
+    f0 = _resize_f0(f0, p_len)
+    return f0
 
 
 def compute_f0(
