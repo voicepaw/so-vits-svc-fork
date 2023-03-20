@@ -130,6 +130,8 @@ Commands:
   vc             Realtime inference from microphone
 ```
 
+If using WSL, please note that WSL requires additional setup to handle audio and the GUI will not work without finding an audio device.
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
