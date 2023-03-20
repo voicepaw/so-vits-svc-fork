@@ -145,6 +145,21 @@ def realtime(
         f"Input Device: {devices[input_device]['name']}, Output Device: {devices[output_device]['name']}"
     )
 
+    # the model realtime coef is somewhat significantly low only in the first inference
+    # there could be no better way to warm up the model than to do a dummy inference
+    # (there are not differences in the behavior of the model between the first and the later inferences)
+    # so we do a dummy inference to warm up the model (1 second of audio)
+    LOG.info("Warming up the model...")
+    svc_model.infer(
+        speaker=speaker,
+        transpose=transpose,
+        auto_predict_f0=auto_predict_f0,
+        cluster_infer_ratio=cluster_infer_ratio,
+        noise_scale=noise_scale,
+        f0_method=f0_method,
+        audio=np.zeros(svc_model.target_sample, dtype=np.float32),
+    )
+
     def callback(
         indata: np.ndarray,
         outdata: np.ndarray,
