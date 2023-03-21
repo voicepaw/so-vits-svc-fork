@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import textwrap
 from logging import getLogger
 from pathlib import Path
 
@@ -15,9 +14,9 @@ from .__main__ import init_logger
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
-LOG = getLogger(__name__)
-
 init_logger()
+
+LOG = getLogger(__name__)
 
 
 def play_audio(path: Path | str):
@@ -62,8 +61,6 @@ def main():
     devices = sd.query_devices()
     input_devices = [d["name"] for d in devices if d["max_input_channels"] > 0]
     output_devices = [d["name"] for d in devices if d["max_output_channels"] > 0]
-    devices[sd.default.device[0]]["name"]
-    devices[sd.default.device[1]]["name"]
 
     frame_contents = {
         "Paths": [
@@ -119,6 +116,7 @@ def main():
         "Common": [
             [
                 sg.Text("Speaker"),
+                sg.Push(),
                 sg.Combo(values=[], key="speaker", size=(20, 1)),
             ],
             [
@@ -132,7 +130,11 @@ def main():
                 ),
             ],
             [
-                sg.Text("Pitch (12 = 1 octave)"),
+                sg.Text(
+                    "Pitch (12 = 1 octave)\n"
+                    "ADJUST THIS based on your voice\n"
+                    "when Auto predict F0 is turned off."
+                ),
                 sg.Push(),
                 sg.Slider(
                     range=(-36, 36),
@@ -149,6 +151,7 @@ def main():
             ],
             [
                 sg.Text("F0 prediction method"),
+                sg.Push(),
                 sg.Combo(
                     ["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
                     key="f0_method",
@@ -213,19 +216,6 @@ def main():
         ],
         "Realtime": [
             [
-                sg.Text(
-                    "In Realtime Inference:\n"
-                    "    Setting F0 prediction method to 'crepe` may cause performance degradation.\n"
-                    "    Auto Predict F0 must be turned off.\n"
-                    + textwrap.fill(
-                        "If the audio sounds mumbly and choppy, the inference has not been made in time "
-                        "and the below parameters should be adjusted or the microphone input is too low and the "
-                        "silence threshold should be increased.",
-                        80,
-                    )
-                )
-            ],
-            [
                 sg.Text("Crossfade seconds"),
                 sg.Push(),
                 sg.Slider(
@@ -237,7 +227,8 @@ def main():
             ],
             [
                 sg.Text(
-                    "Block seconds (big -> more robust, slower, (the same) latency)"
+                    "Block seconds",  # \n(big -> more robust, slower, (the same) latency)"
+                    tooltip="Big -> more robust, slower, (the same) latency",
                 ),
                 sg.Push(),
                 sg.Slider(
@@ -249,7 +240,8 @@ def main():
             ],
             [
                 sg.Text(
-                    "Additional Infer seconds (before) (big -> more robust, slower)"
+                    "Additional Infer seconds (before)",  # \n(big -> more robust, slower)"
+                    tooltip="Big -> more robust, slower, additional latency",
                 ),
                 sg.Push(),
                 sg.Slider(
@@ -261,7 +253,8 @@ def main():
             ],
             [
                 sg.Text(
-                    "Additional Infer seconds (after) (big -> more robust, slower, additional latency)"
+                    "Additional Infer seconds (after)",  # \n(big -> more robust, slower, additional latency)"
+                    tooltip="Big -> more robust, slower, additional latency",
                 ),
                 sg.Push(),
                 sg.Slider(
@@ -273,6 +266,7 @@ def main():
             ],
             [
                 sg.Text("Realtime algorithm"),
+                sg.Push(),
                 sg.Combo(
                     ["2 (Divide by speech)", "1 (Divide constantly)"],
                     default_value="1 (Divide constantly)",
@@ -281,6 +275,7 @@ def main():
             ],
             [
                 sg.Text("Input device"),
+                sg.Push(),
                 sg.Combo(
                     key="input_device",
                     values=input_devices,
@@ -290,6 +285,7 @@ def main():
             ],
             [
                 sg.Text("Output device"),
+                sg.Push(),
                 sg.Combo(
                     key="output_device",
                     values=output_devices,
@@ -304,23 +300,28 @@ def main():
                     default=False,
                 ),
             ],
-        ],
-    }
-
-    layout = []
-    for name, items in frame_contents.items():
-        frame = sg.Frame(name, items)
-        frame.expand_x = True
-        layout.append([frame])
-    layout.extend(
-        [
             [
-                sg.Checkbox(
-                    key="use_gpu", default=torch.cuda.is_available(), text="Use GPU"
-                )
+                sg.Frame(
+                    "Notes",
+                    [
+                        [
+                            sg.Text(
+                                "In Realtime Inference:\n"
+                                "    - Setting F0 prediction method to 'crepe` may cause performance degradation.\n"
+                                "    - Auto Predict F0 must be turned off.\n"
+                                "If the audio sounds mumbly and choppy:\n"
+                                "    Case: The inference has not been made in time (Increase Block seconds)\n"
+                                "    Case: Mic input is low (Decrease Silence threshold)\n"
+                            )
+                        ]
+                    ],
+                ),
             ],
+        ],
+        "Presets": [
             [
                 sg.Text("Presets"),
+                sg.Push(),
                 sg.Combo(
                     key="presets",
                     values=list(load_presets().keys()),
@@ -328,8 +329,39 @@ def main():
                     enable_events=True,
                 ),
                 sg.Button("Delete preset", key="delete_preset"),
-                sg.InputText(key="preset_name"),
-                sg.Button("Add preset", key="add_preset"),
+            ],
+            [
+                sg.Text("Preset name"),
+                sg.Stretch(),
+                sg.InputText(key="preset_name", size=(20, 1)),
+                sg.Button("Add current settings as a preset", key="add_preset"),
+            ],
+        ],
+    }
+
+    # frames
+    frames = {}
+    for name, items in frame_contents.items():
+        frame = sg.Frame(name, items)
+        frame.expand_x = True
+        frames[name] = [frame]
+
+    column1 = sg.Column(
+        [
+            frames["Paths"],
+            frames["Common"],
+        ],
+        vertical_alignment="top",
+    )
+    column2 = sg.Column(
+        [
+            frames["File"],
+            frames["Realtime"],
+            frames["Presets"],
+            [
+                sg.Checkbox(
+                    key="use_gpu", default=torch.cuda.is_available(), text="Use GPU"
+                )
             ],
             [
                 sg.Button("Infer", key="infer"),
@@ -338,8 +370,12 @@ def main():
             ],
         ]
     )
+
+    # columns
+    layout = [[column1, column2]]
+    # layout = [[sg.Column(layout, vertical_alignment="top", scrollable=True, expand_x=True, expand_y=True)]]
     window = sg.Window(
-        f"{__name__.split('.')[0]}", layout
+        f"{__name__.split('.')[0]}", layout, grab_anywhere=True
     )  # , use_custom_titlebar=True)
 
     event, values = window.read(timeout=0.01)
