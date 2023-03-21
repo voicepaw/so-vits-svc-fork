@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import textwrap
 from logging import getLogger
 from pathlib import Path
@@ -11,6 +12,7 @@ from pebble import ProcessPool
 
 from .__main__ import init_logger
 
+GUI_PRESETS_PATH = Path(__file__).parent / "gui_presets.json"
 LOG = getLogger(__name__)
 
 init_logger()
@@ -23,6 +25,26 @@ def play_audio(path: Path | str):
     sd.play(data, sr)
 
 
+def load_presets() -> dict:
+    return json.loads(GUI_PRESETS_PATH.read_text()) if GUI_PRESETS_PATH.exists() else {}
+
+
+def add_preset(name: str, preset: dict) -> dict:
+    presets = load_presets()
+    presets[name] = preset
+    with GUI_PRESETS_PATH.open("w") as f:
+        json.dump(presets, f, indent=4)
+    return presets
+
+
+def delete_preset(name: str) -> dict:
+    presets = load_presets()
+    del presets[name]
+    with GUI_PRESETS_PATH.open("w") as f:
+        json.dump(presets, f, indent=4)
+    return presets
+
+
 def main():
     sg.theme("Dark")
     model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
@@ -33,310 +55,308 @@ def main():
     devices[sd.default.device[0]]["name"]
     devices[sd.default.device[1]]["name"]
 
-    layout = [
-        [
-            sg.Frame(
-                "Paths",
-                [
-                    [
-                        sg.Text("Model path"),
-                        sg.Push(),
-                        sg.InputText(
-                            key="model_path",
-                            default_text=model_candidates[-1].absolute().as_posix()
-                            if model_candidates
-                            else "",
-                            enable_events=True,
-                        ),
-                        sg.FileBrowse(
-                            initial_folder=Path("./logs/44k/").absolute
-                            if Path("./logs/44k/").exists()
-                            else Path(".").absolute().as_posix(),
-                            key="model_path_browse",
-                            file_types=(("PyTorch", "*.pth"),),
-                        ),
-                    ],
-                    [
-                        sg.Text("Config path"),
-                        sg.Push(),
-                        sg.InputText(
-                            key="config_path",
-                            default_text=Path("./configs/44k/config.json")
-                            .absolute()
-                            .as_posix()
-                            if Path("./configs/44k/config.json").exists()
-                            else "",
-                            enable_events=True,
-                        ),
-                        sg.FileBrowse(
-                            initial_folder=Path("./configs/44k/").as_posix()
-                            if Path("./configs/44k/").exists()
-                            else Path(".").absolute().as_posix(),
-                            key="config_path_browse",
-                            file_types=(("JSON", "*.json"),),
-                        ),
-                    ],
-                    [
-                        sg.Text("Cluster model path"),
-                        sg.Push(),
-                        sg.InputText(key="cluster_model_path", enable_events=True),
-                        sg.FileBrowse(
-                            initial_folder="./logs/44k/"
-                            if Path("./logs/44k/").exists()
-                            else ".",
-                            key="cluster_model_path_browse",
-                            file_types=(("PyTorch", "*.pth"),),
-                        ),
-                    ],
-                ],
-            )
+    frame_contents = {
+        "Paths": [
+            [
+                sg.Text("Model path"),
+                sg.Push(),
+                sg.InputText(
+                    key="model_path",
+                    default_text=model_candidates[-1].absolute().as_posix()
+                    if model_candidates
+                    else "",
+                    enable_events=True,
+                ),
+                sg.FileBrowse(
+                    initial_folder=Path("./logs/44k/").absolute
+                    if Path("./logs/44k/").exists()
+                    else Path(".").absolute().as_posix(),
+                    key="model_path_browse",
+                    file_types=(("PyTorch", "*.pth"),),
+                ),
+            ],
+            [
+                sg.Text("Config path"),
+                sg.Push(),
+                sg.InputText(
+                    key="config_path",
+                    default_text=Path("./configs/44k/config.json").absolute().as_posix()
+                    if Path("./configs/44k/config.json").exists()
+                    else "",
+                    enable_events=True,
+                ),
+                sg.FileBrowse(
+                    initial_folder=Path("./configs/44k/").as_posix()
+                    if Path("./configs/44k/").exists()
+                    else Path(".").absolute().as_posix(),
+                    key="config_path_browse",
+                    file_types=(("JSON", "*.json"),),
+                ),
+            ],
+            [
+                sg.Text("Cluster model path"),
+                sg.Push(),
+                sg.InputText(key="cluster_model_path", enable_events=True),
+                sg.FileBrowse(
+                    initial_folder="./logs/44k/"
+                    if Path("./logs/44k/").exists()
+                    else ".",
+                    key="cluster_model_path_browse",
+                    file_types=(("PyTorch", "*.pth"),),
+                ),
+            ],
         ],
-        [
-            sg.Frame(
-                "Common",
-                [
-                    [
-                        sg.Text("Speaker"),
-                        sg.Combo(values=[], key="speaker", size=(20, 1)),
-                    ],
-                    [
-                        sg.Text("Silence threshold"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(-60.0, 0),
-                            orientation="h",
-                            key="silence_threshold",
-                            default_value=-30,
-                            resolution=0.1,
-                        ),
-                    ],
-                    [
-                        sg.Text("Pitch"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(-20, 20),
-                            orientation="h",
-                            key="transpose",
-                            default_value=0,
-                        ),
-                    ],
-                    [
-                        sg.Checkbox(
-                            key="auto_predict_f0",
-                            default=True,
-                            text="Auto predict F0 (Pitch may become unstable when turned on in real-time inference.)",
-                        )
-                    ],
-                    [
-                        sg.Text("F0 prediction method"),
-                        sg.Combo(
-                            ["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
-                            key="f0_method",
-                            default_value="crepe",
-                        ),
-                    ],
-                    [
-                        sg.Text("Cluster infer ratio"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0, 1.0),
-                            orientation="h",
-                            key="cluster_infer_ratio",
-                            default_value=0,
-                            resolution=0.01,
-                        ),
-                    ],
-                    [
-                        sg.Text("Noise scale"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0.0, 1.0),
-                            orientation="h",
-                            key="noise_scale",
-                            default_value=0.4,
-                            resolution=0.01,
-                        ),
-                    ],
-                    [
-                        sg.Text("Pad seconds"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0.0, 1.0),
-                            orientation="h",
-                            key="pad_seconds",
-                            default_value=0.1,
-                            resolution=0.01,
-                        ),
-                    ],
-                    [
-                        sg.Text("Chunk seconds"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0.0, 3.0),
-                            orientation="h",
-                            key="chunk_seconds",
-                            default_value=0.5,
-                            resolution=0.01,
-                        ),
-                    ],
-                    [
-                        sg.Checkbox(
-                            key="absolute_thresh",
-                            default=False,
-                            text="Absolute threshold (ignored (True) in realtime inference)",
-                        )
-                    ],
-                ],
-            )
+        "Common": [
+            [
+                sg.Text("Speaker"),
+                sg.Combo(values=[], key="speaker", size=(20, 1)),
+            ],
+            [
+                sg.Text("Silence threshold"),
+                sg.Push(),
+                sg.Slider(
+                    range=(-60.0, 0),
+                    orientation="h",
+                    key="silence_threshold",
+                    default_value=-30,
+                    resolution=0.1,
+                ),
+            ],
+            [
+                sg.Text("Pitch"),
+                sg.Push(),
+                sg.Slider(
+                    range=(-20, 20),
+                    orientation="h",
+                    key="transpose",
+                    default_value=0,
+                ),
+            ],
+            [
+                sg.Checkbox(
+                    key="auto_predict_f0",
+                    default=True,
+                    text="Auto predict F0 (Pitch may become unstable when turned on in real-time inference.)",
+                )
+            ],
+            [
+                sg.Text("F0 prediction method"),
+                sg.Combo(
+                    ["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
+                    key="f0_method",
+                    default_value="crepe",
+                ),
+            ],
+            [
+                sg.Text("Cluster infer ratio"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0, 1.0),
+                    orientation="h",
+                    key="cluster_infer_ratio",
+                    default_value=0,
+                    resolution=0.01,
+                ),
+            ],
+            [
+                sg.Text("Noise scale"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0.0, 1.0),
+                    orientation="h",
+                    key="noise_scale",
+                    default_value=0.4,
+                    resolution=0.01,
+                ),
+            ],
+            [
+                sg.Text("Pad seconds"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0.0, 1.0),
+                    orientation="h",
+                    key="pad_seconds",
+                    default_value=0.1,
+                    resolution=0.01,
+                ),
+            ],
+            [
+                sg.Text("Chunk seconds"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0.0, 3.0),
+                    orientation="h",
+                    key="chunk_seconds",
+                    default_value=0.5,
+                    resolution=0.01,
+                ),
+            ],
+            [
+                sg.Checkbox(
+                    key="absolute_thresh",
+                    default=False,
+                    text="Absolute threshold (ignored (True) in realtime inference)",
+                )
+            ],
         ],
-        [
-            sg.Frame(
-                "File",
-                [
-                    [
-                        sg.Text("Input audio path"),
-                        sg.Push(),
-                        sg.InputText(key="input_path"),
-                        sg.FileBrowse(initial_folder="."),
-                        sg.Button("Play", key="play_input"),
-                    ],
-                    [sg.Checkbox(key="auto_play", default=True, text="Auto play")],
-                ],
-            )
+        "File": [
+            [
+                sg.Text("Input audio path"),
+                sg.Push(),
+                sg.InputText(key="input_path"),
+                sg.FileBrowse(initial_folder="."),
+                sg.Button("Play", key="play_input"),
+            ],
+            [sg.Checkbox(key="auto_play", default=True, text="Auto play")],
         ],
-        [
-            sg.Frame(
-                "Realtime",
-                [
-                    [
-                        sg.Text(
-                            "In Realtime Inference:\n"
-                            "    Setting F0 prediction method to 'crepe` may cause performance degradation.\n"
-                            "    Auto Predict F0 must be turned off.\n"
-                            + textwrap.fill(
-                                "If the audio sounds mumbly and choppy, the inference has not been made in time "
-                                "and the below parameters should be adjusted or the microphone input is too low and the "
-                                "silence threshold should be increased.",
-                                80,
-                            )
-                        )
-                    ],
-                    [
-                        sg.Text("Crossfade seconds"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0, 0.6),
-                            orientation="h",
-                            key="crossfade_seconds",
-                            default_value=0.08,
-                            resolution=0.001,
-                        ),
-                    ],
-                    [
-                        sg.Text("Block seconds"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0, 1.0),
-                            orientation="h",
-                            key="block_seconds",
-                            default_value=0.35,
-                            resolution=0.001,
-                        ),
-                    ],
-                    [
-                        sg.Text("Additional Infer seconds (before)"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0, 1.0),
-                            orientation="h",
-                            key="additional_infer_before_seconds",
-                            default_value=0.2,
-                            resolution=0.001,
-                        ),
-                    ],
-                    [
-                        sg.Text("Additional Infer seconds (after)"),
-                        sg.Push(),
-                        sg.Slider(
-                            range=(0, 1.0),
-                            orientation="h",
-                            key="additional_infer_after_seconds",
-                            default_value=0.08,
-                            resolution=0.001,
-                        ),
-                    ],
-                    [
-                        sg.Text("Realtime algorithm"),
-                        sg.Combo(
-                            ["2 (Divide by speech)", "1 (Divide constantly)"],
-                            default_value="1 (Divide constantly)",
-                            key="realtime_algorithm",
-                        ),
-                    ],
-                    [
-                        sg.Text("Input device"),
-                        sg.Combo(
-                            key="input_device",
-                            values=input_devices,
-                            size=(20, 1),
-                            default_value=input_devices[0],
-                        ),
-                    ],
-                    [
-                        sg.Text("Output device"),
-                        sg.Combo(
-                            key="output_device",
-                            values=output_devices,
-                            size=(20, 1),
-                            default_value=output_devices[0],
-                        ),
-                    ],
-                    [
-                        sg.Checkbox(
-                            "Passthrough original audio (for latency check)",
-                            key="passthrough_original",
-                            default=False,
-                        ),
-                    ],
-                ],
-            )
+        "Realtime": [
+            [
+                sg.Text(
+                    "In Realtime Inference:\n"
+                    "    Setting F0 prediction method to 'crepe` may cause performance degradation.\n"
+                    "    Auto Predict F0 must be turned off.\n"
+                    + textwrap.fill(
+                        "If the audio sounds mumbly and choppy, the inference has not been made in time "
+                        "and the below parameters should be adjusted or the microphone input is too low and the "
+                        "silence threshold should be increased.",
+                        80,
+                    )
+                )
+            ],
+            [
+                sg.Text("Crossfade seconds"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0, 0.6),
+                    orientation="h",
+                    key="crossfade_seconds",
+                    default_value=0.08,
+                    resolution=0.001,
+                ),
+            ],
+            [
+                sg.Text("Block seconds"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0, 1.0),
+                    orientation="h",
+                    key="block_seconds",
+                    default_value=0.35,
+                    resolution=0.001,
+                ),
+            ],
+            [
+                sg.Text("Additional Infer seconds (before)"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0, 1.0),
+                    orientation="h",
+                    key="additional_infer_before_seconds",
+                    default_value=0.2,
+                    resolution=0.001,
+                ),
+            ],
+            [
+                sg.Text("Additional Infer seconds (after)"),
+                sg.Push(),
+                sg.Slider(
+                    range=(0, 1.0),
+                    orientation="h",
+                    key="additional_infer_after_seconds",
+                    default_value=0.08,
+                    resolution=0.001,
+                ),
+            ],
+            [
+                sg.Text("Realtime algorithm"),
+                sg.Combo(
+                    ["2 (Divide by speech)", "1 (Divide constantly)"],
+                    default_value="1 (Divide constantly)",
+                    key="realtime_algorithm",
+                ),
+            ],
+            [
+                sg.Text("Input device"),
+                sg.Combo(
+                    key="input_device",
+                    values=input_devices,
+                    size=(20, 1),
+                    default_value=input_devices[0],
+                ),
+            ],
+            [
+                sg.Text("Output device"),
+                sg.Combo(
+                    key="output_device",
+                    values=output_devices,
+                    size=(20, 1),
+                    default_value=output_devices[0],
+                ),
+            ],
+            [
+                sg.Checkbox(
+                    "Passthrough original audio (for latency check)",
+                    key="passthrough_original",
+                    default=False,
+                ),
+            ],
         ],
-        [sg.Checkbox(key="use_gpu", default=True, text="Use GPU")],
+    }
+
+    layout = []
+    for name, items in frame_contents.items():
+        frame = sg.Frame(name, items)
+        frame.expand_x = True
+        layout.append([frame])
+    layout.extend(
         [
-            sg.Button("Infer", key="infer"),
-            sg.Button("(Re)Start Voice Changer", key="start_vc"),
-            sg.Button("Stop Voice Changer", key="stop_vc"),
-        ],
-    ]
-    for row in layout:
-        for frame in row:
-            if isinstance(frame, sg.Frame):
-                frame.expand_x = True
+            [sg.Checkbox(key="use_gpu", default=True, text="Use GPU")],
+            [
+                sg.Text("Presets"),
+                sg.Combo(
+                    key="presets",
+                    values=list(load_presets().keys()),
+                    size=(20, 1),
+                    enable_events=True,
+                ),
+                sg.Button("Delete preset", key="delete_preset"),
+                sg.InputText(key="preset_name"),
+                sg.Button("Add preset", key="add_preset"),
+            ],
+            [
+                sg.Button("Infer", key="infer"),
+                sg.Button("(Re)Start Voice Changer", key="start_vc"),
+                sg.Button("Stop Voice Changer", key="stop_vc"),
+            ],
+        ]
+    )
     window = sg.Window(
         f"{__name__.split('.')[0]}", layout
     )  # , use_custom_titlebar=True)
+
+    event, values = window.read(timeout=0.01)
+
+    def update_speaker() -> None:
+        from . import utils
+
+        config_path = Path(values["config_path"])
+        if config_path.exists() and config_path.is_file():
+            hp = utils.get_hparams_from_file(values["config_path"])
+            LOG.info(f"Loaded config from {values['config_path']}")
+            window["speaker"].update(
+                values=list(hp.__dict__["spk"].keys()), set_to_index=0
+            )
+
+    update_speaker()
     with ProcessPool(max_workers=1) as pool:
         future = None
         while True:
-            event, values = window.read(100)
+            event, values = window.read()
             if event == sg.WIN_CLOSED:
                 break
 
-            def update_combo() -> None:
-                from . import utils
-
-                config_path = Path(values["config_path"])
-                if config_path.exists() and config_path.is_file():
-                    hp = utils.get_hparams_from_file(values["config_path"])
-                    LOG.info(f"Loaded config from {values['config_path']}")
-                    window["speaker"].update(
-                        values=list(hp.__dict__["spk"].keys()), set_to_index=0
-                    )
-
             if not event == sg.EVENT_TIMEOUT:
                 LOG.info(f"Event {event}, values {values}")
-            if values["speaker"] == "":
-                update_combo()
             if event.endswith("_path"):
                 for name in window.AllKeysDict:
                     if str(name).endswith("_browse"):
@@ -349,17 +369,26 @@ def main():
                             browser.update()
                         else:
                             LOG.warning(f"Browser {browser} is not a FileBrowse")
-                """browser = window[f"{event}_browse"]
-                if isinstance(browser, sg.Button):
-                    LOG.info(
-                        f"Updating browser {browser} to {Path(values[event]).parent}"
-                    )
-                    browser.InitialFolder = Path(values[event]).parent
-                    browser.update()
-                else:
-                    LOG.warning(f"Browser {browser} is not a FileBrowse")"""
-            if event == "config_path":
-                update_combo()
+
+            preset_keys = [
+                key
+                for key in window.AllKeysDict
+                if not any(key in exclude for exclude in ["preset", "browse"])
+            ]
+            if event == "add_preset":
+                presets = add_preset(
+                    values["preset_name"], {key: values[key] for key in preset_keys}
+                )
+                window["presets"].update(values=list(presets.keys()))
+            elif event == "delete_preset":
+                presets = delete_preset(values["presets"])
+                window["presets"].update(values=list(presets.keys()))
+            elif event == "presets":
+                for key, value in load_presets()[values["presets"]].items():
+                    if key in preset_keys:
+                        window[key].update(value)
+            elif event == "config_path":
+                update_speaker()
             elif event == "infer":
                 from .inference_main import infer
 
