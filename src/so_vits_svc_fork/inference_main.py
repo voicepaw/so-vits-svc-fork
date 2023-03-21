@@ -219,6 +219,7 @@ def realtime(
         callback=callback,
         samplerate=svc_model.target_sample,
         blocksize=int(block_seconds * svc_model.target_sample),
+        latency="low",
     ) as stream:
         while True:
             LOG.info(f"Latency: {stream.latency}")
