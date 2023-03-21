@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import textwrap
 from logging import getLogger
 from pathlib import Path
 
@@ -45,6 +46,7 @@ def main():
                             default_text=model_candidates[-1].absolute().as_posix()
                             if model_candidates
                             else "",
+                            enable_events=True,
                         ),
                         sg.FileBrowse(
                             initial_folder=Path("./logs/44k/").absolute
@@ -77,7 +79,7 @@ def main():
                     [
                         sg.Text("Cluster model path"),
                         sg.Push(),
-                        sg.InputText(key="cluster_model_path"),
+                        sg.InputText(key="cluster_model_path", enable_events=True),
                         sg.FileBrowse(
                             initial_folder="./logs/44k/"
                             if Path("./logs/44k/").exists()
@@ -128,7 +130,7 @@ def main():
                     [
                         sg.Text("F0 prediction method"),
                         sg.Combo(
-                            ["crepe", "parselmouth", "dio", "harvest"],
+                            ["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
                             key="f0_method",
                             default_value="crepe",
                         ),
@@ -207,13 +209,26 @@ def main():
                 "Realtime",
                 [
                     [
+                        sg.Text(
+                            "In Realtime Inference:\n"
+                            "    Setting F0 prediction method to 'crepe` may cause performance degradation.\n"
+                            "    Auto Predict F0 must be turned off.\n"
+                            + textwrap.fill(
+                                "If the audio sounds mumbly and choppy, the inference has not been made in time "
+                                "and the below parameters should be adjusted or the microphone input is too low and the "
+                                "silence threshold should be increased.",
+                                80,
+                            )
+                        )
+                    ],
+                    [
                         sg.Text("Crossfade seconds"),
                         sg.Push(),
                         sg.Slider(
                             range=(0, 0.6),
                             orientation="h",
                             key="crossfade_seconds",
-                            default_value=0.1,
+                            default_value=0.08,
                             resolution=0.001,
                         ),
                     ],
@@ -221,18 +236,40 @@ def main():
                         sg.Text("Block seconds"),
                         sg.Push(),
                         sg.Slider(
-                            range=(0, 3.0),
+                            range=(0, 1.0),
                             orientation="h",
                             key="block_seconds",
-                            default_value=1,
-                            resolution=0.01,
+                            default_value=0.35,
+                            resolution=0.001,
+                        ),
+                    ],
+                    [
+                        sg.Text("Additional Infer seconds (before)"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0, 1.0),
+                            orientation="h",
+                            key="additional_infer_before_seconds",
+                            default_value=0.2,
+                            resolution=0.001,
+                        ),
+                    ],
+                    [
+                        sg.Text("Additional Infer seconds (after)"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0, 1.0),
+                            orientation="h",
+                            key="additional_infer_after_seconds",
+                            default_value=0.08,
+                            resolution=0.001,
                         ),
                     ],
                     [
                         sg.Text("Realtime algorithm"),
                         sg.Combo(
                             ["2 (Divide by speech)", "1 (Divide constantly)"],
-                            default_value="2 (Divide by speech)",
+                            default_value="1 (Divide constantly)",
                             key="realtime_algorithm",
                         ),
                     ],
@@ -252,6 +289,13 @@ def main():
                             values=output_devices,
                             size=(20, 1),
                             default_value=output_devices[0],
+                        ),
+                    ],
+                    [
+                        sg.Checkbox(
+                            "Passthrough original audio (for latency check)",
+                            key="passthrough_original",
+                            default=False,
                         ),
                     ],
                 ],
@@ -294,7 +338,18 @@ def main():
             if values["speaker"] == "":
                 update_combo()
             if event.endswith("_path"):
-                browser = window[f"{event}_browse"]
+                for name in window.AllKeysDict:
+                    if str(name).endswith("_browse"):
+                        browser = window[name]
+                        if isinstance(browser, sg.Button):
+                            LOG.info(
+                                f"Updating browser {browser} to {Path(values[event]).parent}"
+                            )
+                            browser.InitialFolder = Path(values[event]).parent
+                            browser.update()
+                        else:
+                            LOG.warning(f"Browser {browser} is not a FileBrowse")
+                """browser = window[f"{event}_browse"]
                 if isinstance(browser, sg.Button):
                     LOG.info(
                         f"Updating browser {browser} to {Path(values[event]).parent}"
@@ -302,7 +357,7 @@ def main():
                     browser.InitialFolder = Path(values[event]).parent
                     browser.update()
                 else:
-                    LOG.warning(f"Browser {browser} is not a FileBrowse")
+                    LOG.warning(f"Browser {browser} is not a FileBrowse")"""
             if event == "config_path":
                 update_combo()
             elif event == "infer":
@@ -360,6 +415,12 @@ def main():
                         noise_scale=values["noise_scale"],
                         f0_method=values["f0_method"],
                         crossfade_seconds=values["crossfade_seconds"],
+                        additional_infer_before_seconds=values[
+                            "additional_infer_before_seconds"
+                        ],
+                        additional_infer_after_seconds=values[
+                            "additional_infer_after_seconds"
+                        ],
                         db_thresh=values["silence_threshold"],
                         pad_seconds=values["pad_seconds"],
                         chunk_seconds=values["chunk_seconds"],
@@ -368,6 +429,7 @@ def main():
                         block_seconds=values["block_seconds"],
                         input_device=values["input_device"],
                         output_device=values["output_device"],
+                        passthrough_original=values["passthrough_original"],
                     ),
                 )
             elif event == "stop_vc":

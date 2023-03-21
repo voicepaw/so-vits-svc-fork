@@ -8,6 +8,7 @@ import librosa
 import numpy as np
 import soundfile
 import torch
+from cm_time import timer
 
 from .inference.infer_tool import RealtimeVC, RealtimeVC2, Svc
 
@@ -28,7 +29,9 @@ def infer(
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+    f0_method: Literal[
+        "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+    ] = "crepe",
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
@@ -80,18 +83,23 @@ def realtime(
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+    f0_method: Literal[
+        "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+    ] = "crepe",
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
     chunk_seconds: float = 0.5,
     # realtime config
     crossfade_seconds: float = 0.05,
+    additional_infer_before_seconds: float = 0.2,
+    additional_infer_after_seconds: float = 0.1,
     block_seconds: float = 0.5,
     version: int = 2,
     input_device: int | str | None = None,
     output_device: int | str | None = None,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
+    passthrough_original: bool = False,
 ):
     import sounddevice as sd
 
@@ -106,10 +114,18 @@ def realtime(
         else None,
         device=device,
     )
+
+    LOG.info("Creating realtime model...")
     if version == 1:
         model = RealtimeVC(
             svc_model=svc_model,
             crossfade_len=int(crossfade_seconds * svc_model.target_sample),
+            additional_infer_before_len=int(
+                additional_infer_before_seconds * svc_model.target_sample
+            ),
+            additional_infer_after_len=int(
+                additional_infer_after_seconds * svc_model.target_sample
+            ),
         )
     else:
         model = RealtimeVC2(
@@ -187,9 +203,15 @@ def realtime(
         )
         if version == 1:
             kwargs["pad_seconds"] = pad_seconds
-        outdata[:] = model.process(
-            **kwargs,
-        ).reshape(-1, 1)
+        with timer() as t:
+            inference = model.process(
+                **kwargs,
+            ).reshape(-1, 1)
+        if passthrough_original:
+            outdata[:] = (indata + inference) / 2
+        else:
+            outdata[:] = inference
+        LOG.info(f"True Realtime coef: {block_seconds / t.elapsed:.2f}")
 
     with sd.Stream(
         device=(input_device, output_device),
@@ -197,6 +219,8 @@ def realtime(
         callback=callback,
         samplerate=svc_model.target_sample,
         blocksize=int(block_seconds * svc_model.target_sample),
-    ):
+        latency="low",
+    ) as stream:
         while True:
-            sd.sleep(1)
+            LOG.info(f"Latency: {stream.latency}")
+            sd.sleep(1000)

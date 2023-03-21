@@ -52,6 +52,9 @@ class Chunk:
         # return self.end - self.start
         return float32(self.audio.shape[0])
 
+    def __repr__(self) -> str:
+        return f"Chunk(Speech: {self.is_speech}, {self.duration})"
+
 
 def split_silence(
     audio: ndarray[Any, dtype[float32]],
@@ -125,7 +128,9 @@ class Svc:
         tran: int,
         cluster_infer_ratio: float,
         speaker: int | str,
-        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+        f0_method: Literal[
+            "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+        ] = "crepe",
     ):
         f0 = utils.compute_f0(
             audio,
@@ -165,7 +170,9 @@ class Svc:
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
-        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+        f0_method: Literal[
+            "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+        ] = "crepe",
     ) -> tuple[torch.Tensor, int]:
         audio = audio.astype(np.float32)
         # get speaker id
@@ -222,7 +229,9 @@ class Svc:
         auto_predict_f0: bool = False,
         cluster_infer_ratio: float = 0,
         noise_scale: float = 0.4,
-        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+        f0_method: Literal[
+            "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+        ] = "crepe",
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
@@ -286,10 +295,44 @@ class Svc:
         return result_audio
 
 
+def linear_crossfade(
+    first: ndarray[Any, dtype[float32]],
+    second: ndarray[Any, dtype[float32]],
+    length: int,
+) -> ndarray[Any, dtype[float32]]:
+    return np.concatenate(
+        [
+            first[:-length],
+            first[-length:] * np.linspace(1, 0, length)
+            + second[:length] * np.linspace(0, 1, length),
+            second[length:],
+        ]
+    )
+
+
 class Crossfader:
-    def __init__(self, *, crossfade_len: int) -> None:
+    def __init__(
+        self,
+        *,
+        additional_infer_before_len: int,
+        additional_infer_after_len: int,
+        crossfade_len: int,
+    ) -> None:
+        if additional_infer_before_len < 0:
+            raise ValueError("additional_infer_len must be >= 0")
+        if crossfade_len < 0:
+            raise ValueError("crossfade_len must be >= 0")
+        if additional_infer_after_len < 0:
+            raise ValueError("additional_infer_len must be >= 0")
+        if additional_infer_before_len < 0:
+            raise ValueError("additional_infer_len must be >= 0")
+        self.additional_infer_before_len = additional_infer_before_len
+        self.additional_infer_after_len = additional_infer_after_len
         self.crossfade_len = crossfade_len
-        self.last_input_left = np.zeros(crossfade_len, dtype=np.float32)
+        self.last_input_left = np.zeros(
+            crossfade_len + additional_infer_before_len + additional_infer_after_len,
+            dtype=np.float32,
+        )
         self.last_infered_left = np.zeros(crossfade_len, dtype=np.float32)
 
     def process(
@@ -304,33 +347,64 @@ class Crossfader:
         crossfade     :▲■■■■■
                              ▲□□□□□
         """
+        # check input
         if input_audio.ndim != 1:
             raise ValueError("Input audio must be 1-dimensional.")
-        if input_audio.shape[0] < self.crossfade_len:
+        if (
+            input_audio.shape[0] + self.additional_infer_before_len
+            <= self.crossfade_len
+        ):
             raise ValueError(
-                f"Input audio length ({len(input_audio)}) should be at least crossfade length ({self.crossfade_len})."
+                f"Input audio length ({input_audio.shape[0]}) + additional_infer_len ({self.additional_infer_before_len}) must be greater than crossfade_len ({self.crossfade_len})."
             )
         input_audio = input_audio.astype(np.float32)
-        input_audio_ = np.concatenate([self.last_input_left, input_audio])
-        infer_audio_ = self.infer(input_audio_, *args, **kwargs)
-        if len(infer_audio_) != len(input_audio_):
+        input_audio_len = len(input_audio)
+
+        # concat last input and infer
+        input_audio_concat = np.concatenate([self.last_input_left, input_audio])
+        del input_audio
+        pad_len = 0
+        if pad_len:
+            infer_audio_concat = self.infer(
+                np.pad(input_audio_concat, (pad_len, pad_len), mode="reflect"),
+                *args,
+                **kwargs,
+            )[pad_len:-pad_len]
+        else:
+            infer_audio_concat = self.infer(input_audio_concat, *args, **kwargs)
+        if len(infer_audio_concat) != len(input_audio_concat):
             raise ValueError(
-                f"Inferred audio length ({len(infer_audio_)}) should be equal to input audio length ({len(input_audio_)})."
+                f"Inferred audio length ({len(infer_audio_concat)}) should be equal to input audio length ({len(input_audio_concat)})."
             )
-        result_audio = np.concatenate(
-            [
-                (
-                    self.last_infered_left * np.linspace(1, 0, self.crossfade_len)
-                    + infer_audio_[: self.crossfade_len]
-                    * np.linspace(0, 1, self.crossfade_len)
-                )
-                / 2,
-                infer_audio_[self.crossfade_len : -self.crossfade_len],
-            ]
+
+        infer_audio_to_use = infer_audio_concat[
+            -(
+                self.crossfade_len + input_audio_len + self.additional_infer_after_len
+            ) : -(self.crossfade_len + self.additional_infer_after_len)
+        ]
+        assert (
+            len(infer_audio_to_use) == input_audio_len
+        ), f"{len(infer_audio_to_use)} != {input_audio_len}"
+        result_audio = linear_crossfade(
+            self.last_infered_left, infer_audio_to_use, self.crossfade_len
         )
-        self.last_input_left = input_audio[-self.crossfade_len :]
-        self.last_infered_left = infer_audio_[-self.crossfade_len :]
-        assert len(result_audio) == len(input_audio)
+        assert (
+            len(result_audio) == input_audio_len
+        ), f"{len(result_audio)} != {input_audio_len}"
+
+        # update last input and inferred
+        self.last_input_left = input_audio_concat[
+            -(
+                self.crossfade_len
+                + self.additional_infer_before_len
+                + self.additional_infer_after_len
+            ) :
+        ]
+        self.last_infered_left = infer_audio_concat[
+            -(
+                self.crossfade_len + self.additional_infer_after_len
+            ) : -self.additional_infer_after_len
+        ]
         return result_audio
 
     def infer(
@@ -345,11 +419,17 @@ class RealtimeVC(Crossfader):
         *,
         svc_model: Svc,
         crossfade_len: int = 3840,
+        additional_infer_before_len: int = 7680,
+        additional_infer_after_len: int = 7680,
         split: bool = True,
     ) -> None:
         self.svc_model = svc_model
         self.split = split
-        super().__init__(crossfade_len=crossfade_len)
+        super().__init__(
+            crossfade_len=crossfade_len,
+            additional_infer_before_len=additional_infer_before_len,
+            additional_infer_after_len=additional_infer_after_len,
+        )
 
     def process(
         self,
@@ -368,7 +448,9 @@ class RealtimeVC(Crossfader):
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
-        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+        f0_method: Literal[
+            "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+        ] = "crepe",
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
@@ -426,7 +508,9 @@ class RealtimeVC2:
         cluster_infer_ratio: float = 0,
         auto_predict_f0: bool = False,
         noise_scale: float = 0.4,
-        f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+        f0_method: Literal[
+            "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+        ] = "crepe",
         # slice config
         db_thresh: int = -40,
         chunk_seconds: float = 0.5,

@@ -271,7 +271,7 @@ def infer(
 @click.option(
     "-fm",
     "--f0-method",
-    type=click.Choice(["crepe", "parselmouth", "dio", "harvest"]),
+    type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
     default="crepe",
     help="f0 prediction method",
 )
@@ -284,7 +284,21 @@ def infer(
     default=0.01,
     help="crossfade seconds",
 )
-@click.option("-b", "--block-seconds", type=float, default=1, help="block seconds")
+@click.option(
+    "-ab",
+    "--additional-infer-before-seconds",
+    type=float,
+    default=0.2,
+    help="additional infer before seconds",
+)
+@click.option(
+    "-aa",
+    "--additional-infer-after-seconds",
+    type=float,
+    default=0.1,
+    help="additional infer after seconds",
+)
+@click.option("-b", "--block-seconds", type=float, default=0.5, help="block seconds")
 @click.option(
     "-d",
     "--device",
@@ -296,6 +310,14 @@ def infer(
 @click.option("-v", "--version", type=int, default=2, help="version")
 @click.option("-i", "--input-device", type=int, default=None, help="input device")
 @click.option("-o", "--output-device", type=int, default=None, help="output device")
+@click.option(
+    "-po",
+    "--passthrough-original",
+    type=bool,
+    default=False,
+    is_flag=True,
+    help="passthrough original (for latency check)",
+)
 def vc(
     # paths
     model_path: Path,
@@ -307,18 +329,21 @@ def vc(
     auto_predict_f0: bool,
     cluster_infer_ratio: float,
     noise_scale: float,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"],
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
     # slice config
     db_thresh: int,
     pad_seconds: float,
     chunk_seconds: float,
     # realtime config
     crossfade_seconds: float,
+    additional_infer_before_seconds: float,
+    additional_infer_after_seconds: float,
     block_seconds: float,
     version: int,
     input_device: int | str | None,
     output_device: int | str | None,
     device: Literal["cpu", "cuda"],
+    passthrough_original: bool = False,
 ) -> None:
     """Realtime inference from microphone"""
     from .inference_main import realtime
@@ -358,11 +383,14 @@ def vc(
         chunk_seconds=chunk_seconds,
         # realtime config
         crossfade_seconds=crossfade_seconds,
+        additional_infer_before_seconds=additional_infer_before_seconds,
+        additional_infer_after_seconds=additional_infer_after_seconds,
         block_seconds=block_seconds,
         version=version,
         input_device=input_device,
         output_device=output_device,
         device=device,
+        passthrough_original=passthrough_original,
     )
 
 
@@ -467,7 +495,7 @@ def pre_config(
 @click.option(
     "-fm",
     "--f0-method",
-    type=click.Choice(["crepe", "parselmouth", "dio", "harvest"]),
+    type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
     default="crepe",
 )
 def pre_hubert(
@@ -475,7 +503,7 @@ def pre_hubert(
     config_path: Path,
     n_jobs: bool,
     force_rebuild: bool,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"],
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
 ) -> None:
     """Preprocessing part 3: hubert
     If the HuBERT model is not found, it will be downloaded automatically."""
