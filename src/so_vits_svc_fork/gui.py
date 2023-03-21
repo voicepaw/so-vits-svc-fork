@@ -8,11 +8,13 @@ from pathlib import Path
 import PySimpleGUI as sg
 import sounddevice as sd
 import soundfile as sf
+import torch
 from pebble import ProcessPool
 
 from .__main__ import init_logger
 
-GUI_PRESETS_PATH = Path(__file__).parent / "gui_presets.json"
+GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
+GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
 LOG = getLogger(__name__)
 
 init_logger()
@@ -26,7 +28,12 @@ def play_audio(path: Path | str):
 
 
 def load_presets() -> dict:
-    return json.loads(GUI_PRESETS_PATH.read_text()) if GUI_PRESETS_PATH.exists() else {}
+    defaults = json.loads(GUI_DEFAULT_PRESETS_PATH.read_text())
+    users = (
+        json.loads(GUI_PRESETS_PATH.read_text()) if GUI_PRESETS_PATH.exists() else {}
+    )
+    # prioriy: defaults > users
+    return {**defaults, **users}
 
 
 def add_preset(name: str, preset: dict) -> dict:
@@ -34,15 +41,18 @@ def add_preset(name: str, preset: dict) -> dict:
     presets[name] = preset
     with GUI_PRESETS_PATH.open("w") as f:
         json.dump(presets, f, indent=4)
-    return presets
+    return load_presets()
 
 
 def delete_preset(name: str) -> dict:
     presets = load_presets()
-    del presets[name]
+    if name in presets:
+        del presets[name]
+    else:
+        LOG.warning(f"Cannot delete preset {name} because it does not exist.")
     with GUI_PRESETS_PATH.open("w") as f:
         json.dump(presets, f, indent=4)
-    return presets
+    return load_presets()
 
 
 def main():
@@ -118,24 +128,22 @@ def main():
                     range=(-60.0, 0),
                     orientation="h",
                     key="silence_threshold",
-                    default_value=-30,
                     resolution=0.1,
                 ),
             ],
             [
-                sg.Text("Pitch"),
+                sg.Text("Pitch (12 = 1 octave)"),
                 sg.Push(),
                 sg.Slider(
-                    range=(-20, 20),
+                    range=(-36, 36),
                     orientation="h",
                     key="transpose",
-                    default_value=0,
+                    tick_interval=12,
                 ),
             ],
             [
                 sg.Checkbox(
                     key="auto_predict_f0",
-                    default=True,
                     text="Auto predict F0 (Pitch may become unstable when turned on in real-time inference.)",
                 )
             ],
@@ -144,7 +152,6 @@ def main():
                 sg.Combo(
                     ["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
                     key="f0_method",
-                    default_value="crepe",
                 ),
             ],
             [
@@ -154,7 +161,6 @@ def main():
                     range=(0, 1.0),
                     orientation="h",
                     key="cluster_infer_ratio",
-                    default_value=0,
                     resolution=0.01,
                 ),
             ],
@@ -165,7 +171,6 @@ def main():
                     range=(0.0, 1.0),
                     orientation="h",
                     key="noise_scale",
-                    default_value=0.4,
                     resolution=0.01,
                 ),
             ],
@@ -176,7 +181,6 @@ def main():
                     range=(0.0, 1.0),
                     orientation="h",
                     key="pad_seconds",
-                    default_value=0.1,
                     resolution=0.01,
                 ),
             ],
@@ -187,14 +191,12 @@ def main():
                     range=(0.0, 3.0),
                     orientation="h",
                     key="chunk_seconds",
-                    default_value=0.5,
                     resolution=0.01,
                 ),
             ],
             [
                 sg.Checkbox(
                     key="absolute_thresh",
-                    default=False,
                     text="Absolute threshold (ignored (True) in realtime inference)",
                 )
             ],
@@ -204,10 +206,10 @@ def main():
                 sg.Text("Input audio path"),
                 sg.Push(),
                 sg.InputText(key="input_path"),
-                sg.FileBrowse(initial_folder="."),
+                sg.FileBrowse(initial_folder=".", key="input_path_browse"),
                 sg.Button("Play", key="play_input"),
             ],
-            [sg.Checkbox(key="auto_play", default=True, text="Auto play")],
+            [sg.Checkbox(key="auto_play", text="Auto play")],
         ],
         "Realtime": [
             [
@@ -310,7 +312,11 @@ def main():
         layout.append([frame])
     layout.extend(
         [
-            [sg.Checkbox(key="use_gpu", default=True, text="Use GPU")],
+            [
+                sg.Checkbox(
+                    key="use_gpu", default=torch.cuda.is_available(), text="Use GPU"
+                )
+            ],
             [
                 sg.Text("Presets"),
                 sg.Combo(
@@ -347,7 +353,22 @@ def main():
                 values=list(hp.__dict__["spk"].keys()), set_to_index=0
             )
 
+    PRESET_KEYS = [
+        key
+        for key in values.keys()
+        if not any(exclude in key for exclude in ["preset", "browse"])
+    ]
+
+    def apply_preset(name: str) -> None:
+        for key, value in load_presets()[name].items():
+            if key in PRESET_KEYS:
+                window[key].update(value)
+
     update_speaker()
+    default_name = list(load_presets().keys())[0]
+    apply_preset(default_name)
+    window["presets"].update(default_name)
+    del default_name
     with ProcessPool(max_workers=1) as pool:
         future = None
         while True:
@@ -370,23 +391,17 @@ def main():
                         else:
                             LOG.warning(f"Browser {browser} is not a FileBrowse")
 
-            preset_keys = [
-                key
-                for key in window.AllKeysDict
-                if not any(key in exclude for exclude in ["preset", "browse"])
-            ]
             if event == "add_preset":
                 presets = add_preset(
-                    values["preset_name"], {key: values[key] for key in preset_keys}
+                    values["preset_name"], {key: values[key] for key in PRESET_KEYS}
                 )
                 window["presets"].update(values=list(presets.keys()))
             elif event == "delete_preset":
                 presets = delete_preset(values["presets"])
                 window["presets"].update(values=list(presets.keys()))
             elif event == "presets":
-                for key, value in load_presets()[values["presets"]].items():
-                    if key in preset_keys:
-                        window[key].update(value)
+                apply_preset(values["presets"])
+                update_speaker()
             elif event == "config_path":
                 update_speaker()
             elif event == "infer":

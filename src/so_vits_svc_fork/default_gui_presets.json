@@ -1,0 +1,32 @@
+{
+  "Default VC": {
+    "silence_threshold": -40.0,
+    "transpose": 12.0,
+    "auto_predict_f0": false,
+    "f0_method": "dio",
+    "cluster_infer_ratio": 0.0,
+    "noise_scale": 0.4,
+    "pad_seconds": 0.1,
+    "chunk_seconds": 0.5,
+    "absolute_thresh": true,
+    "crossfade_seconds": 0.08,
+    "block_seconds": 0.2,
+    "additional_infer_before_seconds": 0.2,
+    "additional_infer_after_seconds": 0.08,
+    "realtime_algorithm": "1 (Divide constantly)",
+    "passthrough_original": false
+  },
+  "Default File": {
+    "silence_threshold": -30.0,
+    "transpose": 0.0,
+    "auto_predict_f0": true,
+    "f0_method": "crepe",
+    "cluster_infer_ratio": 0.0,
+    "noise_scale": 0.4,
+    "pad_seconds": 0.1,
+    "chunk_seconds": 0.5,
+    "absolute_thresh": true,
+    "auto_play": true,
+    "passthrough_original": false
+  }
+}

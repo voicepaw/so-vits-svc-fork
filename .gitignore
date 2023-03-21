@@ -153,3 +153,4 @@ tests/**/*.pdf
 tests/**/*.csv
 *.tfevents.*
 *.pt
+user_gui_presets.json
