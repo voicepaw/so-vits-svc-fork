@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.0.2 (2023-03-21)
+### Fix
+* **deps:** Update dependency scipy to v1.10.1 ([#35](https://github.com/34j/so-vits-svc-fork/issues/35)) ([`e0253bf`](https://github.com/34j/so-vits-svc-fork/commit/e0253bf1e655f86be605395a18f343763d975101))
+
 ## v1.0.1 (2023-03-20)
 ### Documentation
 * Add ThrowawayAccount01 as a contributor for bug ([#47](https://github.com/34j/so-vits-svc-fork/issues/47)) ([`15e31fa`](https://github.com/34j/so-vits-svc-fork/commit/15e31fa806249d45235918fa62a48a86c43538cb))
