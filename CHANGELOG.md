@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.1 (2023-03-21)
+### Fix
+* Use librosa.load() instead of soundfile.read() ([#58](https://github.com/34j/so-vits-svc-fork/issues/58)) ([`b343106`](https://github.com/34j/so-vits-svc-fork/commit/b34310662b2bac53884df396932f72366132ea01))
+* **gui:** Fix window too big to show in a FHD environment ([#57](https://github.com/34j/so-vits-svc-fork/issues/57)) ([`259e6e6`](https://github.com/34j/so-vits-svc-fork/commit/259e6e6eb6ebfd9027b1813756d67d1a516e0214))
+
 ## v1.2.0 (2023-03-21)
 ### Feature
 * Add presets ([#55](https://github.com/34j/so-vits-svc-fork/issues/55)) ([`e8adcc6`](https://github.com/34j/so-vits-svc-fork/commit/e8adcc621f6caf5f4b20846575b3559c032ed47f))
