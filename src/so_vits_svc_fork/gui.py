@@ -215,7 +215,8 @@ def main():
                             "    Auto Predict F0 must be turned off.\n"
                             + textwrap.fill(
                                 "If the audio sounds mumbly and choppy, the inference has not been made in time "
-                                "and the parameters should be adjusted.",
+                                "and the below parameters should be adjusted or the microphone input is too low and the "
+                                "silence threshold should be increased.",
                                 80,
                             )
                         )
