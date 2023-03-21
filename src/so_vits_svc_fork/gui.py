@@ -277,6 +277,13 @@ def main():
                             default_value=output_devices[0],
                         ),
                     ],
+                    [
+                        sg.Checkbox(
+                            "Passthrough original audio (for latency check)",
+                            key="passthrough_original",
+                            default=False,
+                        ),
+                    ],
                 ],
             )
         ],
@@ -408,6 +415,7 @@ def main():
                         block_seconds=values["block_seconds"],
                         input_device=values["input_device"],
                         output_device=values["output_device"],
+                        passthrough_original=values["passthrough_original"],
                     ),
                 )
             elif event == "stop_vc":

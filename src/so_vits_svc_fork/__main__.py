@@ -310,6 +310,14 @@ def infer(
 @click.option("-v", "--version", type=int, default=2, help="version")
 @click.option("-i", "--input-device", type=int, default=None, help="input device")
 @click.option("-o", "--output-device", type=int, default=None, help="output device")
+@click.option(
+    "-po",
+    "--passthrough-original",
+    type=bool,
+    default=False,
+    is_flag=True,
+    help="passthrough original (for latency check)",
+)
 def vc(
     # paths
     model_path: Path,
@@ -335,6 +343,7 @@ def vc(
     input_device: int | str | None,
     output_device: int | str | None,
     device: Literal["cpu", "cuda"],
+    passthrough_original: bool = False,
 ) -> None:
     """Realtime inference from microphone"""
     from .inference_main import realtime
@@ -381,6 +390,7 @@ def vc(
         input_device=input_device,
         output_device=output_device,
         device=device,
+        passthrough_original=passthrough_original,
     )
 
 

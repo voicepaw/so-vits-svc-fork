@@ -99,6 +99,7 @@ def realtime(
     input_device: int | str | None = None,
     output_device: int | str | None = None,
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
+    passthrough_original: bool = False,
 ):
     import sounddevice as sd
 
@@ -203,9 +204,13 @@ def realtime(
         if version == 1:
             kwargs["pad_seconds"] = pad_seconds
         with timer() as t:
-            outdata[:] = model.process(
+            inference = model.process(
                 **kwargs,
             ).reshape(-1, 1)
+        if passthrough_original:
+            outdata[:] = (indata + inference) / 2
+        else:
+            outdata[:] = inference
         LOG.info(f"True Realtime coef: {block_seconds / t.elapsed:.2f}")
 
     with sd.Stream(
