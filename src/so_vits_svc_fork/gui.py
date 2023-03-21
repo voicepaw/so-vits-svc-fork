@@ -237,7 +237,9 @@ def main():
                 ),
             ],
             [
-                sg.Text("Block seconds"),
+                sg.Text(
+                    "Block seconds (big -> more robust, slower, (the same) latency)"
+                ),
                 sg.Push(),
                 sg.Slider(
                     range=(0, 1.0),
@@ -248,7 +250,9 @@ def main():
                 ),
             ],
             [
-                sg.Text("Additional Infer seconds (before)"),
+                sg.Text(
+                    "Additional Infer seconds (before) (big -> more robust, slower)"
+                ),
                 sg.Push(),
                 sg.Slider(
                     range=(0, 1.0),
@@ -259,7 +263,9 @@ def main():
                 ),
             ],
             [
-                sg.Text("Additional Infer seconds (after)"),
+                sg.Text(
+                    "Additional Infer seconds (after) (big -> more robust, slower, additional latency)"
+                ),
                 sg.Push(),
                 sg.Slider(
                     range=(0, 1.0),
