@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.0 (2023-03-21)
+### Feature
+* Enhance RealtimeVC ([#52](https://github.com/34j/so-vits-svc-fork/issues/52)) ([`81551ce`](https://github.com/34j/so-vits-svc-fork/commit/81551ce9c6fb7924d184c3c5a4cf9035168b28d2))
+
+### Documentation
+* Update gui screenshot ([#53](https://github.com/34j/so-vits-svc-fork/issues/53)) ([`58d06aa`](https://github.com/34j/so-vits-svc-fork/commit/58d06aa7460dd75ef793da295bf7651ae9940814))
+
 ## v1.0.2 (2023-03-21)
 ### Fix
 * **deps:** Update dependency scipy to v1.10.1 ([#35](https://github.com/34j/so-vits-svc-fork/issues/35)) ([`e0253bf`](https://github.com/34j/so-vits-svc-fork/commit/e0253bf1e655f86be605395a18f343763d975101))
