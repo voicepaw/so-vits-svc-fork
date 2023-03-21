@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.0 (2023-03-21)
+### Feature
+* Add presets ([#55](https://github.com/34j/so-vits-svc-fork/issues/55)) ([`e8adcc6`](https://github.com/34j/so-vits-svc-fork/commit/e8adcc621f6caf5f4b20846575b3559c032ed47f))
+
 ## v1.1.1 (2023-03-21)
 ### Fix
 * **deps:** Update dependency gradio to v3.23.0 ([#54](https://github.com/34j/so-vits-svc-fork/issues/54)) ([`a2bdb48`](https://github.com/34j/so-vits-svc-fork/commit/a2bdb48b436d206b30bb72409852c0b30d6811e9))
