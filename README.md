@@ -59,7 +59,7 @@ pip install so-vits-svc-fork
 
 #### GUI
 
-<img src="https://raw.githubusercontent.com/34j/so-vits-svc-fork/main/docs/_static/gui.png" height="800" />
+![GUI](https://raw.githubusercontent.com/34j/so-vits-svc-fork/main/docs/_static/gui.png)
 
 GUI launches with the following command:
 
@@ -80,6 +80,8 @@ svc vc --model-path <model-path>
 ```shell
 svc --model-path <model-path> source.wav
 ```
+
+[Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on HuggingFace.
 
 #### Notes
 
