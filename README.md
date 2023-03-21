@@ -81,6 +81,8 @@ svc vc --model-path <model-path>
 svc --model-path <model-path> source.wav
 ```
 
+[Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on HuggingFace.
+
 #### Notes
 
 - In real-time inference, if there is noise on the inputs, the HuBERT model will react to those as well. Consider using realtime noise reduction applications such as [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/) in this case.
