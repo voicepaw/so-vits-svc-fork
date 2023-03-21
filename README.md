@@ -43,7 +43,7 @@ pip install so-vits-svc-fork
 
 ## Features not available in the original repo
 
-- **Realtime voice conversion**
+- **Realtime voice conversion** (enhanced in v1.1.0)
 - More accurate pitch estimation using CREPE
 - GUI available
 - Unified command-line interface (no need to run Python scripts)
