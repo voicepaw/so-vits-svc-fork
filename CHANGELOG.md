@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.3 (2023-03-21)
+### Fix
+* **deps:** Update dependency onnxsim to v0.4.19 ([#62](https://github.com/34j/so-vits-svc-fork/issues/62)) ([`f8a4cf6`](https://github.com/34j/so-vits-svc-fork/commit/f8a4cf61bad5d0d55a7334af8f022114605e7038))
+
 ## v1.2.2 (2023-03-21)
 ### Fix
 * **deps:** Update dependency onnxoptimizer to v0.3.10 ([#61](https://github.com/34j/so-vits-svc-fork/issues/61)) ([`d0137f9`](https://github.com/34j/so-vits-svc-fork/commit/d0137f920083a08173d58e35492b9b9fb925e41f))
