@@ -129,7 +129,7 @@ def main():
                     [
                         sg.Text("F0 prediction method"),
                         sg.Combo(
-                            ["crepe", "parselmouth", "dio", "harvest"],
+                            ["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
                             key="f0_method",
                             default_value="crepe",
                         ),
@@ -318,7 +318,7 @@ def main():
                 update_combo()
             if event.endswith("_path"):
                 for name in window.AllKeysDict:
-                    if name.endswith("_browse"):
+                    if str(name).endswith("_browse"):
                         browser = window[name]
                         if isinstance(browser, sg.Button):
                             LOG.info(

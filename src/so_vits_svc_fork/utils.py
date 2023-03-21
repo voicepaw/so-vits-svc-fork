@@ -242,7 +242,7 @@ def compute_f0(
     p_len: None | int = None,
     sampling_rate: int = 44100,
     hop_length: int = 512,
-    method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+    method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "crepe",
     **kwargs,
 ):
     wav_numpy = wav_numpy.astype(np.float32)
@@ -251,6 +251,10 @@ def compute_f0(
         return compute_f0_pyworld(wav_numpy, p_len, sampling_rate, hop_length, method)
     elif method == "crepe":
         return compute_f0_crepe(wav_numpy, p_len, sampling_rate, hop_length, **kwargs)
+    elif method == "crepe-tiny":
+        return compute_f0_crepe(
+            wav_numpy, p_len, sampling_rate, hop_length, model="tiny", **kwargs
+        )
     elif method == "parselmouth":
         return compute_f0_parselmouth(wav_numpy, p_len, sampling_rate, hop_length)
     else:

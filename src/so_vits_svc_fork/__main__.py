@@ -271,7 +271,7 @@ def infer(
 @click.option(
     "-fm",
     "--f0-method",
-    type=click.Choice(["crepe", "parselmouth", "dio", "harvest"]),
+    type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
     default="crepe",
     help="f0 prediction method",
 )
@@ -321,7 +321,7 @@ def vc(
     auto_predict_f0: bool,
     cluster_infer_ratio: float,
     noise_scale: float,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"],
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
     # slice config
     db_thresh: int,
     pad_seconds: float,
@@ -485,7 +485,7 @@ def pre_config(
 @click.option(
     "-fm",
     "--f0-method",
-    type=click.Choice(["crepe", "parselmouth", "dio", "harvest"]),
+    type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
     default="crepe",
 )
 def pre_hubert(
@@ -493,7 +493,7 @@ def pre_hubert(
     config_path: Path,
     n_jobs: bool,
     force_rebuild: bool,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"],
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
 ) -> None:
     """Preprocessing part 3: hubert
     If the HuBERT model is not found, it will be downloaded automatically."""

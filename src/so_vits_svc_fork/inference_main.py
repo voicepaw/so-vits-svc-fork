@@ -29,7 +29,9 @@ def infer(
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+    f0_method: Literal[
+        "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+    ] = "crepe",
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
@@ -81,7 +83,9 @@ def realtime(
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
-    f0_method: Literal["crepe", "parselmouth", "dio", "harvest"] = "crepe",
+    f0_method: Literal[
+        "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
+    ] = "crepe",
     # slice config
     db_thresh: int = -40,
     pad_seconds: float = 0.5,
