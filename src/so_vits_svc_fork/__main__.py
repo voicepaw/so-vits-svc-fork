@@ -284,7 +284,21 @@ def infer(
     default=0.01,
     help="crossfade seconds",
 )
-@click.option("-b", "--block-seconds", type=float, default=1, help="block seconds")
+@click.option(
+    "-ab",
+    "--additional-infer-before-seconds",
+    type=float,
+    default=0.2,
+    help="additional infer before seconds",
+)
+@click.option(
+    "-aa",
+    "--additional-infer-after-seconds",
+    type=float,
+    default=0.1,
+    help="additional infer after seconds",
+)
+@click.option("-b", "--block-seconds", type=float, default=0.5, help="block seconds")
 @click.option(
     "-d",
     "--device",
@@ -314,6 +328,8 @@ def vc(
     chunk_seconds: float,
     # realtime config
     crossfade_seconds: float,
+    additional_infer_before_seconds: float,
+    additional_infer_after_seconds: float,
     block_seconds: float,
     version: int,
     input_device: int | str | None,
@@ -358,6 +374,8 @@ def vc(
         chunk_seconds=chunk_seconds,
         # realtime config
         crossfade_seconds=crossfade_seconds,
+        additional_infer_before_seconds=additional_infer_before_seconds,
+        additional_infer_after_seconds=additional_infer_after_seconds,
         block_seconds=block_seconds,
         version=version,
         input_device=input_device,

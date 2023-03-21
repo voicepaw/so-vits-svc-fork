@@ -8,6 +8,7 @@ import librosa
 import numpy as np
 import soundfile
 import torch
+from cm_time import timer
 
 from .inference.infer_tool import RealtimeVC, RealtimeVC2, Svc
 
@@ -87,6 +88,8 @@ def realtime(
     chunk_seconds: float = 0.5,
     # realtime config
     crossfade_seconds: float = 0.05,
+    additional_infer_before_seconds: float = 0.2,
+    additional_infer_after_seconds: float = 0.1,
     block_seconds: float = 0.5,
     version: int = 2,
     input_device: int | str | None = None,
@@ -106,10 +109,18 @@ def realtime(
         else None,
         device=device,
     )
+
+    LOG.info("Creating realtime model...")
     if version == 1:
         model = RealtimeVC(
             svc_model=svc_model,
             crossfade_len=int(crossfade_seconds * svc_model.target_sample),
+            additional_infer_before_len=int(
+                additional_infer_before_seconds * svc_model.target_sample
+            ),
+            additional_infer_after_len=int(
+                additional_infer_after_seconds * svc_model.target_sample
+            ),
         )
     else:
         model = RealtimeVC2(
@@ -187,9 +198,11 @@ def realtime(
         )
         if version == 1:
             kwargs["pad_seconds"] = pad_seconds
-        outdata[:] = model.process(
-            **kwargs,
-        ).reshape(-1, 1)
+        with timer() as t:
+            outdata[:] = model.process(
+                **kwargs,
+            ).reshape(-1, 1)
+        LOG.info(f"True Realtime coef: {block_seconds / t.elapsed:.2f}")
 
     with sd.Stream(
         device=(input_device, output_device),
@@ -197,6 +210,7 @@ def realtime(
         callback=callback,
         samplerate=svc_model.target_sample,
         blocksize=int(block_seconds * svc_model.target_sample),
-    ):
+    ) as stream:
         while True:
-            sd.sleep(1)
+            LOG.info(f"Latency: {stream.latency}")
+            sd.sleep(1000)

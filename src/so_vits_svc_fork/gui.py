@@ -45,6 +45,7 @@ def main():
                             default_text=model_candidates[-1].absolute().as_posix()
                             if model_candidates
                             else "",
+                            enable_events=True,
                         ),
                         sg.FileBrowse(
                             initial_folder=Path("./logs/44k/").absolute
@@ -77,7 +78,7 @@ def main():
                     [
                         sg.Text("Cluster model path"),
                         sg.Push(),
-                        sg.InputText(key="cluster_model_path"),
+                        sg.InputText(key="cluster_model_path", enable_events=True),
                         sg.FileBrowse(
                             initial_folder="./logs/44k/"
                             if Path("./logs/44k/").exists()
@@ -213,7 +214,7 @@ def main():
                             range=(0, 0.6),
                             orientation="h",
                             key="crossfade_seconds",
-                            default_value=0.1,
+                            default_value=0.08,
                             resolution=0.001,
                         ),
                     ],
@@ -221,18 +222,40 @@ def main():
                         sg.Text("Block seconds"),
                         sg.Push(),
                         sg.Slider(
-                            range=(0, 3.0),
+                            range=(0, 1.0),
                             orientation="h",
                             key="block_seconds",
-                            default_value=1,
-                            resolution=0.01,
+                            default_value=0.35,
+                            resolution=0.001,
+                        ),
+                    ],
+                    [
+                        sg.Text("Additional Infer seconds (before)"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0, 1.0),
+                            orientation="h",
+                            key="additional_infer_before_seconds",
+                            default_value=0.2,
+                            resolution=0.001,
+                        ),
+                    ],
+                    [
+                        sg.Text("Additional Infer seconds (after)"),
+                        sg.Push(),
+                        sg.Slider(
+                            range=(0, 1.0),
+                            orientation="h",
+                            key="additional_infer_after_seconds",
+                            default_value=0.08,
+                            resolution=0.001,
                         ),
                     ],
                     [
                         sg.Text("Realtime algorithm"),
                         sg.Combo(
                             ["2 (Divide by speech)", "1 (Divide constantly)"],
-                            default_value="2 (Divide by speech)",
+                            default_value="1 (Divide constantly)",
                             key="realtime_algorithm",
                         ),
                     ],
@@ -294,7 +317,18 @@ def main():
             if values["speaker"] == "":
                 update_combo()
             if event.endswith("_path"):
-                browser = window[f"{event}_browse"]
+                for name in window.AllKeysDict:
+                    if name.endswith("_browse"):
+                        browser = window[name]
+                        if isinstance(browser, sg.Button):
+                            LOG.info(
+                                f"Updating browser {browser} to {Path(values[event]).parent}"
+                            )
+                            browser.InitialFolder = Path(values[event]).parent
+                            browser.update()
+                        else:
+                            LOG.warning(f"Browser {browser} is not a FileBrowse")
+                """browser = window[f"{event}_browse"]
                 if isinstance(browser, sg.Button):
                     LOG.info(
                         f"Updating browser {browser} to {Path(values[event]).parent}"
@@ -302,7 +336,7 @@ def main():
                     browser.InitialFolder = Path(values[event]).parent
                     browser.update()
                 else:
-                    LOG.warning(f"Browser {browser} is not a FileBrowse")
+                    LOG.warning(f"Browser {browser} is not a FileBrowse")"""
             if event == "config_path":
                 update_combo()
             elif event == "infer":
@@ -360,6 +394,12 @@ def main():
                         noise_scale=values["noise_scale"],
                         f0_method=values["f0_method"],
                         crossfade_seconds=values["crossfade_seconds"],
+                        additional_infer_before_seconds=values[
+                            "additional_infer_before_seconds"
+                        ],
+                        additional_infer_after_seconds=values[
+                            "additional_infer_after_seconds"
+                        ],
                         db_thresh=values["silence_threshold"],
                         pad_seconds=values["pad_seconds"],
                         chunk_seconds=values["chunk_seconds"],
