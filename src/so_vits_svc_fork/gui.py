@@ -241,7 +241,7 @@ def main():
                 ),
                 sg.Push(),
                 sg.Slider(
-                    range=(0, 1.0),
+                    range=(0, 3.0),
                     orientation="h",
                     key="block_seconds",
                     resolution=0.001,
@@ -253,7 +253,7 @@ def main():
                 ),
                 sg.Push(),
                 sg.Slider(
-                    range=(0, 1.0),
+                    range=(0, 2.0),
                     orientation="h",
                     key="additional_infer_before_seconds",
                     resolution=0.001,
@@ -265,7 +265,7 @@ def main():
                 ),
                 sg.Push(),
                 sg.Slider(
-                    range=(0, 1.0),
+                    range=(0, 2.0),
                     orientation="h",
                     key="additional_infer_after_seconds",
                     resolution=0.001,
