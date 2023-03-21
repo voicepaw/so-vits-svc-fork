@@ -40,7 +40,7 @@ def add_preset(name: str, preset: dict) -> dict:
     presets = load_presets()
     presets[name] = preset
     with GUI_PRESETS_PATH.open("w") as f:
-        json.dump(presets, f, indent=4)
+        json.dump(presets, f, indent=2)
     return load_presets()
 
 
@@ -51,7 +51,7 @@ def delete_preset(name: str) -> dict:
     else:
         LOG.warning(f"Cannot delete preset {name} because it does not exist.")
     with GUI_PRESETS_PATH.open("w") as f:
-        json.dump(presets, f, indent=4)
+        json.dump(presets, f, indent=2)
     return load_presets()
 
 
