@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.1.1 (2023-03-21)
+### Fix
+* **deps:** Update dependency gradio to v3.23.0 ([#54](https://github.com/34j/so-vits-svc-fork/issues/54)) ([`a2bdb48`](https://github.com/34j/so-vits-svc-fork/commit/a2bdb48b436d206b30bb72409852c0b30d6811e9))
+
 ## v1.1.0 (2023-03-21)
 ### Feature
 * Enhance RealtimeVC ([#52](https://github.com/34j/so-vits-svc-fork/issues/52)) ([`81551ce`](https://github.com/34j/so-vits-svc-fork/commit/81551ce9c6fb7924d184c3c5a4cf9035168b28d2))
