@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.2 (2023-03-21)
+### Fix
+* **deps:** Update dependency onnxoptimizer to v0.3.10 ([#61](https://github.com/34j/so-vits-svc-fork/issues/61)) ([`d0137f9`](https://github.com/34j/so-vits-svc-fork/commit/d0137f920083a08173d58e35492b9b9fb925e41f))
+
+### Documentation
+* **readme:** Add links for pretrained models and fix GUI pic height ([#60](https://github.com/34j/so-vits-svc-fork/issues/60)) ([`34ac39f`](https://github.com/34j/so-vits-svc-fork/commit/34ac39f0c9ce89f2effdd18f3fc4ab91e72b3f82))
+* **notebook:** Add more explanation to notebook ([#59](https://github.com/34j/so-vits-svc-fork/issues/59)) ([`9b3c483`](https://github.com/34j/so-vits-svc-fork/commit/9b3c4835e063d26d1e66d172cf592e69e30d59b8))
+
 ## v1.2.1 (2023-03-21)
 ### Fix
 * Use librosa.load() instead of soundfile.read() ([#58](https://github.com/34j/so-vits-svc-fork/issues/58)) ([`b343106`](https://github.com/34j/so-vits-svc-fork/commit/b34310662b2bac53884df396932f72366132ea01))
