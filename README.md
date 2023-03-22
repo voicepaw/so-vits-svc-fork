@@ -34,7 +34,32 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 ## Installation
 
-Install this via pip (or your favourite package manager):
+### (Create a virtual environment)
+
+Windows:
+
+```shell
+py -3.10 -m venv venv
+venv\Scripts\activate
+```
+
+Linux/MacOS:
+
+```shell
+python3.10 -m venv venv
+source venv/bin/activate
+```
+
+Anaconda:
+
+```shell
+conda create -n so-vits-svc-fork python=3.10 pip
+conda activate so-vits-svc-fork
+```
+
+### Install
+
+Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
