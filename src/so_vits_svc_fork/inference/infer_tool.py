@@ -209,10 +209,9 @@ class Svc:
                     predict_f0=auto_predict_f0,
                     noice_scale=noise_scale,
                 )[0, 0].data.float()
-            realtime_coef = len(audio) / (t.elapsed * self.target_sample)
+            audio_duration = audio.shape[-1] / self.target_sample
             LOG.info(
-                f"Inferece time: {t.elapsed:.2f}s, Realtime coef: {realtime_coef:.2f} "
-                f"Input shape: {audio.shape}, Output shape: {audio.shape}"
+                f"Inferece time: {t.elapsed:.2f}s, RTF: {t.elapsed / audio_duration:.2f}"
             )
         return audio, audio.shape[-1]
 

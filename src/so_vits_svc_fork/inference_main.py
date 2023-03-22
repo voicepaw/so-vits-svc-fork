@@ -161,7 +161,7 @@ def realtime(
         f"Input Device: {devices[input_device]['name']}, Output Device: {devices[output_device]['name']}"
     )
 
-    # the model realtime coef is somewhat significantly low only in the first inference
+    # the model RTL is somewhat significantly high only in the first inference
     # there could be no better way to warm up the model than to do a dummy inference
     # (there are not differences in the behavior of the model between the first and the later inferences)
     # so we do a dummy inference to warm up the model (1 second of audio)
@@ -211,7 +211,10 @@ def realtime(
             outdata[:] = (indata + inference) / 2
         else:
             outdata[:] = inference
-        LOG.info(f"True Realtime coef: {block_seconds / t.elapsed:.2f}")
+        rtf = t.elapsed / block_seconds
+        LOG.info(f"Realtime inference time: {t.elapsed:.3f}s, RTF: {rtf:.3f}")
+        if rtf > 1:
+            LOG.warning("RTF is too high, consider increasing block_seconds")
 
     with sd.Stream(
         device=(input_device, output_device),
@@ -221,6 +224,6 @@ def realtime(
         blocksize=int(block_seconds * svc_model.target_sample),
         latency="low",
     ) as stream:
+        LOG.info(f"Latency: {stream.latency}")
         while True:
-            LOG.info(f"Latency: {stream.latency}")
             sd.sleep(1000)
