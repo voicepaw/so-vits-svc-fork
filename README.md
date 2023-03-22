@@ -63,7 +63,15 @@ Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip install so-vits-svc-fork
+pip install -U so-vits-svc-fork
+```
+
+### Update
+
+Please update this package regularly to get the latest features and bug fixes.
+
+```shell
+pip install -U so-vits-svc-fork
 ```
 
 ## Features not available in the original repo
