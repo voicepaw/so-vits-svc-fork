@@ -8,7 +8,7 @@ import librosa
 import PySimpleGUI as sg
 import sounddevice as sd
 import torch
-from pebble import ProcessPool
+from pebble import ProcessFuture, ProcessPool
 
 from .__main__ import init_logger
 
@@ -360,7 +360,22 @@ def main():
             frames["Presets"],
             [
                 sg.Checkbox(
-                    key="use_gpu", default=torch.cuda.is_available(), text="Use GPU"
+                    key="use_gpu",
+                    default=(
+                        torch.cuda.is_available() or torch.backends.mps.is_available()
+                    ),
+                    text="Use GPU"
+                    + (
+                        " (not available; if your device has GPU, make sure you installed PyTorch with CUDA support)"
+                        if not (
+                            torch.cuda.is_available()
+                            or torch.backends.mps.is_available()
+                        )
+                        else ""
+                    ),
+                    disabled=not (
+                        torch.cuda.is_available() or torch.backends.mps.is_available()
+                    ),
                 )
             ],
             [
@@ -408,12 +423,11 @@ def main():
     window["presets"].update(default_name)
     del default_name
     with ProcessPool(max_workers=1) as pool:
-        future = None
+        future: None | ProcessFuture = None
         while True:
-            event, values = window.read()
+            event, values = window.read(100)
             if event == sg.WIN_CLOSED:
                 break
-
             if not event == sg.EVENT_TIMEOUT:
                 LOG.info(f"Event {event}, values {values}")
             if event.endswith("_path"):
@@ -428,8 +442,7 @@ def main():
                             browser.update()
                         else:
                             LOG.warning(f"Browser {browser} is not a FileBrowse")
-
-            if event == "add_preset":
+            elif event == "add_preset":
                 presets = add_preset(
                     values["preset_name"], {key: values[key] for key in PRESET_KEYS}
                 )
@@ -469,7 +482,15 @@ def main():
                     pad_seconds=values["pad_seconds"],
                     absolute_thresh=values["absolute_thresh"],
                     chunk_seconds=values["chunk_seconds"],
-                    device="cuda" if values["use_gpu"] else "cpu",
+                    device="cpu"
+                    if not values["use_gpu"]
+                    else (
+                        "cuda"
+                        if torch.cuda.is_available()
+                        else "mps"
+                        if torch.backends.mps.is_available()
+                        else "cpu"
+                    ),
                 )
                 if values["auto_play"]:
                     pool.schedule(play_audio, args=[output_path])
@@ -518,6 +539,9 @@ def main():
                 if future:
                     future.cancel()
                     future = None
+            if future is not None and future.done():
+                LOG.error(f"Error in realtime: {future.exception()}")
+                future = None
         if future:
             future.cancel()
     window.close()
