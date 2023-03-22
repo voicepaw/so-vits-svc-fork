@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.6 (2023-03-22)
+### Fix
+* **gui:** Disable checkbox if CUDA is not available and show errors for VC ([#71](https://github.com/34j/so-vits-svc-fork/issues/71)) ([`3fdd983`](https://github.com/34j/so-vits-svc-fork/commit/3fdd9836c3b60d2e737fc7e40efe42a9cc84888e))
+
+### Documentation
+* Add BlueAmulet as a contributor for question ([#74](https://github.com/34j/so-vits-svc-fork/issues/74)) ([`8d073e3`](https://github.com/34j/so-vits-svc-fork/commit/8d073e3e0798a0739cea5b979cf6cfd361f3e6d3))
+* Add GarrettConway as a contributor for doc ([#73](https://github.com/34j/so-vits-svc-fork/issues/73)) ([`6c6cbc6`](https://github.com/34j/so-vits-svc-fork/commit/6c6cbc6ac8a97ecb71d789a5782bb8db2c4c52f8))
+* **readme:** Update README.md regarding installation, update. WSL audio support ([#72](https://github.com/34j/so-vits-svc-fork/issues/72)) ([`4f1323b`](https://github.com/34j/so-vits-svc-fork/commit/4f1323b3d12a080f38a195bf494db7086dbfa7e4))
+
 ## v1.2.5 (2023-03-22)
 ### Fix
 * Fix RTF calculation ([#70](https://github.com/34j/so-vits-svc-fork/issues/70)) ([`fb25500`](https://github.com/34j/so-vits-svc-fork/commit/fb25500f4e3e70e5d71462715b83fb3bedcf8bd5))
