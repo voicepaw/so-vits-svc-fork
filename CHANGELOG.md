@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.5 (2023-03-22)
+### Fix
+* Fix RTF calculation ([#70](https://github.com/34j/so-vits-svc-fork/issues/70)) ([`fb25500`](https://github.com/34j/so-vits-svc-fork/commit/fb25500f4e3e70e5d71462715b83fb3bedcf8bd5))
+
 ## v1.2.4 (2023-03-22)
 ### Fix
 * **utils:** Fix latest_checkpoint_path ([#64](https://github.com/34j/so-vits-svc-fork/issues/64)) ([`00b9f4a`](https://github.com/34j/so-vits-svc-fork/commit/00b9f4acd005cdb801b3f41df6e25b0b8799d631))
