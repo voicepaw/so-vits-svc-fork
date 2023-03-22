@@ -34,11 +34,44 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 ## Installation
 
-Install this via pip (or your favourite package manager):
+### (Create a virtual environment)
+
+Windows:
+
+```shell
+py -3.10 -m venv venv
+venv\Scripts\activate
+```
+
+Linux/MacOS:
+
+```shell
+python3.10 -m venv venv
+source venv/bin/activate
+```
+
+Anaconda:
+
+```shell
+conda create -n so-vits-svc-fork python=3.10 pip
+conda activate so-vits-svc-fork
+```
+
+### Install
+
+Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
-pip install so-vits-svc-fork
+pip install -U so-vits-svc-fork
+```
+
+### Update
+
+Please update this package regularly to get the latest features and bug fixes.
+
+```shell
+pip install -U so-vits-svc-fork
 ```
 
 ## Features not available in the original repo
@@ -85,6 +118,7 @@ svc --model-path <model-path> source.wav
 
 #### Notes
 
+- If using WSL, please note that WSL requires additional setup to handle audio and the GUI will not work without finding an audio device.
 - In real-time inference, if there is noise on the inputs, the HuBERT model will react to those as well. Consider using realtime noise reduction applications such as [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/) in this case.
 
 ### Training
