@@ -11,6 +11,7 @@ import numpy as np
 import requests
 import torch
 import torchcrepe
+from cm_time import timer
 from numpy import dtype, float32, ndarray
 from scipy.io.wavfile import read
 from torch import FloatTensor, Tensor
@@ -245,20 +246,24 @@ def compute_f0(
     method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "crepe",
     **kwargs,
 ):
-    wav_numpy = wav_numpy.astype(np.float32)
-    wav_numpy /= np.quantile(np.abs(wav_numpy), 0.999)
-    if method in ["dio", "harvest"]:
-        return compute_f0_pyworld(wav_numpy, p_len, sampling_rate, hop_length, method)
-    elif method == "crepe":
-        return compute_f0_crepe(wav_numpy, p_len, sampling_rate, hop_length, **kwargs)
-    elif method == "crepe-tiny":
-        return compute_f0_crepe(
-            wav_numpy, p_len, sampling_rate, hop_length, model="tiny", **kwargs
-        )
-    elif method == "parselmouth":
-        return compute_f0_parselmouth(wav_numpy, p_len, sampling_rate, hop_length)
-    else:
-        raise ValueError("type must be dio, crepe, harvest or parselmouth")
+    with timer() as t:
+        wav_numpy = wav_numpy.astype(np.float32)
+        wav_numpy /= np.quantile(np.abs(wav_numpy), 0.999)
+        if method in ["dio", "harvest"]:
+            f0 = compute_f0_pyworld(wav_numpy, p_len, sampling_rate, hop_length, method)
+        elif method == "crepe":
+            f0 = compute_f0_crepe(wav_numpy, p_len, sampling_rate, hop_length, **kwargs)
+        elif method == "crepe-tiny":
+            f0 = compute_f0_crepe(
+                wav_numpy, p_len, sampling_rate, hop_length, model="tiny", **kwargs
+            )
+        elif method == "parselmouth":
+            f0 = compute_f0_parselmouth(wav_numpy, p_len, sampling_rate, hop_length)
+        else:
+            raise ValueError("type must be dio, crepe, harvest or parselmouth")
+    rtf = t.elapsed / (len(wav_numpy) / sampling_rate)
+    LOG.info(f"F0 inference time:       {t.elapsed:.3f}s, RTF: {rtf:.3f}")
+    return f0
 
 
 def f0_to_coarse(f0: torch.Tensor | float):
@@ -338,21 +343,27 @@ def get_hubert_model():
 
 
 def get_hubert_content(hmodel, wav_16k_tensor):
-    feats = wav_16k_tensor
-    if feats.dim() == 2:  # double channels
-        feats = feats.mean(-1)
-    assert feats.dim() == 1, feats.dim()
-    feats = feats.view(1, -1)
-    padding_mask = torch.BoolTensor(feats.shape).fill_(False)
-    inputs = {
-        "source": feats.to(wav_16k_tensor.device),
-        "padding_mask": padding_mask.to(wav_16k_tensor.device),
-        "output_layer": 9,  # layer 9
-    }
-    with torch.no_grad():
-        logits = hmodel.extract_features(**inputs)
-        feats = hmodel.final_proj(logits[0])
-    return feats.transpose(1, 2)
+    with timer() as t:
+        feats = wav_16k_tensor
+        if feats.dim() == 2:  # double channels
+            feats = feats.mean(-1)
+        assert feats.dim() == 1, feats.dim()
+        feats = feats.view(1, -1)
+        padding_mask = torch.BoolTensor(feats.shape).fill_(False)
+        inputs = {
+            "source": feats.to(wav_16k_tensor.device),
+            "padding_mask": padding_mask.to(wav_16k_tensor.device),
+            "output_layer": 9,  # layer 9
+        }
+        with torch.no_grad():
+            logits = hmodel.extract_features(**inputs)
+            feats = hmodel.final_proj(logits[0])
+        res = feats.transpose(1, 2)
+    wav_len = wav_16k_tensor.shape[-1] / 16000
+    LOG.info(
+        f"HuBERT inference time  : {t.elapsed:.3f}s, RTF: {t.elapsed / wav_len:.3f}"
+    )
+    return res
 
 
 def get_content(cmodel: Any, y: ndarray) -> ndarray:
