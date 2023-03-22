@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.4 (2023-03-22)
+### Fix
+* **utils:** Fix latest_checkpoint_path ([#64](https://github.com/34j/so-vits-svc-fork/issues/64)) ([`00b9f4a`](https://github.com/34j/so-vits-svc-fork/commit/00b9f4acd005cdb801b3f41df6e25b0b8799d631))
+
 ## v1.2.3 (2023-03-21)
 ### Fix
 * **deps:** Update dependency onnxsim to v0.4.19 ([#62](https://github.com/34j/so-vits-svc-fork/issues/62)) ([`f8a4cf6`](https://github.com/34j/so-vits-svc-fork/commit/f8a4cf61bad5d0d55a7334af8f022114605e7038))
