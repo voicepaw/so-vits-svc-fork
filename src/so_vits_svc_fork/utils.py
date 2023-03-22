@@ -476,7 +476,9 @@ def summarize(
 
 
 def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth"):
-    return list(sorted(Path(dir_path).glob(regex)))[-1]
+    dir_path = Path(dir_path)
+    name_key = lambda p: int(re.match(r"._(\d+)\.pth", p.name).group(1))
+    return list(sorted(dir_path.glob(regex), key=name_key))[-1]
 
 
 def plot_spectrogram_to_numpy(spectrogram):
