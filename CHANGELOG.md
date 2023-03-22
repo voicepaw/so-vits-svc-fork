@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.8 (2023-03-22)
+### Fix
+* **deps:** Update dependency torchcrepe to v0.0.18 ([#76](https://github.com/34j/so-vits-svc-fork/issues/76)) ([`4fda479`](https://github.com/34j/so-vits-svc-fork/commit/4fda4799f017e7de57de36c95cd8d64ab6f9b446))
+
+### Documentation
+* **readme:** Shorten docs ([#75](https://github.com/34j/so-vits-svc-fork/issues/75)) ([`e0c1572`](https://github.com/34j/so-vits-svc-fork/commit/e0c1572d057032735c3118e9137be8e4399c6251))
+
 ## v1.2.7 (2023-03-22)
 ### Fix
 * Fix clean_checkpoints ([#66](https://github.com/34j/so-vits-svc-fork/issues/66)) ([`e5169bf`](https://github.com/34j/so-vits-svc-fork/commit/e5169bf8121578a6cc3ed1bccd1b47a6281cafe4))
