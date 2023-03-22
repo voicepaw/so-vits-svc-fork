@@ -448,7 +448,7 @@ def clean_checkpoints(
     )
     models_sorted_grouped = groupby(models_sorted, lambda p: p.name[0])
     for k, g in models_sorted_grouped:
-        to_dels = list(g)[n_ckpts_to_keep:]
+        to_dels = list(g)[:-n_ckpts_to_keep]
         for to_del in to_dels:
             if to_del.stem.endswith("_0"):
                 continue
