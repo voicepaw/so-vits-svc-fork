@@ -32,30 +32,21 @@
 
 A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with **realtime support** and **greatly improved interface**. Based on branch `4.0` (v1) and the models are compatible.
 
+## Features not available in the original repo
+
+- **Realtime voice conversion** (enhanced in v1.1.0)
+- More accurate pitch estimation using CREPE
+- GUI available
+- Unified command-line interface (no need to run Python scripts)
+- Ready to use just by installing with `pip`.
+- Automatically download pretrained base model and HuBERT model
+- Code completely formatted with black, isort, autoflake etc.
+- Volume normalization in preprocessing
+- Other minor differences
+
 ## Installation
 
-### (Create a virtual environment)
-
-Windows:
-
-```shell
-py -3.10 -m venv venv
-venv\Scripts\activate
-```
-
-Linux/MacOS:
-
-```shell
-python3.10 -m venv venv
-source venv/bin/activate
-```
-
-Anaconda:
-
-```shell
-conda create -n so-vits-svc-fork python=3.10 pip
-conda activate so-vits-svc-fork
-```
+### [Creating a Virtual Environment](https://github.com/34j/so-vits-svc-fork/wiki#creating-a-virtual-environment)
 
 ### Install
 
@@ -73,18 +64,6 @@ Please update this package regularly to get the latest features and bug fixes.
 ```shell
 pip install -U so-vits-svc-fork
 ```
-
-## Features not available in the original repo
-
-- **Realtime voice conversion** (enhanced in v1.1.0)
-- More accurate pitch estimation using CREPE
-- GUI available
-- Unified command-line interface (no need to run Python scripts)
-- Ready to use just by installing with `pip`.
-- Automatically download pretrained base model and HuBERT model
-- Code completely formatted with black, isort, autoflake etc.
-- Volume normalization in preprocessing
-- Other minor differences
 
 ## Usage
 
