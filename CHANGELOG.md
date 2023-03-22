@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.7 (2023-03-22)
+### Fix
+* Fix clean_checkpoints ([#66](https://github.com/34j/so-vits-svc-fork/issues/66)) ([`e5169bf`](https://github.com/34j/so-vits-svc-fork/commit/e5169bf8121578a6cc3ed1bccd1b47a6281cafe4))
+
 ## v1.2.6 (2023-03-22)
 ### Fix
 * **gui:** Disable checkbox if CUDA is not available and show errors for VC ([#71](https://github.com/34j/so-vits-svc-fork/issues/71)) ([`3fdd983`](https://github.com/34j/so-vits-svc-fork/commit/3fdd9836c3b60d2e737fc7e40efe42a9cc84888e))
