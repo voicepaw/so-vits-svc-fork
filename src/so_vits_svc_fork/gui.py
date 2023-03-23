@@ -442,7 +442,7 @@ def main():
                             browser.update()
                         else:
                             LOG.warning(f"Browser {browser} is not a FileBrowse")
-            elif event == "add_preset":
+            if event == "add_preset":
                 presets = add_preset(
                     values["preset_name"], {key: values[key] for key in PRESET_KEYS}
                 )
