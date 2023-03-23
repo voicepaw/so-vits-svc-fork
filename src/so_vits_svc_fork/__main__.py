@@ -578,11 +578,22 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
     "--output-path",
     type=click.Path(),
     help="model path to save",
-    default=Path("./models/44k/kmeans.pt"),
+    default=Path("./logs/44k/kmeans.pt"),
 )
-@click.option("-n", "--n-clusters", type=int, help="number of clusters", default=10000)
-def train_cluster(input_dir: Path, output_path: Path, n_clusters: int) -> None:
+@click.option("-n", "--n-clusters", type=int, help="number of clusters", default=2000)
+@click.option(
+    "-m/-nm", "--minibatch/--no-minibatch", default=True, help="use minibatch k-means"
+)
+def train_cluster(
+    input_dir: Path, output_path: Path, n_clusters: int, minibatch: bool
+) -> None:
     """Train k-means clustering"""
     from .cluster.train_cluster import main
 
-    main(input_dir=input_dir, output_path=output_path, n_clusters=n_clusters)
+    main(
+        input_dir=input_dir,
+        output_path=output_path,
+        n_clusters=n_clusters,
+        verbose=True,
+        use_minibatch=minibatch,
+    )

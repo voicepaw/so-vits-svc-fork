@@ -19,19 +19,27 @@ def get_cluster_model(ckpt_path: Path | str):
     return kmeans_dict
 
 
+def check_speaker(model: Any, speaker: Any):
+    if speaker not in model:
+        raise ValueError(f"Speaker {speaker} not in {list(model.keys())}")
+
+
 def get_cluster_result(model: Any, x: Any, speaker: Any):
     """
     x: np.array [t, 256]
     return cluster class result
     """
+    check_speaker(model, speaker)
     return model[speaker].predict(x)
 
 
 def get_cluster_center_result(model: Any, x: Any, speaker: Any):
     """x: np.array [t, 256]"""
+    check_speaker(model, speaker)
     predict = model[speaker].predict(x)
     return model[speaker].cluster_centers_[predict]
 
 
 def get_center(model: Any, x: Any, speaker: Any):
+    check_speaker(model, speaker)
     return model[speaker].cluster_centers_[x]

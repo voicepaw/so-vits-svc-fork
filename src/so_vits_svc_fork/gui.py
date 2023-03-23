@@ -107,15 +107,21 @@ def main():
                 ),
             ],
             [
-                sg.Text("Cluster model path"),
+                sg.Text("Cluster model path (Optional)"),
                 sg.Push(),
-                sg.InputText(key="cluster_model_path", enable_events=True),
+                sg.InputText(
+                    key="cluster_model_path",
+                    default_text=Path("./logs/44k/kmeans.pt").absolute().as_posix()
+                    if Path("./logs/44k/kmeans.pt").exists()
+                    else "",
+                    enable_events=True,
+                ),
                 sg.FileBrowse(
                     initial_folder="./logs/44k/"
                     if Path("./logs/44k/").exists()
                     else ".",
                     key="cluster_model_path_browse",
-                    file_types=(("PyTorch", "*.pth"),),
+                    file_types=(("PyTorch", "*.pt"),),
                 ),
             ],
         ],
