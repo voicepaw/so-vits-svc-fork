@@ -54,13 +54,19 @@ def delete_preset(name: str) -> dict:
     return load_presets()
 
 
-def main():
-    sg.theme("Dark")
-    model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
-
+def get_devices(update: bool = True) -> tuple[list[str], list[str]]:
+    if update:
+        sd._terminate()
+        sd._initialize()
     devices = sd.query_devices()
     input_devices = [d["name"] for d in devices if d["max_input_channels"] > 0]
     output_devices = [d["name"] for d in devices if d["max_output_channels"] > 0]
+    return input_devices, output_devices
+
+
+def main():
+    sg.theme("Dark")
+    model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
 
     frame_contents = {
         "Paths": [
@@ -278,9 +284,8 @@ def main():
                 sg.Push(),
                 sg.Combo(
                     key="input_device",
-                    values=input_devices,
+                    values=[],
                     size=(20, 1),
-                    default_value=input_devices[0],
                 ),
             ],
             [
@@ -288,9 +293,8 @@ def main():
                 sg.Push(),
                 sg.Combo(
                     key="output_device",
-                    values=output_devices,
+                    values=[],
                     size=(20, 1),
-                    default_value=output_devices[0],
                 ),
             ],
             [
@@ -401,9 +405,29 @@ def main():
         config_path = Path(values["config_path"])
         if config_path.exists() and config_path.is_file():
             hp = utils.get_hparams_from_file(values["config_path"])
-            LOG.info(f"Loaded config from {values['config_path']}")
+            LOG.debug(f"Loaded config from {values['config_path']}")
             window["speaker"].update(
                 values=list(hp.__dict__["spk"].keys()), set_to_index=0
+            )
+
+    def update_devices() -> None:
+        input_devices, output_devices = get_devices()
+        window["input_device"].update(
+            values=input_devices, value=values["input_device"]
+        )
+        window["output_device"].update(
+            values=output_devices, value=values["output_device"]
+        )
+        input_default, output_default = sd.default.device
+        if values["input_device"] not in input_devices:
+            window["input_device"].update(
+                values=input_devices,
+                set_to_index=0 if input_default is None else input_default - 1,
+            )
+        if values["output_device"] not in output_devices:
+            window["output_device"].update(
+                values=output_devices,
+                set_to_index=0 if output_default is None else output_default - 1,
             )
 
     PRESET_KEYS = [
@@ -416,8 +440,8 @@ def main():
         for key, value in load_presets()[name].items():
             if key in PRESET_KEYS:
                 window[key].update(value)
+                values[key] = value
 
-    update_speaker()
     default_name = list(load_presets().keys())[0]
     apply_preset(default_name)
     window["presets"].update(default_name)
@@ -425,11 +449,12 @@ def main():
     with ProcessPool(max_workers=1) as pool:
         future: None | ProcessFuture = None
         while True:
-            event, values = window.read(100)
+            event, values = window.read(500)
             if event == sg.WIN_CLOSED:
                 break
             if not event == sg.EVENT_TIMEOUT:
                 LOG.info(f"Event {event}, values {values}")
+            update_devices()
             if event.endswith("_path"):
                 for name in window.AllKeysDict:
                     if str(name).endswith("_browse"):
