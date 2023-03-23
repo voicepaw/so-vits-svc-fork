@@ -145,7 +145,8 @@ def main():
                 sg.Text(
                     "Pitch (12 = 1 octave)\n"
                     "ADJUST THIS based on your voice\n"
-                    "when Auto predict F0 is turned off."
+                    "when Auto predict F0 is turned off.",
+                    size=(None, 4),
                 ),
                 sg.Push(),
                 sg.Slider(
@@ -392,6 +393,8 @@ def main():
                 sg.Button("Infer", key="infer"),
                 sg.Button("(Re)Start Voice Changer", key="start_vc"),
                 sg.Button("Stop Voice Changer", key="stop_vc"),
+                sg.Push(),
+                sg.Button("ONNX Export", key="onnx_export"),
             ],
         ]
     )
@@ -452,10 +455,12 @@ def main():
     apply_preset(default_name)
     window["presets"].update(default_name)
     del default_name
+    update_speaker()
+    update_devices()
     with ProcessPool(max_workers=1) as pool:
         future: None | ProcessFuture = None
         while True:
-            event, values = window.read(500)
+            event, values = window.read(200)
             if event == sg.WIN_CLOSED:
                 break
             if not event == sg.EVENT_TIMEOUT:
@@ -473,6 +478,10 @@ def main():
                             browser.update()
                         else:
                             LOG.warning(f"Browser {browser} is not a FileBrowse")
+            window["transpose"].update(
+                disabled=values["auto_predict_f0"],
+                visible=not values["auto_predict_f0"],
+            )
             if event == "add_preset":
                 presets = add_preset(
                     values["preset_name"], {key: values[key] for key in PRESET_KEYS}
@@ -570,8 +579,18 @@ def main():
                 if future:
                     future.cancel()
                     future = None
+            elif event == "onnx_export":
+                from .onnx_export import onnx_export
+
+                onnx_export(
+                    input_path=Path(values["model_path"]),
+                    output_path=Path(values["model_path"]).with_suffix(".onnx"),
+                    config_path=Path(values["config_path"]),
+                    device="cpu",
+                )
             if future is not None and future.done():
-                LOG.error(f"Error in realtime: {future.exception()}")
+                LOG.error("Error in realtime: ")
+                LOG.exception(future.exception())
                 future = None
         if future:
             future.cancel()

@@ -4,13 +4,11 @@ from torch.nn import Conv1d, Conv2d
 from torch.nn import functional as F
 from torch.nn.utils import spectral_norm, weight_norm
 
-from so_vits_svc_fork import modules as attentions
-from so_vits_svc_fork import modules as commons
-from so_vits_svc_fork import modules as modules
-from so_vits_svc_fork import utils
-from so_vits_svc_fork.modules.commons import get_padding
-from so_vits_svc_fork.utils import f0_to_coarse
-from so_vits_svc_fork.vdecoder.hifigan.models import Generator
+from .. import utils
+from ..modules import attentions, commons, modules
+from ..modules.commons import get_padding
+from ..utils import f0_to_coarse
+from ..vdecoder.hifigan.models import Generator
 
 
 class ResidualCouplingBlock(nn.Module):
