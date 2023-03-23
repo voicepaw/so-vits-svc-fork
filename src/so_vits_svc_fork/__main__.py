@@ -545,14 +545,44 @@ def clean():
 
 
 @cli.command
-@click.option("-i", "--input-path", type=click.Path(exists=True), help="model path")
-@click.option("-o", "--output-path", type=click.Path(), help="onnx model path to save")
-@click.option("-c", "--config-path", type=click.Path(), help="config path")
-@click.option("-d", "--device", type=str, default="cpu", help="torch device")
+@click.option(
+    "-i",
+    "--input-path",
+    type=click.Path(exists=True),
+    help="model path",
+    default=Path("./logs/44k/"),
+)
+@click.option(
+    "-o",
+    "--output-path",
+    type=click.Path(),
+    help="onnx model path to save",
+    default=None,
+)
+@click.option(
+    "-c",
+    "--config-path",
+    type=click.Path(),
+    help="config path",
+    default=Path("./configs/44k/config.json"),
+)
+@click.option(
+    "-d",
+    "--device",
+    type=str,
+    default="cpu",
+    help="device to use",
+)
 def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
     """Export model to onnx"""
     input_path = Path(input_path)
+    if input_path.is_dir():
+        input_path = list(input_path.glob("*.pth"))[0]
+    if output_path is None:
+        output_path = input_path.with_suffix(".onnx")
     output_path = Path(output_path)
+    if output_path.is_dir():
+        output_path = output_path / (input_path.stem + ".onnx")
     config_path = Path(config_path)
     device_ = torch.device(device)
     from .onnx_export import onnx_export

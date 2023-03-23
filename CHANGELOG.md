@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.11 (2023-03-23)
+### Fix
+* **gui,onnx:** Fix onnx export and fix gui ([#83](https://github.com/34j/so-vits-svc-fork/issues/83)) ([`3e9a47d`](https://github.com/34j/so-vits-svc-fork/commit/3e9a47dd4faa938a6aaebf2d7c1c0b9d68cc97d3))
+
+## v1.2.10 (2023-03-23)
+### Fix
+* **cluster:** Fix cluster not working ([#82](https://github.com/34j/so-vits-svc-fork/issues/82)) ([`29b209c`](https://github.com/34j/so-vits-svc-fork/commit/29b209cf7060deb7f15ae28fe2e520bb20a236f4))
+
 ## v1.2.9 (2023-03-23)
 ### Fix
 * **gui:** Fix speakers and devices not updated and fix default presets ([#80](https://github.com/34j/so-vits-svc-fork/issues/80)) ([`a851150`](https://github.com/34j/so-vits-svc-fork/commit/a8511508b0d2b3a62e7b77833280e4264997d9ed))
