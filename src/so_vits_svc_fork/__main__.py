@@ -18,8 +18,16 @@ import pyinputplus as pyip
 import torch
 from rich.logging import RichHandler
 
+from so_vits_svc_fork import __version__
+
+LOG = getLogger(__name__)
+LOGGER_INIT = False
+
 
 def init_logger() -> None:
+    global LOGGER_INIT
+    if LOGGER_INIT:
+        return
     IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
     IS_TEST = "test" in Path(__file__).parent.stem
 
@@ -36,10 +44,11 @@ def init_logger() -> None:
     if IS_TEST:
         LOG.debug("Test mode is on.")
 
+    LOG.info(f"Version: {__version__}")
+    LOGGER_INIT = True
+
 
 init_logger()
-
-LOG = getLogger(__name__)
 
 
 class RichHelpFormatter(click.HelpFormatter):
