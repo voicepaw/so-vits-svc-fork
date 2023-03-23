@@ -505,35 +505,38 @@ def main():
                 if not input_path.exists() or not input_path.is_file():
                     LOG.warning(f"Input path {input_path} does not exist.")
                     continue
-                infer(
-                    model_path=Path(values["model_path"]),
-                    config_path=Path(values["config_path"]),
-                    input_path=input_path,
-                    output_path=output_path,
-                    speaker=values["speaker"],
-                    cluster_model_path=Path(values["cluster_model_path"])
-                    if values["cluster_model_path"]
-                    else None,
-                    transpose=values["transpose"],
-                    auto_predict_f0=values["auto_predict_f0"],
-                    cluster_infer_ratio=values["cluster_infer_ratio"],
-                    noise_scale=values["noise_scale"],
-                    db_thresh=values["silence_threshold"],
-                    pad_seconds=values["pad_seconds"],
-                    absolute_thresh=values["absolute_thresh"],
-                    chunk_seconds=values["chunk_seconds"],
-                    device="cpu"
-                    if not values["use_gpu"]
-                    else (
-                        "cuda"
-                        if torch.cuda.is_available()
-                        else "mps"
-                        if torch.backends.mps.is_available()
-                        else "cpu"
-                    ),
-                )
-                if values["auto_play"]:
-                    pool.schedule(play_audio, args=[output_path])
+                try:
+                    infer(
+                        model_path=Path(values["model_path"]),
+                        config_path=Path(values["config_path"]),
+                        input_path=input_path,
+                        output_path=output_path,
+                        speaker=values["speaker"],
+                        cluster_model_path=Path(values["cluster_model_path"])
+                        if values["cluster_model_path"]
+                        else None,
+                        transpose=values["transpose"],
+                        auto_predict_f0=values["auto_predict_f0"],
+                        cluster_infer_ratio=values["cluster_infer_ratio"],
+                        noise_scale=values["noise_scale"],
+                        db_thresh=values["silence_threshold"],
+                        pad_seconds=values["pad_seconds"],
+                        absolute_thresh=values["absolute_thresh"],
+                        chunk_seconds=values["chunk_seconds"],
+                        device="cpu"
+                        if not values["use_gpu"]
+                        else (
+                            "cuda"
+                            if torch.cuda.is_available()
+                            else "mps"
+                            if torch.backends.mps.is_available()
+                            else "cpu"
+                        ),
+                    )
+                    if values["auto_play"]:
+                        pool.schedule(play_audio, args=[output_path])
+                except Exception as e:
+                    LOG.exception(e)
             elif event == "play_input":
                 if Path(values["input_path"]).exists():
                     pool.schedule(play_audio, args=[Path(values["input_path"])])
@@ -582,15 +585,21 @@ def main():
             elif event == "onnx_export":
                 from .onnx_export import onnx_export
 
-                onnx_export(
-                    input_path=Path(values["model_path"]),
-                    output_path=Path(values["model_path"]).with_suffix(".onnx"),
-                    config_path=Path(values["config_path"]),
-                    device="cpu",
-                )
+                try:
+                    onnx_export(
+                        input_path=Path(values["model_path"]),
+                        output_path=Path(values["model_path"]).with_suffix(".onnx"),
+                        config_path=Path(values["config_path"]),
+                        device="cpu",
+                    )
+                except Exception as e:
+                    LOG.exception(e)
             if future is not None and future.done():
                 LOG.error("Error in realtime: ")
-                LOG.exception(future.exception())
+                try:
+                    future.result()
+                except Exception as e:
+                    LOG.exception(e)
                 future = None
         if future:
             future.cancel()
