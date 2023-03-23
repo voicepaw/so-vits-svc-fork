@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.2.9 (2023-03-23)
+### Fix
+* **gui:** Fix speakers and devices not updated and fix default presets ([#80](https://github.com/34j/so-vits-svc-fork/issues/80)) ([`a851150`](https://github.com/34j/so-vits-svc-fork/commit/a8511508b0d2b3a62e7b77833280e4264997d9ed))
+
 ## v1.2.8 (2023-03-22)
 ### Fix
 * **deps:** Update dependency torchcrepe to v0.0.18 ([#76](https://github.com/34j/so-vits-svc-fork/issues/76)) ([`4fda479`](https://github.com/34j/so-vits-svc-fork/commit/4fda4799f017e7de57de36c95cd8d64ab6f9b446))
