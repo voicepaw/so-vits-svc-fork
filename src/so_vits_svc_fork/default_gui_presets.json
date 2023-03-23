@@ -14,7 +14,8 @@
     "additional_infer_before_seconds": 0.15,
     "additional_infer_after_seconds": 0.1,
     "realtime_algorithm": "1 (Divide constantly)",
-    "passthrough_original": false
+    "passthrough_original": false,
+    "use_gpu": true
   },
   "Default VC (CPU)": {
     "silence_threshold": -35.0,
@@ -67,7 +68,8 @@
     "additional_infer_before_seconds": 0.05,
     "additional_infer_after_seconds": 0.05,
     "realtime_algorithm": "1 (Divide constantly)",
-    "passthrough_original": false
+    "passthrough_original": false,
+    "use_gpu": true
   },
   "Default File": {
     "silence_threshold": -35.0,
