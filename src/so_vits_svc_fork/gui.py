@@ -225,7 +225,7 @@ def main():
                 sg.FileBrowse(initial_folder=".", key="input_path_browse"),
                 sg.Button("Play", key="play_input"),
             ],
-            [sg.Checkbox(key="auto_play", text="Auto play")],
+            [sg.Checkbox(key="auto_play", text="Auto play", default=True)],
         ],
         "Realtime": [
             [
