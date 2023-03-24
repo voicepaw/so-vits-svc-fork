@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.1 (2023-03-24)
+### Fix
+* **gui:** Fix defaut for auto_play ([#97](https://github.com/34j/so-vits-svc-fork/issues/97)) ([`07920a4`](https://github.com/34j/so-vits-svc-fork/commit/07920a4954e1a14d47fcb2687f050d49d03da415))
+* **infer_tool:** Fix speaker not automaticlly set to the first one if not found in cluster inference ([#96](https://github.com/34j/so-vits-svc-fork/issues/96)) ([`a643e4f`](https://github.com/34j/so-vits-svc-fork/commit/a643e4f26b59f12f00b316467edad876467dad49))
+
+### Documentation
+* **notebook:** Add cluster training and inference ([#84](https://github.com/34j/so-vits-svc-fork/issues/84)) ([`9ffb621`](https://github.com/34j/so-vits-svc-fork/commit/9ffb6216f418d8c5a4a9f1bdd79fc2cebb885db1))
+
 ## v1.3.0 (2023-03-23)
 ### Feature
 * **gui:** Better error handling ([#85](https://github.com/34j/so-vits-svc-fork/issues/85)) ([`985704b`](https://github.com/34j/so-vits-svc-fork/commit/985704b1afa8af15fe8eab5e3fc838465f5162c8))
