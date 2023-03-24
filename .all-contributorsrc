@@ -58,6 +58,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "MashiroSA",
+      "name": "緋",
+      "avatar_url": "https://avatars.githubusercontent.com/u/40637516?v=4",
+      "profile": "https://mei.touhou.icu",
+      "contributions": [
+        "doc",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
