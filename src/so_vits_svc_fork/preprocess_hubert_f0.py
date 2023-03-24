@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from logging import getLogger
 from pathlib import Path
 from random import shuffle
 from typing import Iterable, Literal
@@ -11,10 +10,10 @@ import torch
 from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
+from so_vits_svc_fork.logger import LOG
+
 from . import utils
 from .utils import HUBERT_SAMPLING_RATE
-
-LOG = getLogger(__name__)
 
 
 def _process_one(

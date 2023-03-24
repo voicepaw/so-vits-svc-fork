@@ -3,7 +3,6 @@ from __future__ import annotations
 import multiprocessing
 import os
 import time
-from logging import getLogger
 from pathlib import Path
 
 import torch
@@ -17,6 +16,7 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 
 import so_vits_svc_fork.modules.commons as commons
+from so_vits_svc_fork.logger import LOG
 
 from . import utils
 from .data_utils import TextAudioCollate, TextAudioSpeakerLoader
@@ -27,7 +27,6 @@ from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
 # os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'INFO'
 
 
-LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
 global_step = 0
 start_time = time.time()

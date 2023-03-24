@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import re
 from itertools import groupby
-from logging import getLogger
 from pathlib import Path
 from typing import Any, Literal
 
@@ -17,7 +16,8 @@ from scipy.io.wavfile import read
 from torch import FloatTensor, Tensor
 from tqdm import tqdm
 
-LOG = getLogger(__name__)
+from so_vits_svc_fork.logger import LOG
+
 MATPLOTLIB_FLAG = False
 f0_bin = 256
 f0_max = 1100.0
@@ -459,7 +459,7 @@ def clean_checkpoints(
     sort_by_time      --  True -> chronologically delete ckpts
                           False -> lexicographically delete ckpts
     """
-    LOG.warning("Cleaning old checkpoints...")
+    LOG.info("Cleaning old checkpoints...")
     path_to_models = Path(path_to_models)
 
     # Define sort key functions
@@ -486,7 +486,7 @@ def clean_checkpoints(
         to_delete_list = list(group_items)[:-n_ckpts_to_keep]
 
         for to_delete in to_delete_list:
-            LOG.warning(f"Removing {to_delete}")
+            LOG.info(f"Removing checkpoint {to_delete}")
             to_delete.unlink()
 
 

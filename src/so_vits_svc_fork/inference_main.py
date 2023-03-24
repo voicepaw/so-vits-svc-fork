@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from logging import getLogger
 from pathlib import Path
 from typing import Literal
 
@@ -10,9 +9,9 @@ import soundfile
 import torch
 from cm_time import timer
 
-from .inference.infer_tool import RealtimeVC, RealtimeVC2, Svc
+from so_vits_svc_fork.logger import LOG
 
-LOG = getLogger(__name__)
+from .inference.infer_tool import RealtimeVC, RealtimeVC2, Svc
 
 
 def infer(

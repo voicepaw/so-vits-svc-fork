@@ -1,10 +1,8 @@
-from logging import getLogger
-
 import torch
 import torch.utils.data
 from librosa.filters import mel as librosa_mel_fn
 
-LOG = getLogger(__name__)
+from so_vits_svc_fork.logger import LOG
 
 MAX_WAV_VALUE = 32768.0
 

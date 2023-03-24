@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import warnings
-from logging import getLogger
 from pathlib import Path
 from typing import Iterable
 
@@ -12,7 +11,7 @@ import soundfile
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
 
-LOG = getLogger(__name__)
+from so_vits_svc_fork.logger import LOG
 
 # input_dir and output_dir exists.
 # write code to convert input dir audio files to output dir audio files,

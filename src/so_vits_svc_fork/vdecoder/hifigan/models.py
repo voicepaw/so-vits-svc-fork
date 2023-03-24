@@ -1,6 +1,5 @@
 import json
 import os
-from logging import getLogger
 
 import numpy as np
 import torch
@@ -9,10 +8,10 @@ import torch.nn.functional as F
 from torch.nn import AvgPool1d, Conv1d, Conv2d, ConvTranspose1d
 from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
 
+from so_vits_svc_fork.logger import LOG
+
 from .env import AttrDict
 from .utils import get_padding, init_weights
-
-LOG = getLogger(__name__)
 
 LRELU_SLOPE = 0.1
 

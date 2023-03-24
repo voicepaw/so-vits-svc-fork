@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from copy import deepcopy
-from logging import getLogger
 from pathlib import Path
 from typing import Any, Callable, Iterable, Literal
 
@@ -16,8 +15,7 @@ from so_vits_svc_fork import cluster, utils
 from so_vits_svc_fork.models import SynthesizerTrn
 
 from ..utils import HUBERT_SAMPLING_RATE
-
-LOG = getLogger(__name__)
+from .logger import LOG
 
 
 def pad_array(array_, target_length: int):

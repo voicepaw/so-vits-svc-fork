@@ -1,54 +1,17 @@
 from __future__ import annotations
 
-import os
-from logging import (
-    DEBUG,
-    INFO,
-    FileHandler,
-    StreamHandler,
-    basicConfig,
-    captureWarnings,
-    getLogger,
-)
 from pathlib import Path
 from typing import Literal
 
 import click
 import pyinputplus as pyip
 import torch
-from rich.logging import RichHandler
 
 from so_vits_svc_fork import __version__
+from so_vits_svc_fork.logger import LOG, print_test_info
 
-LOG = getLogger(__name__)
-LOGGER_INIT = False
-
-
-def init_logger() -> None:
-    global LOGGER_INIT
-    if LOGGER_INIT:
-        return
-    IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
-    IS_TEST = "test" in Path(__file__).parent.stem
-
-    basicConfig(
-        level=DEBUG if IS_TEST else INFO,
-        format="%(asctime)s %(message)s",
-        datefmt="[%X]",
-        handlers=[
-            RichHandler() if not IN_COLAB else StreamHandler(),
-            FileHandler(f"{__name__.split('.')[0]}.log"),
-        ],
-    )
-    captureWarnings(True)
-    if IS_TEST:
-        LOG.debug("Test mode is on.")
-
-    LOG.info(f"Version: {__version__}")
-    LOGGER_INIT = True
-
-
-init_logger()
+LOG.info(f"Version: {__version__}")
+print_test_info()
 
 
 class RichHelpFormatter(click.HelpFormatter):
@@ -100,7 +63,6 @@ def cli():
     To train a model, run pre-resample, pre-config, pre-hubert, train.\n
     To infer a model, run infer.
     """
-    init_logger()
 
 
 @cli.command()

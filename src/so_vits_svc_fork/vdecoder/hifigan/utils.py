@@ -1,13 +1,12 @@
 import glob
 import os
-from logging import getLogger
 
 # matplotlib.use("Agg")
 import matplotlib.pylab as plt
 import torch
 from torch.nn.utils import weight_norm
 
-LOG = getLogger(__name__)
+from so_vits_svc_fork.logger import LOG
 
 
 def plot_spectrogram(spectrogram):

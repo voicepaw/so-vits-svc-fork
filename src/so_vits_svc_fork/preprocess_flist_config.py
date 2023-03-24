@@ -5,13 +5,12 @@ import os
 import re
 import wave
 from copy import deepcopy
-from logging import getLogger
 from pathlib import Path
 from random import shuffle
 
 from tqdm import tqdm
 
-LOG = getLogger(__name__)
+from so_vits_svc_fork.logger import LOG
 
 
 def _get_wav_duration(filepath: Path):

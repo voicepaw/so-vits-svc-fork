@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from logging import getLogger
 from pathlib import Path
 from typing import Any
 
@@ -11,7 +10,7 @@ from joblib import Parallel, delayed
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from tqdm_joblib import tqdm_joblib
 
-LOG = getLogger(__name__)
+from so_vits_svc_fork.logger import LOG
 
 
 def train_cluster(
