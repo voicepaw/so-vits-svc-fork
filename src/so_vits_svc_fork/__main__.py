@@ -490,6 +490,7 @@ def pre_config(
 @click.option(
     "-n",
     "--n_jobs",
+    "--n-jobs",
     type=int,
     default=4,
     help="number of jobs (optimal value may depend on your VRAM capacity and audio duration per file)",
