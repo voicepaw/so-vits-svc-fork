@@ -113,13 +113,14 @@ Place your dataset like `dataset_raw/{speaker_id}/**/{wav_file}.{any_format}` (s
 ```shell
 svc pre-resample
 svc pre-config
-svc pre-hubert
+svc pre-hubert -fm dio
 svc train
 ```
 
 #### Notes
 
 - Dataset audio duration per file should be <~ 10s or VRAM will run out.
+- To change the f0 inference method to CREPE, replace `svc pre-hubert -fm dio` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
 - It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. As tested, the default requires about 14 GB.
 
 ### Further help
