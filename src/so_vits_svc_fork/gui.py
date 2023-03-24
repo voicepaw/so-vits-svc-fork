@@ -292,7 +292,7 @@ def main():
                 sg.Combo(
                     key="input_device",
                     values=[],
-                    size=(20, 1),
+                    size=(60, 1),
                 ),
             ],
             [
@@ -301,7 +301,7 @@ def main():
                 sg.Combo(
                     key="output_device",
                     values=[],
-                    size=(20, 1),
+                    size=(60, 1),
                 ),
             ],
             [
