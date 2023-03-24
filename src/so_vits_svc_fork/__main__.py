@@ -281,7 +281,7 @@ def infer(
     "-fm",
     "--f0-method",
     type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
-    default="crepe",
+    default="dio",
     help="f0 prediction method",
 )
 @click.option("-p", "--pad-seconds", type=float, default=0.02, help="pad seconds")
@@ -505,7 +505,7 @@ def pre_config(
     "-fm",
     "--f0-method",
     type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
-    default="crepe",
+    default="dio",
 )
 def pre_hubert(
     input_dir: Path,

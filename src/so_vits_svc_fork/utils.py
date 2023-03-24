@@ -243,7 +243,7 @@ def compute_f0(
     p_len: None | int = None,
     sampling_rate: int = 44100,
     hop_length: int = 512,
-    method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "crepe",
+    method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     **kwargs,
 ):
     with timer() as t:
