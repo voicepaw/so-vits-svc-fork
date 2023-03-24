@@ -12,10 +12,12 @@ from cm_time import timer
 from numpy import dtype, float32, ndarray
 
 from so_vits_svc_fork import cluster, utils
+from so_vits_svc_fork.logger import getLogger
 from so_vits_svc_fork.models import SynthesizerTrn
 
 from ..utils import HUBERT_SAMPLING_RATE
-from .logger import LOG
+
+LOG = getLogger(__name__)
 
 
 def pad_array(array_, target_length: int):
