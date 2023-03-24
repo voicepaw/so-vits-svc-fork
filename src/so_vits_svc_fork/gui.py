@@ -9,8 +9,10 @@ import PySimpleGUI as sg
 import sounddevice as sd
 import torch
 from pebble import ProcessFuture, ProcessPool
+from tqdm.tk import tqdm_tk
 
 from .__main__ import init_logger
+from .utils import ensure_hubert_model
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
@@ -54,17 +56,53 @@ def delete_preset(name: str) -> dict:
     return load_presets()
 
 
-def get_devices(update: bool = True) -> tuple[list[str], list[str]]:
+def get_devices(
+    update: bool = True,
+) -> tuple[list[str], list[str], list[int], list[int]]:
     if update:
         sd._terminate()
         sd._initialize()
     devices = sd.query_devices()
-    input_devices = [d["name"] for d in devices if d["max_input_channels"] > 0]
-    output_devices = [d["name"] for d in devices if d["max_output_channels"] > 0]
-    return input_devices, output_devices
+    hostapis = sd.query_hostapis()
+    for hostapi in hostapis:
+        for device_idx in hostapi["devices"]:
+            devices[device_idx]["hostapi_name"] = hostapi["name"]
+    input_devices = [
+        f"{d['name']} ({d['hostapi_name']})"
+        for d in devices
+        if d["max_input_channels"] > 0
+    ]
+    output_devices = [
+        f"{d['name']} ({d['hostapi_name']})"
+        for d in devices
+        if d["max_output_channels"] > 0
+    ]
+    input_devices_indices = [d["index"] for d in devices if d["max_input_channels"] > 0]
+    output_devices_indices = [
+        d["index"] for d in devices if d["max_output_channels"] > 0
+    ]
+    return input_devices, output_devices, input_devices_indices, output_devices_indices
 
 
 def main():
+    try:
+        ensure_hubert_model(tqdm_cls=tqdm_tk)
+    except Exception as e:
+        LOG.exception(e)
+        LOG.info("Trying tqdm.std...")
+        try:
+            ensure_hubert_model()
+        except Exception as e:
+            LOG.exception(e)
+            try:
+                ensure_hubert_model(disable=True)
+            except Exception as e:
+                LOG.exception(e)
+                LOG.error(
+                    "Failed to download Hubert model. Please download it manually."
+                )
+                return
+
     sg.theme("Dark")
     model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
 
@@ -292,7 +330,7 @@ def main():
                 sg.Combo(
                     key="input_device",
                     values=[],
-                    size=(20, 1),
+                    size=(60, 1),
                 ),
             ],
             [
@@ -301,7 +339,7 @@ def main():
                 sg.Combo(
                     key="output_device",
                     values=[],
-                    size=(20, 1),
+                    size=(60, 1),
                 ),
             ],
             [
@@ -310,6 +348,8 @@ def main():
                     key="passthrough_original",
                     default=False,
                 ),
+                sg.Push(),
+                sg.Button("Refresh devices", key="refresh_devices"),
             ],
             [
                 sg.Frame(
@@ -403,9 +443,10 @@ def main():
     layout = [[column1, column2]]
     # layout = [[sg.Column(layout, vertical_alignment="top", scrollable=True, expand_x=True, expand_y=True)]]
     window = sg.Window(
-        f"{__name__.split('.')[0]}", layout, grab_anywhere=True
+        f"{__name__.split('.')[0]}", layout, grab_anywhere=True, finalize=True
     )  # , use_custom_titlebar=True)
-
+    # for n in ["input_device", "output_device"]:
+    #     window[n].Widget.configure(justify="right")
     event, values = window.read(timeout=0.01)
 
     def update_speaker() -> None:
@@ -420,7 +461,7 @@ def main():
             )
 
     def update_devices() -> None:
-        input_devices, output_devices = get_devices()
+        input_devices, output_devices, _, _ = get_devices()
         window["input_device"].update(
             values=input_devices, value=values["input_device"]
         )
@@ -465,7 +506,6 @@ def main():
                 break
             if not event == sg.EVENT_TIMEOUT:
                 LOG.info(f"Event {event}, values {values}")
-            update_devices()
             if event.endswith("_path"):
                 for name in window.AllKeysDict:
                     if str(name).endswith("_browse"):
@@ -493,6 +533,8 @@ def main():
             elif event == "presets":
                 apply_preset(values["presets"])
                 update_speaker()
+            elif event == "refresh_devices":
+                update_devices()
             elif event == "config_path":
                 update_speaker()
             elif event == "infer":
@@ -541,6 +583,9 @@ def main():
                 if Path(values["input_path"]).exists():
                     pool.schedule(play_audio, args=[Path(values["input_path"])])
             elif event == "start_vc":
+                _, _, input_device_indices, output_device_indices = get_devices(
+                    update=False
+                )
                 from .inference_main import realtime
 
                 if future:
@@ -573,8 +618,12 @@ def main():
                         version=int(values["realtime_algorithm"][0]),
                         device="cuda" if values["use_gpu"] else "cpu",
                         block_seconds=values["block_seconds"],
-                        input_device=values["input_device"],
-                        output_device=values["output_device"],
+                        input_device=input_device_indices[
+                            window["input_device"].widget.current()
+                        ],
+                        output_device=output_device_indices[
+                            window["output_device"].widget.current()
+                        ],
                         passthrough_original=values["passthrough_original"],
                     ),
                 )

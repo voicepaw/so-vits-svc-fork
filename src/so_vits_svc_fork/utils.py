@@ -283,7 +283,13 @@ def f0_to_coarse(f0: torch.Tensor | float):
     return f0_coarse
 
 
-def download_file(url: str, filepath: Path | str, chunk_size: int = 4 * 1024, **kwargs):
+def download_file(
+    url: str,
+    filepath: Path | str,
+    chunk_size: int = 4 * 1024,
+    tqdm_cls: type = tqdm,
+    **kwargs,
+):
     filepath = Path(filepath)
     filepath.parent.mkdir(parents=True, exist_ok=True)
     temppath = filepath.parent / f"{filepath.name}.download"
@@ -292,7 +298,7 @@ def download_file(url: str, filepath: Path | str, chunk_size: int = 4 * 1024, **
     temppath.unlink(missing_ok=True)
     resp = requests.get(url, stream=True)
     total = int(resp.headers.get("content-length", 0))
-    with temppath.open("wb") as f, tqdm(
+    with temppath.open("wb") as f, tqdm_cls(
         total=total,
         unit="iB",
         unit_scale=True,
@@ -305,7 +311,7 @@ def download_file(url: str, filepath: Path | str, chunk_size: int = 4 * 1024, **
     temppath.rename(filepath)
 
 
-def ensure_pretrained_model(folder_path: Path) -> None:
+def ensure_pretrained_model(folder_path: Path, **kwargs) -> None:
     model_urls = [
         # "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
         "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
@@ -315,17 +321,19 @@ def ensure_pretrained_model(folder_path: Path) -> None:
     for model_url in model_urls:
         model_path = folder_path / model_url.split("/")[-1]
         if not model_path.exists():
-            download_file(model_url, model_path, desc=f"Downloading {model_path.name}")
+            download_file(
+                model_url, model_path, desc=f"Downloading {model_path.name}", **kwargs
+            )
 
 
-def ensure_hubert_model() -> Path:
+def ensure_hubert_model(**kwargs) -> Path:
     vec_path = Path("checkpoint_best_legacy_500.pt")
     vec_path.parent.mkdir(parents=True, exist_ok=True)
     if not vec_path.exists():
         # url = "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
         # url = "https://huggingface.co/innnky/contentvec/resolve/main/checkpoint_best_legacy_500.pt"
         url = "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/checkpoint_best_legacy_500.pt"
-        download_file(url, vec_path, desc="Downloading Hubert model")
+        download_file(url, vec_path, desc="Downloading Hubert model", **kwargs)
     return vec_path
 
 
