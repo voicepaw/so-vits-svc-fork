@@ -451,24 +451,35 @@ def clean_checkpoints(
     sort_by_time      --  True -> chronologically delete ckpts
                           False -> lexicographically delete ckpts
     """
+    LOG.warning("Cleaning old checkpoints...")
     path_to_models = Path(path_to_models)
-    name_key = lambda p: int(re.match(r"._(\d+)", p.stem).group(1))
+
+    # Define sort key functions
+    name_key = lambda p: int(re.match(r"[GD]_(\d+)", p.stem).group(1))
     time_key = lambda p: p.stat().st_mtime
-    models_sorted = sorted(
+    path_key = lambda p: (p.stem[0], time_key(p) if sort_by_time else name_key(p))
+
+    models = list(
         filter(
-            lambda p: (p.is_file() and re.match(r"._\d+", p.stem)),
+            lambda p: (
+                p.is_file()
+                and re.match(r"[GD]_\d+", p.stem)
+                and not p.stem.endswith("_0")
+            ),
             path_to_models.glob("*.pth"),
-        ),
-        key=time_key if sort_by_time else name_key,
+        )
     )
+
+    models_sorted = sorted(models, key=path_key)
+
     models_sorted_grouped = groupby(models_sorted, lambda p: p.stem[0])
-    for k, g in models_sorted_grouped:
-        to_dels = list(g)[:-n_ckpts_to_keep]
-        for to_del in to_dels:
-            if to_del.stem.endswith("_0"):
-                continue
-            LOG.warning(f"Removing {to_del}")
-            to_del.unlink()
+
+    for group_name, group_items in models_sorted_grouped:
+        to_delete_list = list(group_items)[:-n_ckpts_to_keep]
+
+        for to_delete in to_delete_list:
+            LOG.warning(f"Removing {to_delete}")
+            to_delete.unlink()
 
 
 def summarize(
