@@ -189,6 +189,16 @@ class Svc:
             else:
                 LOG.warning(f"Speaker {speaker} is not found. Use speaker 0 instead.")
                 speaker_id = 0
+        speaker_candidates = list(
+            filter(lambda x: x[1] == speaker_id, self.spk2id.__dict__.items())
+        )
+        if len(speaker_candidates) > 1:
+            raise ValueError(
+                f"Speaker_id {speaker_id} is not unique. Candidates: {speaker_candidates}"
+            )
+        elif len(speaker_candidates) == 0:
+            raise ValueError(f"Speaker_id {speaker_id} is not found.")
+        speaker = speaker_candidates[0][0]
         sid = torch.LongTensor([int(speaker_id)]).to(self.dev).unsqueeze(0)
 
         # get unit f0
