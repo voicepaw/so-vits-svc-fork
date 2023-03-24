@@ -10,7 +10,9 @@ from joblib import Parallel, delayed
 from sklearn.cluster import KMeans, MiniBatchKMeans
 from tqdm_joblib import tqdm_joblib
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 
 def train_cluster(

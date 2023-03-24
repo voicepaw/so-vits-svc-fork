@@ -16,7 +16,9 @@ from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 
 import so_vits_svc_fork.modules.commons as commons
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 from . import utils
 from .data_utils import TextAudioCollate, TextAudioSpeakerLoader

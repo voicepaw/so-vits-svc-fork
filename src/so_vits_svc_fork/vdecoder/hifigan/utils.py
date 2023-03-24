@@ -6,7 +6,9 @@ import matplotlib.pylab as plt
 import torch
 from torch.nn.utils import weight_norm
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 
 def plot_spectrogram(spectrogram):

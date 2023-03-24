@@ -10,7 +10,9 @@ import torch
 from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 from .utils import ensure_hubert_model
 

@@ -11,7 +11,9 @@ import soundfile
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 # input_dir and output_dir exists.
 # write code to convert input dir audio files to output dir audio files,

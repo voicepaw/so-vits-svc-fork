@@ -10,7 +10,9 @@ from random import shuffle
 
 from tqdm import tqdm
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 
 def _get_wav_duration(filepath: Path):

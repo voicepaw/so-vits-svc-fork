@@ -10,7 +10,9 @@ import torch
 from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 from . import utils
 from .utils import HUBERT_SAMPLING_RATE

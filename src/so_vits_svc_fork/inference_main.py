@@ -9,7 +9,9 @@ import soundfile
 import torch
 from cm_time import timer
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 from .inference.infer_tool import RealtimeVC, RealtimeVC2, Svc
 

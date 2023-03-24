@@ -9,7 +9,9 @@ import torch
 import torch.utils.data
 from librosa.filters import mel as librosa_mel_fn
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 
 def load_wav_to_torch(full_path, target_sr=None, return_empty_on_exception=False):

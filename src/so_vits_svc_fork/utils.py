@@ -16,7 +16,9 @@ from scipy.io.wavfile import read
 from torch import FloatTensor, Tensor
 from tqdm import tqdm
 
-from so_vits_svc_fork.logger import LOG
+from so_vits_svc_fork.logger import getLogger
+
+LOG = getLogger(__name__)
 
 MATPLOTLIB_FLAG = False
 f0_bin = 256

@@ -8,8 +8,9 @@ import pyinputplus as pyip
 import torch
 
 from so_vits_svc_fork import __version__
-from so_vits_svc_fork.logger import LOG, print_test_info
+from so_vits_svc_fork.logger import getLogger, print_test_info
 
+LOG = getLogger(__name__)
 LOG.info(f"Version: {__version__}")
 print_test_info()
 
