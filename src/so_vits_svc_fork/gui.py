@@ -34,7 +34,8 @@ def load_presets() -> dict:
         json.loads(GUI_PRESETS_PATH.read_text()) if GUI_PRESETS_PATH.exists() else {}
     )
     # prioriy: defaults > users
-    return {**defaults, **users}
+    # order: defaults -> users
+    return {**defaults, **users, **defaults}
 
 
 def add_preset(name: str, preset: dict) -> dict:
