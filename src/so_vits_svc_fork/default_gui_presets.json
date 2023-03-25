@@ -75,7 +75,7 @@
     "silence_threshold": -35.0,
     "transpose": 0.0,
     "auto_predict_f0": true,
-    "f0_method": "crepe",
+    "f0_method": "dio",
     "cluster_infer_ratio": 0.0,
     "noise_scale": 0.4,
     "pad_seconds": 0.1,
