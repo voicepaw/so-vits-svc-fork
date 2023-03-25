@@ -68,6 +68,16 @@
         "doc",
         "bug"
       ]
+    },
+    {
+      "login": "Lordmau5",
+      "name": "Lordmau5",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1345036?v=4",
+      "profile": "https://github.com/Lordmau5",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,

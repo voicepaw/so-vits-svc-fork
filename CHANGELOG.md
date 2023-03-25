@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.2 (2023-03-24)
+### Fix
+* **gui:** Fix devices list and fix tqdm error in gui ([#99](https://github.com/34j/so-vits-svc-fork/issues/99)) ([`59724cd`](https://github.com/34j/so-vits-svc-fork/commit/59724cd2afc6a8d5ef6ea4b7fa8c012e21fc4af6))
+
+### Documentation
+* Add MashiroSA as a contributor for doc, and bug ([#98](https://github.com/34j/so-vits-svc-fork/issues/98)) ([`495b7cb`](https://github.com/34j/so-vits-svc-fork/commit/495b7cbfc9f9468d49bc3f57efe6c5c076dcb0d3))
+* **notebook:** Fix cluster inference command and improve cluster training command ([#93](https://github.com/34j/so-vits-svc-fork/issues/93)) ([`7642594`](https://github.com/34j/so-vits-svc-fork/commit/7642594472bd660fe046c45909f0475398af199e))
+
 ## v1.3.1 (2023-03-24)
 ### Fix
 * **gui:** Fix defaut for auto_play ([#97](https://github.com/34j/so-vits-svc-fork/issues/97)) ([`07920a4`](https://github.com/34j/so-vits-svc-fork/commit/07920a4954e1a14d47fcb2687f050d49d03da415))
