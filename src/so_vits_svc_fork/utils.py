@@ -10,6 +10,7 @@ from typing import Any, Literal
 import numpy as np
 import requests
 import torch
+import torch.backends.mps
 import torchcrepe
 from cm_time import timer
 from numpy import dtype, float32, ndarray
@@ -25,6 +26,24 @@ f0_min = 50.0
 f0_mel_min = 1127 * np.log(1 + f0_min / 700)
 f0_mel_max = 1127 * np.log(1 + f0_max / 700)
 HUBERT_SAMPLING_RATE = 16000
+
+
+def get_optimal_device() -> torch.device:
+    if torch.cuda.is_available():
+        device = torch.device("cuda")
+    elif torch.backends.mps.is_available():
+        device = torch.device("cpu")
+    else:
+        try:
+            import torch_directml
+
+            if torch_directml.is_available():
+                device = torch.device(torch_directml.device())
+            else:
+                device = torch.device("cpu")
+        except Exception:
+            device = torch.device("cpu")
+    return device
 
 
 # def normalize_f0(f0, random_scale=True):
@@ -209,7 +228,7 @@ def compute_f0_crepe(
     p_len: None | int = None,
     sampling_rate: int = 44100,
     hop_length: int = 512,
-    device: str = "cuda" if torch.cuda.is_available() else "cpu",
+    device: str | int | torch.device = get_optimal_device(),
     model: Literal["full", "tiny"] = "full",
 ):
     audio = torch.from_numpy(wav_numpy).to(device, copy=True)

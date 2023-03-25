@@ -15,7 +15,7 @@ from numpy import dtype, float32, ndarray
 from so_vits_svc_fork import cluster, utils
 from so_vits_svc_fork.models import SynthesizerTrn
 
-from ..utils import HUBERT_SAMPLING_RATE
+from ..utils import HUBERT_SAMPLING_RATE, get_optimal_device
 
 LOG = getLogger(__name__)
 
@@ -92,12 +92,12 @@ class Svc:
         *,
         net_g_path: str,
         config_path: str,
-        device: torch.device | str | None = None,
+        device: torch.device | str | int | None = None,
         cluster_model_path: Path | str | None = None,
     ):
         self.net_g_path = net_g_path
         if device is None:
-            self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            self.dev = torch.device(get_optimal_device())
         else:
             self.dev = torch.device(device)
         self.net_g_ms = None

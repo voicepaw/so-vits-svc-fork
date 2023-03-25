@@ -42,6 +42,7 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 - Automatically download pretrained base model and HuBERT model
 - Code completely formatted with black, isort, autoflake etc.
 - Volume normalization in preprocessing
+- Supports AMD GPU in windows (experimental)
 - Other minor differences
 
 ## Installation

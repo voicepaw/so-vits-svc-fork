@@ -9,6 +9,7 @@ import torch.nn.functional as F
 from torch.nn import AvgPool1d, Conv1d, Conv2d, ConvTranspose1d
 from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
 
+from ...utils import get_optimal_device
 from .env import AttrDict
 from .utils import get_padding, init_weights
 
@@ -17,7 +18,7 @@ LOG = getLogger(__name__)
 LRELU_SLOPE = 0.1
 
 
-def load_model(model_path, device="cuda"):
+def load_model(model_path, device=get_optimal_device()):
     config_file = os.path.join(os.path.split(model_path)[0], "config.json")
     with open(config_file) as f:
         data = f.read()

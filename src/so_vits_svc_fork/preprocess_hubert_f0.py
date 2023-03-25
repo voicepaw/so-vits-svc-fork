@@ -12,7 +12,7 @@ from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
 from . import utils
-from .utils import HUBERT_SAMPLING_RATE
+from .utils import HUBERT_SAMPLING_RATE, get_optimal_device
 
 LOG = getLogger(__name__)
 
@@ -22,7 +22,7 @@ def _process_one(
     hubert_model,
     sampling_rate: int,
     hop_length: int,
-    device: Literal["cuda", "cpu"] = "cuda",
+    device: torch.device | int | str = get_optimal_device(),
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
 ):
@@ -57,10 +57,10 @@ def _process_batch(
     sampling_rate: int,
     hop_length: int,
     pbar_position: int,
+    device: torch.device | int | str = get_optimal_device(),
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
 ):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
     hubert_model = utils.get_hubert_model().to(device)
 
     for filepath in tqdm(filepaths, position=pbar_position):
@@ -81,6 +81,7 @@ def preprocess_hubert_f0(
     n_jobs: int = 4,
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
+    device: torch.device | int | str = get_optimal_device(),
 ):
     input_dir = Path(input_dir)
     config_path = Path(config_path)
@@ -95,7 +96,13 @@ def preprocess_hubert_f0(
     filepath_chunks = np.array_split(filepaths, n_jobs)
     Parallel(n_jobs=n_jobs)(
         delayed(_process_batch)(
-            chunk, sampling_rate, hop_length, pbar_position, f0_method, force_rebuild
+            chunk,
+            sampling_rate,
+            hop_length,
+            pbar_position,
+            device=device,
+            f0_method=f0_method,
+            force_rebuild=force_rebuild,
         )
         for (pbar_position, chunk) in enumerate(filepath_chunks)
     )

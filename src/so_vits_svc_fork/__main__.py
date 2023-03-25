@@ -20,6 +20,8 @@ from rich.logging import RichHandler
 
 from so_vits_svc_fork import __version__
 
+from .utils import get_optimal_device
+
 LOG = getLogger(__name__)
 LOGGER_INIT = False
 
@@ -177,7 +179,7 @@ def train(config_path: Path, model_path: Path):
     "-d",
     "--device",
     type=str,
-    default="cuda" if torch.cuda.is_available() else "cpu",
+    default=get_optimal_device(),
     help="device",
 )
 @click.option("-ch", "--chunk-seconds", type=float, default=0.5, help="chunk seconds")
@@ -199,7 +201,7 @@ def infer(
     pad_seconds: float = 0.5,
     chunk_seconds: float = 0.5,
     absolute_thresh: bool = False,
-    device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
+    device: torch.device | int | str = get_optimal_device(),
 ):
     """Inference"""
     from .inference_main import infer
@@ -312,7 +314,7 @@ def infer(
     "-d",
     "--device",
     type=str,
-    default="cuda" if torch.cuda.is_available() else "cpu",
+    default=get_optimal_device(),
     help="device",
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
@@ -351,7 +353,7 @@ def vc(
     version: int,
     input_device: int | str | None,
     output_device: int | str | None,
-    device: Literal["cpu", "cuda"],
+    device: torch.device | int | str,
     passthrough_original: bool = False,
 ) -> None:
     """Realtime inference from microphone"""
@@ -508,12 +510,20 @@ def pre_config(
     type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
     default="dio",
 )
+@click.option(
+    "-d",
+    "--device",
+    type=str,
+    default=get_optimal_device(),
+    help="device",
+)
 def pre_hubert(
     input_dir: Path,
     config_path: Path,
     n_jobs: bool,
     force_rebuild: bool,
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
+    device: str | torch.device,
 ) -> None:
     """Preprocessing part 3: hubert
     If the HuBERT model is not found, it will be downloaded automatically."""
@@ -527,6 +537,7 @@ def pre_hubert(
         n_jobs=n_jobs,
         force_rebuild=force_rebuild,
         f0_method=f0_method,
+        device=device,
     )
 
 

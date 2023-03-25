@@ -12,7 +12,7 @@ from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
 from .__main__ import init_logger
-from .utils import ensure_hubert_model
+from .utils import ensure_hubert_model, get_optimal_device
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
@@ -566,15 +566,7 @@ def main():
                         pad_seconds=values["pad_seconds"],
                         absolute_thresh=values["absolute_thresh"],
                         chunk_seconds=values["chunk_seconds"],
-                        device="cpu"
-                        if not values["use_gpu"]
-                        else (
-                            "cuda"
-                            if torch.cuda.is_available()
-                            else "mps"
-                            if torch.backends.mps.is_available()
-                            else "cpu"
-                        ),
+                        device=get_optimal_device() if values["use_gpu"] else "cpu",
                     )
                     if values["auto_play"]:
                         pool.schedule(play_audio, args=[output_path])
@@ -617,7 +609,7 @@ def main():
                         pad_seconds=values["pad_seconds"],
                         chunk_seconds=values["chunk_seconds"],
                         version=int(values["realtime_algorithm"][0]),
-                        device="cuda" if values["use_gpu"] else "cpu",
+                        device=get_optimal_device() if values["use_gpu"] else "cpu",
                         block_seconds=values["block_seconds"],
                         input_device=input_device_indices[
                             window["input_device"].widget.current()

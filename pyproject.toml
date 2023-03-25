@@ -76,6 +76,10 @@ myst-parser = ">=0.16"
 sphinx = ">=4.0"
 sphinx-rtd-theme = ">=1.0"
 
+
+[tool.poetry.group.directml.dependencies]
+torch-directml = "^0.1.13.1.dev230301"
+
 [tool.semantic_release]
 branch = "main"
 version_toml = "pyproject.toml:tool.poetry.version"
