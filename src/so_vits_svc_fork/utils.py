@@ -260,7 +260,9 @@ def compute_f0(
         elif method == "parselmouth":
             f0 = compute_f0_parselmouth(wav_numpy, p_len, sampling_rate, hop_length)
         else:
-            raise ValueError("type must be dio, crepe, harvest or parselmouth")
+            raise ValueError(
+                "type must be dio, crepe, crepe-tiny, harvest or parselmouth"
+            )
     rtf = t.elapsed / (len(wav_numpy) / sampling_rate)
     LOG.info(f"F0 inference time:       {t.elapsed:.3f}s, RTF: {rtf:.3f}")
     return f0
