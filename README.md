@@ -46,6 +46,12 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 ## Installation
 
+### One click easy installation
+
+<a href="https://github.com/34j/so-vits-svc-fork/releases/download/v1.3.2/install.bat" download>
+  <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
+</a>
+
 ### [Creating a Virtual Environment](https://github.com/34j/so-vits-svc-fork/wiki#creating-a-virtual-environment)
 
 ### Install
