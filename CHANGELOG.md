@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.4 (2023-03-25)
+### Fix
+* Change default f0 method from crepe to dio ([#100](https://github.com/34j/so-vits-svc-fork/issues/100)) ([`baf58d2`](https://github.com/34j/so-vits-svc-fork/commit/baf58d286c286c0064fd015e0e8f0b9e690021f7))
+
 ## v1.3.3 (2023-03-25)
 ### Fix
 * Fix old checkpoint deletion by sorting the models properly (#65) ([#89](https://github.com/34j/so-vits-svc-fork/issues/89)) ([`287dc94`](https://github.com/34j/so-vits-svc-fork/commit/287dc94be719147023af0ecfe7e92b16a8e98fc5))
