@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.3 (2023-03-25)
+### Fix
+* Fix old checkpoint deletion by sorting the models properly (#65) ([#89](https://github.com/34j/so-vits-svc-fork/issues/89)) ([`287dc94`](https://github.com/34j/so-vits-svc-fork/commit/287dc94be719147023af0ecfe7e92b16a8e98fc5))
+
+### Documentation
+* Add Lordmau5 as a contributor for bug, and code ([#102](https://github.com/34j/so-vits-svc-fork/issues/102)) ([`4df46ee`](https://github.com/34j/so-vits-svc-fork/commit/4df46eed47378f41d76c7637f540779db3bb54a3))
+
 ## v1.3.2 (2023-03-24)
 ### Fix
 * **gui:** Fix devices list and fix tqdm error in gui ([#99](https://github.com/34j/so-vits-svc-fork/issues/99)) ([`59724cd`](https://github.com/34j/so-vits-svc-fork/commit/59724cd2afc6a8d5ef6ea4b7fa8c012e21fc4af6))
