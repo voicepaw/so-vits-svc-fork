@@ -23,9 +23,7 @@ def _process_one(
     sampling_rate: int,
     hop_length: int,
     device: Literal["cuda", "cpu"] = "cuda",
-    f0_method: Literal[
-        "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-    ] = "crepe",
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
 ):
     wav, sr = librosa.load(filepath, sr=sampling_rate)
@@ -59,9 +57,7 @@ def _process_batch(
     sampling_rate: int,
     hop_length: int,
     pbar_position: int,
-    f0_method: Literal[
-        "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-    ] = "crepe",
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
 ):
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -83,9 +79,7 @@ def preprocess_hubert_f0(
     input_dir: Path | str,
     config_path: Path | str,
     n_jobs: int = 4,
-    f0_method: Literal[
-        "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-    ] = "crepe",
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
 ):
     input_dir = Path(input_dir)

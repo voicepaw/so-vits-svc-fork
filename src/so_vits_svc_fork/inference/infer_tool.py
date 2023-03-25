@@ -130,7 +130,7 @@ class Svc:
         speaker: int | str,
         f0_method: Literal[
             "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-        ] = "crepe",
+        ] = "dio",
     ):
         f0 = utils.compute_f0(
             audio,
@@ -172,7 +172,7 @@ class Svc:
         noise_scale: float = 0.4,
         f0_method: Literal[
             "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-        ] = "crepe",
+        ] = "dio",
     ) -> tuple[torch.Tensor, int]:
         audio = audio.astype(np.float32)
         # get speaker id
@@ -240,7 +240,7 @@ class Svc:
         noise_scale: float = 0.4,
         f0_method: Literal[
             "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-        ] = "crepe",
+        ] = "dio",
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
@@ -459,7 +459,7 @@ class RealtimeVC(Crossfader):
         noise_scale: float = 0.4,
         f0_method: Literal[
             "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-        ] = "crepe",
+        ] = "dio",
         # slice config
         db_thresh: int = -40,
         pad_seconds: float = 0.5,
@@ -519,7 +519,7 @@ class RealtimeVC2:
         noise_scale: float = 0.4,
         f0_method: Literal[
             "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
-        ] = "crepe",
+        ] = "dio",
         # slice config
         db_thresh: int = -40,
         chunk_seconds: float = 0.5,

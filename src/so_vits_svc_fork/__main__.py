@@ -281,7 +281,7 @@ def infer(
     "-fm",
     "--f0-method",
     type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
-    default="crepe",
+    default="dio",
     help="f0 prediction method",
 )
 @click.option("-p", "--pad-seconds", type=float, default=0.02, help="pad seconds")
@@ -490,6 +490,7 @@ def pre_config(
 @click.option(
     "-n",
     "--n_jobs",
+    "--n-jobs",
     type=int,
     default=4,
     help="number of jobs (optimal value may depend on your VRAM capacity and audio duration per file)",
@@ -505,7 +506,7 @@ def pre_config(
     "-fm",
     "--f0-method",
     type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
-    default="crepe",
+    default="dio",
 )
 def pre_hubert(
     input_dir: Path,
