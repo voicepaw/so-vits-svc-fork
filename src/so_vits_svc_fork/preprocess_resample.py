@@ -9,6 +9,7 @@ import audioread.exceptions
 import librosa
 import numpy as np
 import soundfile
+import soundfile as sf
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
 
@@ -58,7 +59,7 @@ def preprocess_resample(
         """Preprocess one audio file."""
 
         try:
-            audio, sr = librosa.load(input_path)
+            audio, sr = sf.read(input_path)
 
         # Audioread is the last backend it will attempt, so this is the exception thrown on failure
         except audioread.exceptions.NoBackendError as e:
