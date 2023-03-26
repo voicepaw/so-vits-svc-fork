@@ -166,6 +166,13 @@ def train(config_path: Path, model_path: Path):
     "-db", "--db-thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)"
 )
 @click.option(
+    "-fm",
+    "--f0-method",
+    type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
+    default="dio",
+    help="f0 prediction method",
+)
+@click.option(
     "-a", "--auto-predict-f0", type=bool, default=True, help="auto predict f0"
 )
 @click.option(
@@ -185,17 +192,21 @@ def train(config_path: Path, model_path: Path):
     "-ab", "--absolute-thresh", type=bool, default=False, help="absolute thresh"
 )
 def infer(
+    # paths
     input_path: Path,
     output_path: Path,
-    speaker: str,
     model_path: Path,
     config_path: Path,
+    # svc config
+    speaker: str,
     cluster_model_path: Path | None = None,
     transpose: int = 0,
-    db_thresh: int = -40,
     auto_predict_f0: bool = False,
     cluster_infer_ratio: float = 0,
     noise_scale: float = 0.4,
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
+    # slice config
+    db_thresh: int = -40,
     pad_seconds: float = 0.5,
     chunk_seconds: float = 0.5,
     absolute_thresh: bool = False,
@@ -222,17 +233,21 @@ def infer(
     if cluster_model_path is not None:
         cluster_model_path = Path(cluster_model_path)
     infer(
+        # paths
         input_path=input_path,
         output_path=output_path,
-        speaker=speaker,
         model_path=model_path,
         config_path=config_path,
+        # svc config
+        speaker=speaker,
         cluster_model_path=cluster_model_path,
         transpose=transpose,
-        db_thresh=db_thresh,
         auto_predict_f0=auto_predict_f0,
         cluster_infer_ratio=cluster_infer_ratio,
         noise_scale=noise_scale,
+        f0_method=f0_method,
+        # slice config
+        db_thresh=db_thresh,
         pad_seconds=pad_seconds,
         chunk_seconds=chunk_seconds,
         absolute_thresh=absolute_thresh,
