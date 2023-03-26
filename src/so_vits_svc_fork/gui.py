@@ -4,9 +4,9 @@ import json
 from logging import getLogger
 from pathlib import Path
 
-import librosa
 import PySimpleGUI as sg
 import sounddevice as sd
+import soundfile as sf
 import torch
 from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
@@ -22,7 +22,7 @@ LOG = getLogger(__name__)
 def play_audio(path: Path | str):
     if isinstance(path, Path):
         path = path.as_posix()
-    data, sr = librosa.load(path)
+    data, sr = sf.read(path)
     sd.play(data, sr)
 
 

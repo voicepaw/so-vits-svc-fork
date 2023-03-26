@@ -402,14 +402,26 @@ def vc(
     help="path to output dir",
 )
 @click.option("-s", "--sampling-rate", type=int, default=44100, help="sampling rate")
-def pre_resample(input_dir: Path, output_dir: Path, sampling_rate: int) -> None:
+@click.option(
+    "-n",
+    "--n-jobs",
+    type=int,
+    default=-1,
+    help="number of jobs (optimal value may depend on your RAM capacity and audio duration per file)",
+)
+def pre_resample(
+    input_dir: Path, output_dir: Path, sampling_rate: int, n_jobs: int
+) -> None:
     """Preprocessing part 1: resample"""
     from .preprocess_resample import preprocess_resample
 
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
     preprocess_resample(
-        input_dir=input_dir, output_dir=output_dir, sampling_rate=sampling_rate
+        input_dir=input_dir,
+        output_dir=output_dir,
+        sampling_rate=sampling_rate,
+        n_jobs=n_jobs,
     )
 
 

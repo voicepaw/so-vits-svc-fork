@@ -21,7 +21,7 @@ def _process_one(
     huggingface_token: str | None = None,
 ) -> None:
     try:
-        audio, sr = sf.read(input_path)
+        audio, sr = sf.read(input_path, dtype="float32")
     except Exception as e:
         LOG.warning(f"Failed to read {input_path}: {e}")
         return

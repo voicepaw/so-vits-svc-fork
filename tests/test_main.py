@@ -27,7 +27,9 @@ class TestMain(TestCase):
     def test_preprocess(self):
         from so_vits_svc_fork.preprocess_resample import preprocess_resample
 
-        preprocess_resample("tests/dataset_raw", "tests/dataset/44k", 44100)
+        preprocess_resample(
+            "tests/dataset_raw", "tests/dataset/44k", 44100, n_jobs=1 if IS_CI else -1
+        )
 
         from so_vits_svc_fork.preprocess_flist_config import preprocess_config
 

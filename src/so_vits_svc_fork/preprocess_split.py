@@ -2,6 +2,7 @@ from logging import getLogger
 from pathlib import Path
 
 import librosa
+import soundfile
 import soundfile as sf
 from joblib import Parallel, delayed
 from tqdm import tqdm
@@ -19,7 +20,7 @@ def _process_one(
     hop_seconds: float = 0.1,
 ):
     try:
-        audio, sr = librosa.load(input_path)
+        audio, sr = sf.read(input_path, dtype="float32")
     except Exception as e:
         LOG.warning(f"Failed to read {input_path}: {e}")
         return
