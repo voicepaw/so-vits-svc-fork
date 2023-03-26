@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.2 (2023-03-26)
+### Fix
+* **logging:** Initialize logging in logger file and move version log ([#131](https://github.com/34j/so-vits-svc-fork/issues/131)) ([`441d51f`](https://github.com/34j/so-vits-svc-fork/commit/441d51f8efa84144d8a9f8fa02f2adaaf15295c0))
+* **preprocess:** Fix dtype in sf.read() to save memory and fix preprocess_resample ([#132](https://github.com/34j/so-vits-svc-fork/issues/132)) ([`0af1e13`](https://github.com/34j/so-vits-svc-fork/commit/0af1e13a468ad282266a595b8d3c77d62aa938dc))
+* Fix audio resampled to 22kHz ([#130](https://github.com/34j/so-vits-svc-fork/issues/130)) ([`4203f37`](https://github.com/34j/so-vits-svc-fork/commit/4203f374c5625369518063888e1ca70d1af4f694))
+
+### Documentation
+* Update notebook and README.md ([#128](https://github.com/34j/so-vits-svc-fork/issues/128)) ([`38d9744`](https://github.com/34j/so-vits-svc-fork/commit/38d97449d5b443167926f409f904f4b40c6e0f03))
+
 ## v1.4.1 (2023-03-26)
 ### Fix
 * **__main__,gui:** Fix some parameters not passed ([#124](https://github.com/34j/so-vits-svc-fork/issues/124)) ([`6cfe3d3`](https://github.com/34j/so-vits-svc-fork/commit/6cfe3d3f567c03e1c59065ff827f564a13a7aaaf))
