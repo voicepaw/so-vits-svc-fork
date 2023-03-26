@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.3 (2023-03-26)
+### Performance
+* **preprocess:** Specify samplerate to reduce memory usage ([#137](https://github.com/34j/so-vits-svc-fork/issues/137)) ([`6217eda`](https://github.com/34j/so-vits-svc-fork/commit/6217eda0ec3bac27e408fcd0466a6b658cf718c5))
+
 ## v1.4.2 (2023-03-26)
 ### Fix
 * **logging:** Initialize logging in logger file and move version log ([#131](https://github.com/34j/so-vits-svc-fork/issues/131)) ([`441d51f`](https://github.com/34j/so-vits-svc-fork/commit/441d51f8efa84144d8a9f8fa02f2adaaf15295c0))
