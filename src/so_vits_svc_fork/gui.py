@@ -11,12 +11,10 @@ import torch
 from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
-from .__main__ import init_logger
 from .utils import ensure_hubert_model
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
-init_logger()
 
 LOG = getLogger(__name__)
 
