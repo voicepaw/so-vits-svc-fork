@@ -59,9 +59,14 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
+python -m pip install -U pip setuptools wheel
 pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
 pip install -U so-vits-svc-fork
 ```
+
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`.
+- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
+- If `fairseq` raises an error that [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed or that some dll is missing, please (re)install it.
 
 ### Update
 
@@ -108,6 +113,14 @@ svc --model-path <model-path> source.wav
 
 ### Training
 
+#### Before training
+
+- If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
+- If your dataset is a long audio file with multiple speakers, use `svc sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
+- If your dataset is a long audio file with a single speaker, use `svc split` to split the dataset into multiple files (using `librosa`).
+
+[^1]: https://ytpmv.info/how-to-use-uvr/
+
 #### Google Colab
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
@@ -119,14 +132,14 @@ Place your dataset like `dataset_raw/{speaker_id}/**/{wav_file}.{any_format}` (s
 ```shell
 svc pre-resample
 svc pre-config
-svc pre-hubert -fm dio
+svc pre-hubert
 svc train
 ```
 
 #### Notes
 
 - Dataset audio duration per file should be <~ 10s or VRAM will run out.
-- To change the f0 inference method to CREPE, replace `svc pre-hubert -fm dio` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
+- To change the f0 inference method to CREPE, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
 - It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. As tested, the default requires about 14 GB.
 
 ### Further help
@@ -139,7 +152,7 @@ Usage: svc [OPTIONS] COMMAND [ARGS]...
 
   so-vits-svc allows any folder structure for training data.
   However, the following folder structure is recommended.
-      When training: dataset_raw/{speaker_name}/{wav_name}.wav
+      When training: dataset_raw/{speaker_name}/**/{wav_name}.{any_format}
       When inference: configs/44k/config.json, logs/44k/G_XXXX.pth
   If the folder structure is followed, you DO NOT NEED TO SPECIFY model path, config path, etc.
   (The latest model will be automatically loaded.)
@@ -156,6 +169,8 @@ Commands:
   pre-config     Preprocessing part 2: config
   pre-hubert     Preprocessing part 3: hubert If the HuBERT model is not found, it will be...
   pre-resample   Preprocessing part 1: resample
+  pre-sd         Speech diarization using pyannote.audio
+  pre-split      Split audio files into multiple files
   train          Train model If D_0.pth or G_0.pth not found, automatically download from hub.
   train-cluster  Train k-means clustering
   vc             Realtime inference from microphone

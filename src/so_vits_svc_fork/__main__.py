@@ -530,6 +530,115 @@ def pre_hubert(
     )
 
 
+@cli.command()
+@click.option(
+    "-i",
+    "--input-dir",
+    type=click.Path(exists=True),
+    default=Path("./dataset_raw_raw/"),
+    help="path to source dir",
+)
+@click.option(
+    "-o",
+    "--output-dir",
+    type=click.Path(),
+    default=Path("./dataset_raw/"),
+    help="path to output dir",
+)
+@click.option(
+    "-n",
+    "--n-jobs",
+    type=int,
+    default=-1,
+    help="number of jobs (optimal value may depend on your VRAM capacity and audio duration per file)",
+)
+@click.option("-min", "--min-speakers", type=int, default=2, help="min speakers")
+@click.option("-max", "--max-speakers", type=int, default=2, help="max speakers")
+@click.option(
+    "-t", "--huggingface-token", type=str, default=None, help="huggingface token"
+)
+def pre_sd(
+    input_dir: Path | str,
+    output_dir: Path | str,
+    min_speakers: int,
+    max_speakers: int,
+    huggingface_token: str | None,
+    n_jobs: int,
+):
+    """Speech diarization using pyannote.audio"""
+    if huggingface_token is None:
+        huggingface_token = os.environ.get("HUGGINGFACE_TOKEN", None)
+    if huggingface_token is None:
+        huggingface_token = click.prompt(
+            "Please enter your HuggingFace token", hide_input=True
+        )
+    if os.environ.get("HUGGINGFACE_TOKEN", None) is None:
+        LOG.info("You can also set the HUGGINGFACE_TOKEN environment variable.")
+    assert huggingface_token is not None
+    huggingface_token = huggingface_token.rstrip(" \n\r\t\0")
+    if len(huggingface_token) <= 1:
+        raise ValueError("HuggingFace token is empty: " + huggingface_token)
+
+    if max_speakers == 1:
+        LOG.warning("Consider using pre-split if max_speakers == 1")
+    from .preprocess_speaker_diarization import preprocess_speaker_diarization
+
+    preprocess_speaker_diarization(
+        input_dir=input_dir,
+        output_dir=output_dir,
+        min_speakers=min_speakers,
+        max_speakers=max_speakers,
+        huggingface_token=huggingface_token,
+        n_jobs=n_jobs,
+    )
+
+
+@cli.command()
+@click.option(
+    "-i",
+    "--input-dir",
+    type=click.Path(exists=True),
+    default=Path("./dataset_raw_raw/"),
+    help="path to source dir",
+)
+@click.option(
+    "-o",
+    "--output-dir",
+    type=click.Path(),
+    default=Path("./dataset_raw/"),
+    help="path to output dir",
+)
+@click.option(
+    "-n",
+    "--n-jobs",
+    type=int,
+    default=-1,
+    help="number of jobs (optimal value may depend on your RAM capacity and audio duration per file)",
+)
+@click.option("-d", "--top-db", type=float, default=30, help="top db")
+@click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
+@click.option("-h", "--hop-seconds", type=float, default=0.3, help="hop seconds")
+def pre_split(
+    input_dir: Path | str,
+    output_dir: Path | str,
+    top_db: int,
+    frame_seconds: float,
+    hop_seconds: float,
+    n_jobs: int,
+):
+    """Split audio files into multiple files"""
+    from .preprocess_split import preprocess_split
+
+    preprocess_split(
+        input_dir=input_dir,
+        output_dir=output_dir,
+        top_db=top_db,
+        frame_seconds=frame_seconds,
+        hop_seconds=hop_seconds,
+        n_jobs=n_jobs,
+    )
+
+
 @cli.command
 def clean():
     """Clean up files, only useful if you are using the default file structure"""
