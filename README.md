@@ -176,6 +176,10 @@ Commands:
   vc             Realtime inference from microphone
 ```
 
+#### External links
+
+[Video Tutorial](https://www.youtube.com/watch?v=tZn0lcGO5OQ)
+
 ## Contributors ✨
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
