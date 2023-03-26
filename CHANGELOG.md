@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.6 (2023-03-26)
+### Fix
+* **release:** Trigger release ([`15ad525`](https://github.com/34j/so-vits-svc-fork/commit/15ad5255854c8182513be536f84495d7eee32786))
+
+### Documentation
+* Add BlueAmulet as a contributor for code ([#119](https://github.com/34j/so-vits-svc-fork/issues/119)) ([`6a7e8ba`](https://github.com/34j/so-vits-svc-fork/commit/6a7e8ba827ee69f1ceca60b83dfbae437bbe6667))
+
 ## v1.3.5 (2023-03-26)
 ### Fix
 * **data_utils:** Allow float32 audio to be processed properly ([#115](https://github.com/34j/so-vits-svc-fork/issues/115)) ([`13943b6`](https://github.com/34j/so-vits-svc-fork/commit/13943b693d177cf5417127647a3280a9e5ff9ca5))
