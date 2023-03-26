@@ -4,11 +4,10 @@ import random
 import numpy as np
 import torch
 import torch.utils.data
-import torchaudio
 
 from . import utils
 from .modules.mel_processing import spectrogram_torch
-from .utils import load_filepaths_and_text
+from .utils import load_filepaths_and_text, load_wav_to_torch
 
 # import h5py
 
@@ -25,6 +24,7 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
 
     def __init__(self, audiopaths, hparams):
         self.audiopaths = load_filepaths_and_text(audiopaths)
+        self.max_wav_value = hparams.data.max_wav_value
         self.sampling_rate = hparams.data.sampling_rate
         self.filter_length = hparams.data.filter_length
         self.hop_length = hparams.data.hop_length
@@ -39,13 +39,15 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
 
     def get_audio(self, filename):
         filename = filename.replace("\\", "/")
-        audio_norm, sampling_rate = torchaudio.load(filename)
+        audio, sampling_rate = load_wav_to_torch(filename)
         if sampling_rate != self.sampling_rate:
             raise ValueError(
                 "{} SR doesn't match target {} SR".format(
                     sampling_rate, self.sampling_rate
                 )
             )
+        audio_norm = audio / self.max_wav_value
+        audio_norm = audio_norm.unsqueeze(0)
         spec_filename = filename.replace(".wav", ".spec.pt")
         if os.path.exists(spec_filename):
             spec = torch.load(spec_filename)
