@@ -6,9 +6,7 @@ from pathlib import Path
 from typing import Iterable
 
 import librosa
-import numpy as np
 import soundfile
-import soundfile as sf
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
 
@@ -47,11 +45,11 @@ def is_relative_to(path: Path, *other):
         return False
 
 
-def _preprocess_one(input_path: Path, output_path: Path, sampling_rate: int) -> None:
+def _preprocess_one(input_path: Path, output_path: Path, sr: int) -> None:
     """Preprocess one audio file."""
 
     try:
-        audio, sr = sf.read(input_path, dtype="float32")
+        audio, sr = librosa.load(input_path, sr=sr, mono=True)
 
     # Audioread is the last backend it will attempt, so this is the exception thrown on failure
     except Exception as e:
@@ -59,18 +57,13 @@ def _preprocess_one(input_path: Path, output_path: Path, sampling_rate: int) -> 
         LOG.warning(f"Failed to load {input_path} due to {e}")
         return
 
+    # Adjust volume
+    audio /= max(audio.max(), -audio.min())
+
     # Trim silence
     audio, _ = librosa.effects.trim(audio, top_db=20)
 
-    # Adjust volume
-    peak = np.abs(audio).max()
-    if peak > 1.0:
-        audio = 0.98 * audio / peak
-
-    # Resample
-    audio = librosa.resample(audio, orig_sr=sr, target_sr=sampling_rate)
-    audio /= max(audio.max(), -audio.min())
-    soundfile.write(output_path, audio, samplerate=sampling_rate, subtype="PCM_16")
+    soundfile.write(output_path, audio, samplerate=sr, subtype="PCM_16")
 
 
 def preprocess_resample(
@@ -109,6 +102,6 @@ def preprocess_resample(
 
     with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
         Parallel(n_jobs=n_jobs)(
-            delayed(_preprocess_one)(*args, sampling_rate=sampling_rate)
+            delayed(_preprocess_one)(*args, sr=sampling_rate)
             for args in in_and_out_paths
         )

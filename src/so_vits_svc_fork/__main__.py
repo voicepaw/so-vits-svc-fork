@@ -584,6 +584,7 @@ def pre_hubert(
 @click.option(
     "-t", "--huggingface-token", type=str, default=None, help="huggingface token"
 )
+@click.option("-s", "--sr", type=int, default=44100, help="sampling rate")
 def pre_sd(
     input_dir: Path | str,
     output_dir: Path | str,
@@ -591,6 +592,7 @@ def pre_sd(
     max_speakers: int,
     huggingface_token: str | None,
     n_jobs: int,
+    sr: int,
 ):
     """Speech diarization using pyannote.audio"""
     if huggingface_token is None:
@@ -617,6 +619,7 @@ def pre_sd(
         max_speakers=max_speakers,
         huggingface_token=huggingface_token,
         n_jobs=n_jobs,
+        sr=sr,
     )
 
 
@@ -645,6 +648,7 @@ def pre_sd(
 @click.option("-d", "--top-db", type=float, default=30, help="top db")
 @click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
 @click.option("-h", "--hop-seconds", type=float, default=0.3, help="hop seconds")
+@click.option("-s", "--sr", type=int, default=44100, help="sample rate")
 def pre_split(
     input_dir: Path | str,
     output_dir: Path | str,
@@ -652,6 +656,7 @@ def pre_split(
     frame_seconds: float,
     hop_seconds: float,
     n_jobs: int,
+    sr: int,
 ):
     """Split audio files into multiple files"""
     from .preprocess_split import preprocess_split
@@ -663,6 +668,7 @@ def pre_split(
         frame_seconds=frame_seconds,
         hop_seconds=hop_seconds,
         n_jobs=n_jobs,
+        sr=sr,
     )
 
 
