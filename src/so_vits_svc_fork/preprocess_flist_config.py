@@ -3,24 +3,15 @@ from __future__ import annotations
 import json
 import os
 import re
-import wave
 from copy import deepcopy
 from logging import getLogger
 from pathlib import Path
 from random import shuffle
 
+from librosa import get_duration
 from tqdm import tqdm
 
 LOG = getLogger(__name__)
-
-
-def _get_wav_duration(filepath: Path):
-    with open(filepath, "rb") as f:
-        with wave.open(f) as wav_file:
-            n_frames = wav_file.getnframes()
-            framerate = wav_file.getframerate()
-            duration = n_frames / float(framerate)
-    return duration
 
 
 def preprocess_config(
@@ -48,7 +39,7 @@ def preprocess_config(
             pattern = re.compile(r"^[\.a-zA-Z0-9_\/]+$")
             if not pattern.match(path.name):
                 LOG.warning(f"file name {path} contains non-alphanumeric characters.")
-            if _get_wav_duration(path) < 0.3:
+            if get_duration(filename=path) < 0.3:
                 LOG.warning(f"skip {path} because it is too short.")
                 continue
             paths.append(path)
