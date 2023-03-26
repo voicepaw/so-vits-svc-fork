@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.4.1 (2023-03-26)
+### Fix
+* **__main__,gui:** Fix some parameters not passed ([#124](https://github.com/34j/so-vits-svc-fork/issues/124)) ([`6cfe3d3`](https://github.com/34j/so-vits-svc-fork/commit/6cfe3d3f567c03e1c59065ff827f564a13a7aaaf))
+
 ## v1.4.0 (2023-03-26)
 ### Feature
 * **preprocessing:** Add 2 more preprocessing commands ([#123](https://github.com/34j/so-vits-svc-fork/issues/123)) ([`45eba0f`](https://github.com/34j/so-vits-svc-fork/commit/45eba0f25db1346757fcd9134ccb3a62125a05a9))
