@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v1.3.5 (2023-03-26)
+### Fix
+* **data_utils:** Allow float32 audio to be processed properly ([#115](https://github.com/34j/so-vits-svc-fork/issues/115)) ([`13943b6`](https://github.com/34j/so-vits-svc-fork/commit/13943b693d177cf5417127647a3280a9e5ff9ca5))
+
 ## v1.3.4 (2023-03-25)
 ### Fix
 * Change default f0 method from crepe to dio ([#100](https://github.com/34j/so-vits-svc-fork/issues/100)) ([`baf58d2`](https://github.com/34j/so-vits-svc-fork/commit/baf58d286c286c0064fd015e0e8f0b9e690021f7))
