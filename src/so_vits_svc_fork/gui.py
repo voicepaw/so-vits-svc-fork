@@ -550,10 +550,12 @@ def main():
                     continue
                 try:
                     infer(
+                        # paths
                         model_path=Path(values["model_path"]),
-                        config_path=Path(values["config_path"]),
-                        input_path=input_path,
                         output_path=output_path,
+                        input_path=input_path,
+                        config_path=Path(values["config_path"]),
+                        # svc config
                         speaker=values["speaker"],
                         cluster_model_path=Path(values["cluster_model_path"])
                         if values["cluster_model_path"]
@@ -562,10 +564,12 @@ def main():
                         auto_predict_f0=values["auto_predict_f0"],
                         cluster_infer_ratio=values["cluster_infer_ratio"],
                         noise_scale=values["noise_scale"],
+                        f0_method=values["f0_method"],
+                        # slice config
                         db_thresh=values["silence_threshold"],
                         pad_seconds=values["pad_seconds"],
-                        absolute_thresh=values["absolute_thresh"],
                         chunk_seconds=values["chunk_seconds"],
+                        absolute_thresh=values["absolute_thresh"],
                         device="cpu"
                         if not values["use_gpu"]
                         else (
@@ -595,9 +599,11 @@ def main():
                 future = pool.schedule(
                     realtime,
                     kwargs=dict(
+                        # paths
                         model_path=Path(values["model_path"]),
                         config_path=Path(values["config_path"]),
                         speaker=values["speaker"],
+                        # svc config
                         cluster_model_path=Path(values["cluster_model_path"])
                         if values["cluster_model_path"]
                         else None,
@@ -606,6 +612,11 @@ def main():
                         cluster_infer_ratio=values["cluster_infer_ratio"],
                         noise_scale=values["noise_scale"],
                         f0_method=values["f0_method"],
+                        # slice config
+                        db_thresh=values["silence_threshold"],
+                        pad_seconds=values["pad_seconds"],
+                        chunk_seconds=values["chunk_seconds"],
+                        # realtime config
                         crossfade_seconds=values["crossfade_seconds"],
                         additional_infer_before_seconds=values[
                             "additional_infer_before_seconds"
@@ -613,18 +624,15 @@ def main():
                         additional_infer_after_seconds=values[
                             "additional_infer_after_seconds"
                         ],
-                        db_thresh=values["silence_threshold"],
-                        pad_seconds=values["pad_seconds"],
-                        chunk_seconds=values["chunk_seconds"],
-                        version=int(values["realtime_algorithm"][0]),
-                        device="cuda" if values["use_gpu"] else "cpu",
                         block_seconds=values["block_seconds"],
+                        version=int(values["realtime_algorithm"][0]),
                         input_device=input_device_indices[
                             window["input_device"].widget.current()
                         ],
                         output_device=output_device_indices[
                             window["output_device"].widget.current()
                         ],
+                        device="cuda" if values["use_gpu"] else "cpu",
                         passthrough_original=values["passthrough_original"],
                     ),
                 )
