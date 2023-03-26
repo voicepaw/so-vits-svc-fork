@@ -14,13 +14,14 @@ LOG = getLogger(__name__)
 def _process_one(
     input_path: Path,
     output_dir: Path,
+    sr: int,
     *,
     top_db: int = 30,
     frame_seconds: float = 0.5,
     hop_seconds: float = 0.1,
 ):
     try:
-        audio, sr = sf.read(input_path, dtype="float32")
+        audio, sr = librosa.load(input_path, sr=sr, mono=True)
     except Exception as e:
         LOG.warning(f"Failed to read {input_path}: {e}")
         return
@@ -43,6 +44,7 @@ def _process_one(
 def preprocess_split(
     input_dir: Path | str,
     output_dir: Path | str,
+    sr: int,
     *,
     top_db: int = 30,
     frame_seconds: float = 0.5,
@@ -58,6 +60,7 @@ def preprocess_split(
             delayed(_process_one)(
                 input_path,
                 output_dir / input_path.relative_to(input_dir).parent,
+                sr,
                 top_db=top_db,
                 frame_seconds=frame_seconds,
                 hop_seconds=hop_seconds,

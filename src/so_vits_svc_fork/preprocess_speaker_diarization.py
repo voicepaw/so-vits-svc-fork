@@ -2,6 +2,7 @@ from collections import defaultdict
 from logging import getLogger
 from pathlib import Path
 
+import librosa
 import soundfile as sf
 import torch
 from joblib import Parallel, delayed
@@ -15,13 +16,14 @@ LOG = getLogger(__name__)
 def _process_one(
     input_path: Path,
     output_dir: Path,
+    sr: int,
     *,
     min_speakers: int = 1,
     max_speakers: int = 1,
     huggingface_token: str | None = None,
 ) -> None:
     try:
-        audio, sr = sf.read(input_path, dtype="float32")
+        audio, sr = librosa.load(input_path, sr=sr, mono=True)
     except Exception as e:
         LOG.warning(f"Failed to read {input_path}: {e}")
         return
@@ -59,6 +61,7 @@ def _process_one(
 def preprocess_speaker_diarization(
     input_dir: Path | str,
     output_dir: Path | str,
+    sr: int,
     *,
     min_speakers: int = 1,
     max_speakers: int = 1,
@@ -79,6 +82,7 @@ def preprocess_speaker_diarization(
             delayed(_process_one)(
                 input_path,
                 output_dir / input_path.relative_to(input_dir).parent / input_path.stem,
+                sr,
                 max_speakers=max_speakers,
                 min_speakers=min_speakers,
                 huggingface_token=huggingface_token,
