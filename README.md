@@ -41,7 +41,6 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 - Ready to use just by installing with `pip`.
 - Automatically download pretrained base model and HuBERT model
 - Code completely formatted with black, isort, autoflake etc.
-- Volume normalization in preprocessing
 - Other minor differences
 
 ## Installation
@@ -141,6 +140,7 @@ svc train
 - Dataset audio duration per file should be <~ 10s or VRAM will run out.
 - To change the f0 inference method to CREPE, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
 - It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. As tested, the default requires about 14 GB.
+- Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
 
 ### Further help
 
