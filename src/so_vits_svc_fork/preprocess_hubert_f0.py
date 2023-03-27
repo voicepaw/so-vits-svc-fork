@@ -12,6 +12,7 @@ from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
 from . import utils
+from .preprocess_utils import check_hubert_min_duration
 from .utils import HUBERT_SAMPLING_RATE
 
 LOG = getLogger(__name__)
@@ -26,13 +27,17 @@ def _process_one(
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
 ):
-    wav, sr = librosa.load(filepath, sr=sampling_rate)
+    audio, sr = librosa.load(filepath, sr=sampling_rate)
+
+    if not check_hubert_min_duration(audio, sr):
+        LOG.info(f"Skip {filepath} because it is too short.")
+        return
 
     # Compute HuBERT content
     soft_path = filepath.parent / (filepath.name + ".soft.pt")
-    if not soft_path.exists() or force_rebuild:
+    if (not soft_path.exists()) or force_rebuild:
         wav16k = librosa.resample(
-            wav, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE
+            audio, orig_sr=sampling_rate, target_sr=HUBERT_SAMPLING_RATE
         )
         wav16k = torch.from_numpy(wav16k).to(device)
         c = utils.get_hubert_content(hubert_model, wav_16k_tensor=wav16k)
@@ -42,9 +47,9 @@ def _process_one(
 
     # Compute f0
     f0_path = filepath.parent / (filepath.name + ".f0.npy")
-    if not f0_path.exists() or force_rebuild:
+    if (not f0_path.exists()) or force_rebuild:
         f0 = utils.compute_f0(
-            wav, sampling_rate=sampling_rate, hop_length=hop_length, method=f0_method
+            audio, sampling_rate=sampling_rate, hop_length=hop_length, method=f0_method
         )
         np.save(f0_path, f0)
     else:

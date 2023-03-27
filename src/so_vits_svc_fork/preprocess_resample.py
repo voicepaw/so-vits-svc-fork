@@ -10,6 +10,8 @@ import soundfile
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
 
+from .preprocess_utils import check_hubert_min_duration
+
 LOG = getLogger(__name__)
 
 # input_dir and output_dir exists.
@@ -57,11 +59,19 @@ def _preprocess_one(input_path: Path, output_path: Path, sr: int) -> None:
         LOG.warning(f"Failed to load {input_path} due to {e}")
         return
 
+    if not check_hubert_min_duration(audio, sr):
+        LOG.info(f"Skip {input_path} because it is too short.")
+        return
+
     # Adjust volume
     audio /= max(audio.max(), -audio.min())
 
     # Trim silence
     audio, _ = librosa.effects.trim(audio, top_db=20)
+
+    if not check_hubert_min_duration(audio, sr):
+        LOG.info(f"Skip {input_path} because it is too short.")
+        return
 
     soundfile.write(output_path, audio, samplerate=sr, subtype="PCM_16")
 
