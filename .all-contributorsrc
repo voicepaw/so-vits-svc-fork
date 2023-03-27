@@ -79,6 +79,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "Satisfy256",
+      "name": "Satisfy256",
+      "avatar_url": "https://avatars.githubusercontent.com/u/101394399?v=4",
+      "profile": "https://github.com/Satisfy256",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
