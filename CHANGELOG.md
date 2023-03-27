@@ -2,6 +2,19 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.1 (2023-03-27)
+### Fix
+* **deps:** Update dependency rich to v13.3.3 ([#171](https://github.com/34j/so-vits-svc-fork/issues/171)) ([`8bdefa9`](https://github.com/34j/so-vits-svc-fork/commit/8bdefa9636e13fb0a24058a589675a20655357f4))
+
+### Documentation
+* Add nerdyrodent as a contributor for video ([#168](https://github.com/34j/so-vits-svc-fork/issues/168)) ([`78ab661`](https://github.com/34j/so-vits-svc-fork/commit/78ab661af198d87ce2ca5525fa262c639ed03cdc))
+* Add heyfixit as a contributor for doc ([#167](https://github.com/34j/so-vits-svc-fork/issues/167)) ([`32a2a63`](https://github.com/34j/so-vits-svc-fork/commit/32a2a63b375300be6d67be56035005956003bdfd))
+* Add Desuka-art as a contributor for bug ([#165](https://github.com/34j/so-vits-svc-fork/issues/165)) ([`fe3c6bf`](https://github.com/34j/so-vits-svc-fork/commit/fe3c6bf8270fc219cdaeef05b7deacdbfc4df313))
+* Add ruckusmattster as a contributor for bug ([#163](https://github.com/34j/so-vits-svc-fork/issues/163)) ([`2b971db`](https://github.com/34j/so-vits-svc-fork/commit/2b971db5c7a332c8321e99bd77bb956a0ee3ec88))
+* Add pierluigizagaria as a contributor for userTesting ([#160](https://github.com/34j/so-vits-svc-fork/issues/160)) ([`6fabe8d`](https://github.com/34j/so-vits-svc-fork/commit/6fabe8d10b684caa236331a157455db1da686f8f))
+* Add Satisfy256 as a contributor for bug ([#158](https://github.com/34j/so-vits-svc-fork/issues/158)) ([`ee72aee`](https://github.com/34j/so-vits-svc-fork/commit/ee72aee12f23fee458599b8b7fa4f0ed27d33b1c))
+* Add DL909 as a contributor for bug ([#152](https://github.com/34j/so-vits-svc-fork/issues/152)) ([`a5e6651`](https://github.com/34j/so-vits-svc-fork/commit/a5e6651a8f537961caf53adbb8bc52c1412c0762))
+
 ## v2.1.0 (2023-03-27)
 ### Feature
 * **__main__:** Add an option to launch tensorboard in `train` command ([#149](https://github.com/34j/so-vits-svc-fork/issues/149)) ([`ef22cce`](https://github.com/34j/so-vits-svc-fork/commit/ef22cceaeb7f06ea53b2151ef9c962d1040de20d))
