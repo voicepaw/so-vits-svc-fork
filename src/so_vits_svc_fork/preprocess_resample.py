@@ -47,7 +47,15 @@ def is_relative_to(path: Path, *other):
         return False
 
 
-def _preprocess_one(input_path: Path, output_path: Path, sr: int) -> None:
+def _preprocess_one(
+    input_path: Path,
+    output_path: Path,
+    sr: int,
+    *,
+    top_db: int,
+    frame_seconds: float,
+    hop_seconds: float,
+) -> None:
     """Preprocess one audio file."""
 
     try:
@@ -67,7 +75,12 @@ def _preprocess_one(input_path: Path, output_path: Path, sr: int) -> None:
     audio /= max(audio.max(), -audio.min())
 
     # Trim silence
-    audio, _ = librosa.effects.trim(audio, top_db=20)
+    audio, _ = librosa.effects.trim(
+        audio,
+        top_db=top_db,
+        frame_length=int(frame_seconds * sr),
+        hop_length=int(hop_seconds * sr),
+    )
 
     if not check_hubert_min_duration(audio, sr):
         LOG.info(f"Skip {input_path} because it is too short.")
@@ -77,7 +90,14 @@ def _preprocess_one(input_path: Path, output_path: Path, sr: int) -> None:
 
 
 def preprocess_resample(
-    input_dir: Path | str, output_dir: Path | str, sampling_rate: int, n_jobs: int = -1
+    input_dir: Path | str,
+    output_dir: Path | str,
+    sampling_rate: int,
+    n_jobs: int = -1,
+    *,
+    top_db: int = 30,
+    frame_seconds: float = 0.1,
+    hop_seconds: float = 0.05,
 ) -> None:
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -112,6 +132,12 @@ def preprocess_resample(
 
     with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
         Parallel(n_jobs=n_jobs)(
-            delayed(_preprocess_one)(*args, sr=sampling_rate)
+            delayed(_preprocess_one)(
+                *args,
+                sr=sampling_rate,
+                top_db=top_db,
+                frame_seconds=frame_seconds,
+                hop_seconds=hop_seconds,
+            )
             for args in in_and_out_paths
         )

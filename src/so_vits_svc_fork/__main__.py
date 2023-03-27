@@ -409,8 +409,17 @@ def vc(
     default=-1,
     help="number of jobs (optimal value may depend on your RAM capacity and audio duration per file)",
 )
+@click.option("-d", "--top-db", type=float, default=30, help="top db")
+@click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
+@click.option("-h", "--hop-seconds", type=float, default=0.3, help="hop seconds")
 def pre_resample(
-    input_dir: Path, output_dir: Path, sampling_rate: int, n_jobs: int
+    input_dir: Path,
+    output_dir: Path,
+    sampling_rate: int,
+    n_jobs: int,
+    top_db: int,
+    frame_seconds: float,
+    hop_seconds: float,
 ) -> None:
     """Preprocessing part 1: resample"""
     from .preprocess_resample import preprocess_resample
@@ -422,6 +431,9 @@ def pre_resample(
         output_dir=output_dir,
         sampling_rate=sampling_rate,
         n_jobs=n_jobs,
+        top_db=top_db,
+        frame_seconds=frame_seconds,
+        hop_seconds=hop_seconds,
     )
 
 
