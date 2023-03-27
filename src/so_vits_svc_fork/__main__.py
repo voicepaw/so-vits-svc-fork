@@ -86,13 +86,32 @@ def cli():
     help="path to output dir",
     default=Path("./logs/44k"),
 )
-def train(config_path: Path, model_path: Path):
+@click.option(
+    "-t/-nt",
+    "--tensorboard/--no-tensorboard",
+    default=False,
+    type=bool,
+    help="launch tensorboard",
+)
+def train(config_path: Path, model_path: Path, tensorboard: bool = False):
     """Train model
     If D_0.pth or G_0.pth not found, automatically download from hub."""
     from .train import train
 
     config_path = Path(config_path)
     model_path = Path(model_path)
+
+    if tensorboard:
+        import webbrowser
+
+        from tensorboard import program
+
+        getLogger("tensorboard").setLevel(30)
+        tb = program.TensorBoard()
+        tb.configure(argv=[None, "--logdir", model_path.as_posix()])
+        url = tb.launch()
+        webbrowser.open(url)
+
     train(config_path=config_path, model_path=model_path)
 
 
