@@ -133,6 +133,15 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "nerdyrodent",
+      "name": "Nerdy Rodent",
+      "avatar_url": "https://avatars.githubusercontent.com/u/74688049?v=4",
+      "profile": "https://www.youtube.com/c/NerdyRodent",
+      "contributions": [
+        "video"
+      ]
     }
   ],
   "contributorsPerLine": 7,
