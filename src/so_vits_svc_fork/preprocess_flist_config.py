@@ -52,21 +52,21 @@ def preprocess_config(
 
     LOG.info(f"Writing {train_list_path}")
     train_list_path.parent.mkdir(parents=True, exist_ok=True)
-    with train_list_path.open("w") as f:
+    with train_list_path.open("w", encoding="utf-8") as f:
         for fname in train:
             wavpath = fname.as_posix()
             f.write(wavpath + "\n")
 
     LOG.info(f"Writing {val_list_path}")
     val_list_path.parent.mkdir(parents=True, exist_ok=True)
-    with val_list_path.open("w") as f:
+    with val_list_path.open("w", encoding="utf-8") as f:
         for fname in val:
             wavpath = fname.as_posix()
             f.write(wavpath + "\n")
 
     LOG.info(f"Writing {test_list_path}")
     test_list_path.parent.mkdir(parents=True, exist_ok=True)
-    with test_list_path.open("w") as f:
+    with test_list_path.open("w", encoding="utf-8") as f:
         for fname in test:
             wavpath = fname.as_posix()
             f.write(wavpath + "\n")
@@ -83,5 +83,5 @@ def preprocess_config(
     config["data"]["validation_files"] = val_list_path.as_posix()
     LOG.info(f"Writing {config_path}")
     config_path.parent.mkdir(parents=True, exist_ok=True)
-    with config_path.open("w") as f:
+    with config_path.open("w", encoding="utf-8") as f:
         json.dump(config, f, indent=2)
