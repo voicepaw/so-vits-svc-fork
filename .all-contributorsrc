@@ -79,6 +79,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "DL909",
+      "name": "DL909",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71912115?v=4",
+      "profile": "https://github.com/DL909",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
