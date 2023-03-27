@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v2.0.0 (2023-03-27)
+### Fix
+* Fix preprocessing and convert bool options to flags, use `unidecode` to decode non-ASCII filenames in `pre-resample` ([#147](https://github.com/34j/so-vits-svc-fork/issues/147)) ([`98d7ee2`](https://github.com/34j/so-vits-svc-fork/commit/98d7ee22a40104468285324cc6ec21c707c30d54))
+
+### Breaking
+* Preprocessing default parameters changed and some options became flags. ([`98d7ee2`](https://github.com/34j/so-vits-svc-fork/commit/98d7ee22a40104468285324cc6ec21c707c30d54))
+
+### Documentation
+* **readme:** Add yt tutorial vid link ([#143](https://github.com/34j/so-vits-svc-fork/issues/143)) ([`1694f44`](https://github.com/34j/so-vits-svc-fork/commit/1694f449e5a9f7b9da71e9a4c2764830c5268de3))
+
 ## v1.4.3 (2023-03-26)
 ### Performance
 * **preprocess:** Specify samplerate to reduce memory usage ([#137](https://github.com/34j/so-vits-svc-fork/issues/137)) ([`6217eda`](https://github.com/34j/so-vits-svc-fork/commit/6217eda0ec3bac27e408fcd0466a6b658cf718c5))
