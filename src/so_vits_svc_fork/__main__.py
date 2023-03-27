@@ -141,7 +141,11 @@ def train(config_path: Path, model_path: Path):
     help="f0 prediction method",
 )
 @click.option(
-    "-a", "--auto-predict-f0", type=bool, default=True, help="auto predict f0"
+    "-a/-na",
+    "--auto-predict-f0/--no-auto-predict-f0",
+    type=bool,
+    default=True,
+    help="auto predict f0",
 )
 @click.option(
     "-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio"
@@ -157,7 +161,11 @@ def train(config_path: Path, model_path: Path):
 )
 @click.option("-ch", "--chunk-seconds", type=float, default=0.5, help="chunk seconds")
 @click.option(
-    "-ab", "--absolute-thresh", type=bool, default=False, help="absolute thresh"
+    "-ab/-nab",
+    "--absolute-thresh/--no-absolute-thresh",
+    type=bool,
+    default=False,
+    help="absolute thresh",
 )
 def infer(
     # paths
@@ -247,10 +255,10 @@ def infer(
 )
 @click.option("-t", "--transpose", type=int, default=12, help="transpose")
 @click.option(
-    "-a",
-    "--auto-predict-f0",
+    "-a/-na",
+    "--auto-predict-f0/--no-auto-predict-f0",
     type=bool,
-    default=False,
+    default=True,
     help="auto predict f0 (not recommended for realtime since voice pitch will not be stable)",
 )
 @click.option(
@@ -496,15 +504,14 @@ def pre_config(
 )
 @click.option(
     "-n",
-    "--n_jobs",
     "--n-jobs",
     type=int,
     default=4,
     help="number of jobs (optimal value may depend on your VRAM capacity and audio duration per file)",
 )
 @click.option(
-    "-f",
-    "--force-rebuild",
+    "-f/-nf",
+    "--force-rebuild/--no-force-rebuild",
     type=bool,
     default=True,
     help="force rebuild existing preprocessed files",
