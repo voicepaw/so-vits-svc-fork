@@ -106,6 +106,15 @@
       "contributions": [
         "userTesting"
       ]
+    },
+    {
+      "login": "ruckusmattster",
+      "name": "ruckusmattster",
+      "avatar_url": "https://avatars.githubusercontent.com/u/77196088?v=4",
+      "profile": "https://github.com/ruckusmattster",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
