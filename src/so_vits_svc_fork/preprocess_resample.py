@@ -9,6 +9,7 @@ import librosa
 import soundfile
 from joblib import Parallel, delayed
 from tqdm_joblib import tqdm_joblib
+from unidecode import unidecode
 
 from .preprocess_utils import check_hubert_min_duration
 
@@ -122,6 +123,13 @@ def preprocess_resample(
             continue
         speaker_name = in_path_relative.parts[0]
         file_name = in_path_relative.with_suffix(".wav").name
+        new_filename = unidecode(file_name)
+        if new_filename != file_name:
+            LOG.warning(
+                f"Filename {file_name} contains non-ASCII characters. "
+                f"Replaced with {new_filename}."
+            )
+            file_name = new_filename
         out_path = output_dir / speaker_name / file_name
         out_path = _get_unique_filename(out_path, out_paths)
         out_path.parent.mkdir(parents=True, exist_ok=True)
