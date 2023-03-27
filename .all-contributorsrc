@@ -79,6 +79,15 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "Desuka-art",
+      "name": "Desuka-art",
+      "avatar_url": "https://avatars.githubusercontent.com/u/111822082?v=4",
+      "profile": "https://github.com/Desuka-art",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
