@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.0 (2023-03-27)
+### Feature
+* **__main__:** Add an option to launch tensorboard in `train` command ([#149](https://github.com/34j/so-vits-svc-fork/issues/149)) ([`ef22cce`](https://github.com/34j/so-vits-svc-fork/commit/ef22cceaeb7f06ea53b2151ef9c962d1040de20d))
+
 ## v2.0.0 (2023-03-27)
 ### Fix
 * Fix preprocessing and convert bool options to flags, use `unidecode` to decode non-ASCII filenames in `pre-resample` ([#147](https://github.com/34j/so-vits-svc-fork/issues/147)) ([`98d7ee2`](https://github.com/34j/so-vits-svc-fork/commit/98d7ee22a40104468285324cc6ec21c707c30d54))
