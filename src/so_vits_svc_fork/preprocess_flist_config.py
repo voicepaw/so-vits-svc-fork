@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import re
 from copy import deepcopy
 from logging import getLogger
 from pathlib import Path
@@ -36,9 +35,8 @@ def preprocess_config(
         spk_id += 1
         paths = []
         for path in tqdm(list((input_dir / speaker).glob("**/*.wav"))):
-            pattern = re.compile(r"^[\.a-zA-Z0-9_\/]+$")
-            if not pattern.match(path.name):
-                LOG.warning(f"file name {path} contains non-alphanumeric characters.")
+            if not path.name.isascii():
+                LOG.warning(f"file name {path} contains non-ascii characters.")
             if get_duration(filename=path) < 0.3:
                 LOG.warning(f"skip {path} because it is too short.")
                 continue
