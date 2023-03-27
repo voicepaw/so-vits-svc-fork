@@ -115,6 +115,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "heyfixit",
+      "name": "heyfixit",
+      "avatar_url": "https://avatars.githubusercontent.com/u/41658450?v=4",
+      "profile": "https://github.com/heyfixit",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
