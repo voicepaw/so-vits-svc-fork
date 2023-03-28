@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 from logging import getLogger
 from pathlib import Path
 
 import librosa
-import soundfile
 import soundfile as sf
 from joblib import Parallel, delayed
 from tqdm import tqdm
