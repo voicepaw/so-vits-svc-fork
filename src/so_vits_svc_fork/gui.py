@@ -460,7 +460,18 @@ def main():
             )
 
     def update_devices() -> None:
-        input_devices, output_devices, _, _ = get_devices()
+        (
+            input_devices,
+            output_devices,
+            input_device_indices,
+            output_device_indices,
+        ) = get_devices()
+        input_device_indices_reversed = {
+            v: k for k, v in enumerate(input_device_indices)
+        }
+        output_device_indices_reversed = {
+            v: k for k, v in enumerate(output_device_indices)
+        }
         window["input_device"].update(
             values=input_devices, value=values["input_device"]
         )
@@ -471,12 +482,12 @@ def main():
         if values["input_device"] not in input_devices:
             window["input_device"].update(
                 values=input_devices,
-                set_to_index=0 if input_default is None else input_default - 1,
+                set_to_index=input_device_indices_reversed.get(input_default, 0),
             )
         if values["output_device"] not in output_devices:
             window["output_device"].update(
                 values=output_devices,
-                set_to_index=0 if output_default is None else output_default - 1,
+                set_to_index=output_device_indices_reversed.get(output_default, 0),
             )
 
     PRESET_KEYS = [
