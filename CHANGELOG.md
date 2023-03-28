@@ -2,6 +2,15 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.2 (2023-03-28)
+### Fix
+* **gui:** Fix wrong devices set as default ([#176](https://github.com/34j/so-vits-svc-fork/issues/176)) ([`6265f8f`](https://github.com/34j/so-vits-svc-fork/commit/6265f8f93e8facd4f58aab906bfcb23e05d4032b))
+* **__main__:** Fix -h option overridden ([#175](https://github.com/34j/so-vits-svc-fork/issues/175)) ([`52f1cfe`](https://github.com/34j/so-vits-svc-fork/commit/52f1cfe1f08bd63966b0d1d7c025abed17cb36a6))
+
+### Documentation
+* Add xieyumc as a contributor for doc ([#174](https://github.com/34j/so-vits-svc-fork/issues/174)) ([`29474d9`](https://github.com/34j/so-vits-svc-fork/commit/29474d9dc77555fe5a55427278d44dfea7ece5ef))
+* **readme_zh_cn:** Update README_zh_CN.md ([#173](https://github.com/34j/so-vits-svc-fork/issues/173)) ([`f94a14c`](https://github.com/34j/so-vits-svc-fork/commit/f94a14cb63e2afd40cba3e94f84077643d9a7560))
+
 ## v2.1.1 (2023-03-27)
 ### Fix
 * **deps:** Update dependency rich to v13.3.3 ([#171](https://github.com/34j/so-vits-svc-fork/issues/171)) ([`8bdefa9`](https://github.com/34j/so-vits-svc-fork/commit/8bdefa9636e13fb0a24058a589675a20655357f4))
