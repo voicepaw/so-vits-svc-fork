@@ -438,7 +438,9 @@ def vc(
 )
 @click.option("-d", "--top-db", type=float, default=30, help="top db")
 @click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
-@click.option("-h", "--hop-seconds", type=float, default=0.3, help="hop seconds")
+@click.option(
+    "-ho", "-hop", "--hop-seconds", type=float, default=0.3, help="hop seconds"
+)
 def pre_resample(
     input_dir: Path,
     output_dir: Path,
@@ -653,7 +655,9 @@ def pre_sd(
 )
 @click.option("-d", "--top-db", type=float, default=30, help="top db")
 @click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
-@click.option("-h", "--hop-seconds", type=float, default=0.3, help="hop seconds")
+@click.option(
+    "-ho", "-hop", "--hop-seconds", type=float, default=0.3, help="hop seconds"
+)
 @click.option("-s", "--sr", type=int, default=44100, help="sample rate")
 def pre_split(
     input_dir: Path | str,
