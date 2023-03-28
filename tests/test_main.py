@@ -15,6 +15,7 @@ class TestMain(TestCase):
         import so_vits_svc_fork.preprocess_flist_config  # noqa
         import so_vits_svc_fork.preprocess_hubert_f0  # noqa
         import so_vits_svc_fork.preprocess_resample  # noqa
+        import so_vits_svc_fork.preprocess_split  # noqa
         import so_vits_svc_fork.train  # noqa
 
     def test_infer(self):
