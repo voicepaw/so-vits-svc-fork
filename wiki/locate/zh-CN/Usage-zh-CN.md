@@ -14,13 +14,13 @@ svcg
 
 ### 命令行界面
 
-- 实时转换 (输入源为麦克风)
+-   实时转换 (输入源为麦克风)
 
 ```shell
 svc vc --model-path <model-path>
 ```
 
-- 从文件转换
+-   从文件转换
 
 ```shell
 svc --model-path <model-path> source.wav
@@ -30,21 +30,21 @@ svc --model-path <model-path> source.wav
 
 ### 注意
 
-- 如果使用 WSL, 请注意 WSL 需要额外设置来处理音频，如果 GUI 找不到音频设备将不能正常工作。
-- 在实时语音转换中, 如果输入源有杂音, HuBERT
-  模型依然会把杂音进行推理.可以考虑使用实时噪音减弱程序比如 [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/)
-  来解决.
+-   如果使用 WSL, 请注意 WSL 需要额外设置来处理音频，如果 GUI 找不到音频设备将不能正常工作。
+-   在实时语音转换中, 如果输入源有杂音, HuBERT
+    模型依然会把杂音进行推理.可以考虑使用实时噪音减弱程序比如 [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/)
+    来解决.
 
 ## 训练
 
 ### 预处理
 
-- 如果数据集有 BGM,请用例如[Ultimate Vocal Remover](https://ultimatevocalremover.com/)等软件去除 BGM.
-  推荐使用`3_HP-Vocal-UVR.pth` 或者 `UVR-MDX-NET Main` . [^1]
-- 如果数据集是包含多个歌手的长音频文件, 使用 `svc sd` 将数据集拆分为多个文件 (使用 `pyannote.audio`)
-  。为了提高准确率，可能需要手动进行分类。如果歌手的声线多样,请把 --min-speakers 设置为大于实际说话者数量. 如果出现依赖未安装,
-  请通过 `pip install pyannote-audio`来安装 `pyannote.audio`。
-- 如果数据集是包含单个歌手的长音频文件, 使用 `svc split` 将数据集拆分为多个文件 (使用 `librosa`).
+-   如果数据集有 BGM,请用例如[Ultimate Vocal Remover](https://ultimatevocalremover.com/)等软件去除 BGM.
+    推荐使用`3_HP-Vocal-UVR.pth` 或者 `UVR-MDX-NET Main` . [^1]
+-   如果数据集是包含多个歌手的长音频文件, 使用 `svc sd` 将数据集拆分为多个文件 (使用 `pyannote.audio`)
+    。为了提高准确率，可能需要手动进行分类。如果歌手的声线多样,请把 --min-speakers 设置为大于实际说话者数量. 如果出现依赖未安装,
+    请通过 `pip install pyannote-audio`来安装 `pyannote.audio`。
+-   如果数据集是包含单个歌手的长音频文件, 使用 `svc split` 将数据集拆分为多个文件 (使用 `librosa`).
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
 
@@ -65,12 +65,12 @@ svc train -t
 
 ### 注意
 
-- 数据集的每个文件应该小于 10s，不然显存会爆。
-- 如果想要 f0 的推理方式为 CREPE, 用 `svc pre-hubert -fm crepe` 替换 `svc pre-hubert`.
-  由于性能原因，可能需要减少 `--n-jobs` 。
-- 建议在执行 `train` 命令之前更改 `config.json` 中的 batch_size 以匹配显存容量。 默认值针对 Tesla
-  T4（16GB 显存）进行了优化，但没有那么多显存也可以进行训练。
-- 在原始仓库中，会自动移除静音和进行音量平衡，且这个操作并不是必须要处理的。
+-   数据集的每个文件应该小于 10s，不然显存会爆。
+-   如果想要 f0 的推理方式为 CREPE, 用 `svc pre-hubert -fm crepe` 替换 `svc pre-hubert`.
+    由于性能原因，可能需要减少 `--n-jobs` 。
+-   建议在执行 `train` 命令之前更改 `config.json` 中的 batch_size 以匹配显存容量。 默认值针对 Tesla
+    T4（16GB 显存）进行了优化，但没有那么多显存也可以进行训练。
+-   在原始仓库中，会自动移除静音和进行音量平衡，且这个操作并不是必须要处理的。
 
 ## 帮助菜单
 
@@ -104,4 +104,4 @@ svc train -t
 
 ### 补充链接
 
-[Youtube视频教程](https://www.youtube.com/watch?v=tZn0lcGO5OQ)
+[Youtube 视频教程](https://www.youtube.com/watch?v=tZn0lcGO5OQ)

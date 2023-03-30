@@ -14,13 +14,13 @@ svcg
 
 ### CLI
 
-- Realtime (from microphone)
+-   Realtime (from microphone)
 
 ```shell
 svc vc --model-path <model-path>
 ```
 
-- File
+-   File
 
 ```shell
 svc --model-path <model-path> source.wav
@@ -30,16 +30,16 @@ svc --model-path <model-path> source.wav
 
 ### Notes
 
-- If using WSL, please note that WSL requires additional setup to handle audio and the GUI will not work without finding an audio device.
-- In real-time inference, if there is noise on the inputs, the HuBERT model will react to those as well. Consider using realtime noise reduction applications such as [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/) in this case.
+-   If using WSL, please note that WSL requires additional setup to handle audio and the GUI will not work without finding an audio device.
+-   In real-time inference, if there is noise on the inputs, the HuBERT model will react to those as well. Consider using realtime noise reduction applications such as [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/) in this case.
 
 ## Training
 
 ### Before training
 
-- If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
-- If your dataset is a long audio file with multiple speakers, use `svc sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
-- If your dataset is a long audio file with a single speaker, use `svc split` to split the dataset into multiple files (using `librosa`).
+-   If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
+-   If your dataset is a long audio file with multiple speakers, use `svc sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
+-   If your dataset is a long audio file with a single speaker, use `svc split` to split the dataset into multiple files (using `librosa`).
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
 
@@ -60,10 +60,10 @@ svc train -t
 
 ### Notes
 
-- Dataset audio duration per file should be <~ 10s or VRAM will run out.
-- To change the f0 inference method to CREPE, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
-- It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. The default value is optimized for Tesla T4 (16GB VRAM), but training is possible without that much VRAM.
-- Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
+-   Dataset audio duration per file should be <~ 10s or VRAM will run out.
+-   To change the f0 inference method to CREPE, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
+-   It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. The default value is optimized for Tesla T4 (16GB VRAM), but training is possible without that much VRAM.
+-   Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
 
 ## Further help
 
@@ -95,5 +95,7 @@ Commands:
   train-cluster  Train k-means clustering
   vc             Realtime inference from microphone
 ```
+
 ### External Links
+
 [Video Tutorial](https://www.youtube.com/watch?v=tZn0lcGO5OQ)

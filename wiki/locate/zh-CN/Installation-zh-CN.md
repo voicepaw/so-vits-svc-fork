@@ -9,6 +9,7 @@
 ## 手动安装
 
 ### 创建虚拟环境
+
 Windows:
 
 ```shell
@@ -30,7 +31,7 @@ conda create -n so-vits-svc-fork python=3.10 pip
 conda activate so-vits-svc-fork
 ```
 
-不创建Venv虚拟环境而直接安装可能会导致 `PermissionError` 如果`Python`是安装在`Program Files`等情况.
+不创建 Venv 虚拟环境而直接安装可能会导致 `PermissionError` 如果`Python`是安装在`Program Files`等情况.
 
 ### 安装
 
@@ -42,12 +43,12 @@ pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu1
 pip install -U so-vits-svc-fork
 ```
 
-- 如果没有可用 GPU, 不需要执行 `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
-- 如果在 Linux 下使用 AMD GPU, 请使用此命令 `--index-url https://download.pytorch.org/whl/rocm5.4.2`
-  替换掉 `--index-url https://download.pytorch.org/whl/cu117` . Windows 下不支持 AMD GPUs (#120).
-- 如果 `fairseq` 报错:
-  - 如果提示 [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) 没有安装. 安装即可.
-  - 如果提示缺少 dll 文件, 重新安装 `Microsoft Visual C++ 2022` 和 `Windows SDK` 可能有用
+-   如果没有可用 GPU, 不需要执行 `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
+-   如果在 Linux 下使用 AMD GPU, 请使用此命令 `--index-url https://download.pytorch.org/whl/rocm5.4.2`
+    替换掉 `--index-url https://download.pytorch.org/whl/cu117` . Windows 下不支持 AMD GPUs (#120).
+-   如果 `fairseq` 报错:
+    -   如果提示 [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) 没有安装. 安装即可.
+    -   如果提示缺少 dll 文件, 重新安装 `Microsoft Visual C++ 2022` 和 `Windows SDK` 可能有用
 
 ### 更新
 
