@@ -4,11 +4,11 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 ## Features not available in the original repo
 
--   **Realtime voice conversion** (enhanced in v1.1.0)
--   More accurate pitch estimation using CREPE
--   GUI available
--   Unified command-line interface (no need to run Python scripts)
--   Ready to use just by installing with `pip`.
--   Automatically download pretrained base model and HuBERT model
--   Code completely formatted with black, isort, autoflake etc.
--   Other minor differences
+- **Realtime voice conversion** (enhanced in v1.1.0)
+- More accurate pitch estimation using CREPE
+- GUI available
+- Unified command-line interface (no need to run Python scripts)
+- Ready to use just by installing with `pip`.
+- Automatically download pretrained base model and HuBERT model
+- Code completely formatted with black, isort, autoflake etc.
+- Other minor differences
