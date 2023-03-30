@@ -6,7 +6,9 @@
   <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
 </a>
 
-## Creating a virtual environment
+## Install manually
+
+### Creating a virtual environment
 
 Windows:
 
@@ -31,7 +33,7 @@ conda activate so-vits-svc-fork
 
 Installing without creating a virtual environment may cause a `PermissionError` if Python is installed in Program Files, etc.
 
-## Install
+### Install
 
 Install this via pip (or your favourite package manager that uses pip):
 
@@ -47,7 +49,7 @@ pip install -U so-vits-svc-fork
   - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
   - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
 
-## Update
+### Update
 
 Please update this package regularly to get the latest features and bug fixes.
 
