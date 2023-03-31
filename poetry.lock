@@ -1214,14 +1214,14 @@ tool = ["click (>=6.0.0)"]
 
 [[package]]
 name = "gradio"
-version = "3.24.0"
+version = "3.24.1"
 description = "Python library for easily interacting with trained machine learning models"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "gradio-3.24.0-py3-none-any.whl", hash = "sha256:cedd67f7cbd17764b3613fb4df274a7c450c74e31a2e3229097d43cb4ffa50c7"},
-    {file = "gradio-3.24.0.tar.gz", hash = "sha256:4ac2bf531b3c0ff5ec9e93959f2d1dbc49eac1767bafa2d80f8950a3bc40c4ed"},
+    {file = "gradio-3.24.1-py3-none-any.whl", hash = "sha256:a9b2fb94007b370ba5442159775a0987b27810451582525fe10711517082b1d2"},
+    {file = "gradio-3.24.1.tar.gz", hash = "sha256:19f11c8b5d9b23a22a7e0e3a32332146474d215588674afdfdbe2f86fe0a7811"},
 ]
 
 [package.dependencies]
