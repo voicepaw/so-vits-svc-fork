@@ -1,5 +1,5 @@
 from logging import getLogger
-from typing import Literal
+from typing import Any, Literal, Sequence
 
 import torch
 from torch import nn
@@ -378,30 +378,30 @@ class SynthesizerTrn(nn.Module):
 
     def __init__(
         self,
-        spec_channels,
-        segment_size,
-        inter_channels,
-        hidden_channels,
-        filter_channels,
-        n_heads,
-        n_layers,
-        kernel_size,
-        p_dropout,
-        resblock,
-        resblock_kernel_sizes,
-        resblock_dilation_sizes,
-        upsample_rates,
-        upsample_initial_channel,
-        upsample_kernel_sizes,
-        gin_channels,
-        ssl_dim,
-        n_speakers,
-        sampling_rate=44100,
+        spec_channels: int,
+        segment_size: int,
+        inter_channels: int,
+        hidden_channels: int,
+        filter_channels: int,
+        n_heads: int,
+        n_layers: int,
+        kernel_size: int,
+        p_dropout: int,
+        resblock: str,
+        resblock_kernel_sizes: Sequence[int],
+        resblock_dilation_sizes: Sequence[Sequence[int]],
+        upsample_rates: Sequence[int],
+        upsample_initial_channel: int,
+        upsample_kernel_sizes: Sequence[int],
+        gin_channels: int,
+        ssl_dim: int,
+        n_speakers: int,
+        sampling_rate: int = 44100,
         type_: Literal["hifi-gan", "istft", "ms-istft", "mb-istft"] = "hifi-gan",
         gen_istft_n_fft: int = 16,
         gen_istft_hop_size: int = 4,
-        subbands: bool = False,
-        **kwargs,
+        subbands: int = 8,
+        **kwargs: Any,
     ):
         super().__init__()
         self.spec_channels = spec_channels
@@ -434,23 +434,36 @@ class SynthesizerTrn(nn.Module):
             kernel_size=kernel_size,
             p_dropout=p_dropout,
         )
-        hps = {
-            "sampling_rate": sampling_rate,
-            "inter_channels": inter_channels,
-            "resblock": resblock,
-            "resblock_kernel_sizes": resblock_kernel_sizes,
-            "resblock_dilation_sizes": resblock_dilation_sizes,
-            "upsample_rates": upsample_rates,
-            "upsample_initial_channel": upsample_initial_channel,
-            "upsample_kernel_sizes": upsample_kernel_sizes,
-            "gin_channels": gin_channels,
-        }
 
         LOG.info(f"Decoder type: {type_}")
         if type_ == "hifi-gan":
+            hps = {
+                "sampling_rate": sampling_rate,
+                "inter_channels": inter_channels,
+                "resblock": resblock,
+                "resblock_kernel_sizes": resblock_kernel_sizes,
+                "resblock_dilation_sizes": resblock_dilation_sizes,
+                "upsample_rates": upsample_rates,
+                "upsample_initial_channel": upsample_initial_channel,
+                "upsample_kernel_sizes": upsample_kernel_sizes,
+                "gin_channels": gin_channels,
+            }
             self.dec = Generator(h=hps)
             self.mb = False
         else:
+            hps = {
+                "initial_channel": inter_channels,
+                "resblock": resblock,
+                "resblock_kernel_sizes": resblock_kernel_sizes,
+                "resblock_dilation_sizes": resblock_dilation_sizes,
+                "upsample_rates": upsample_rates,
+                "upsample_initial_channel": upsample_initial_channel,
+                "upsample_kernel_sizes": upsample_kernel_sizes,
+                "gin_channels": gin_channels,
+                "gen_istft_n_fft": gen_istft_n_fft,
+                "gen_istft_hop_size": gen_istft_hop_size,
+                "subbands": subbands,
+            }
             from .vdecoder.mb_istft.generators import (
                 Multiband_iSTFT_Generator,
                 Multistream_iSTFT_Generator,
@@ -459,6 +472,7 @@ class SynthesizerTrn(nn.Module):
 
             # gen_istft_n_fft, gen_istft_hop_size, subbands
             if type_ == "istft":
+                del hps["subbands"]
                 self.dec = iSTFT_Generator(**hps)
             elif type_ == "ms-istft":
                 self.dec = Multistream_iSTFT_Generator(**hps)

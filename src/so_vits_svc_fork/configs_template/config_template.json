@@ -7,7 +7,7 @@
     "learning_rate": 0.0001,
     "betas": [0.8, 0.99],
     "eps": 1e-9,
-    "batch_size": 6,
+    "batch_size": 2,
     "fp16_run": false,
     "lr_decay": 0.999875,
     "segment_size": 10240,
@@ -18,7 +18,11 @@
     "use_sr": true,
     "max_speclen": 512,
     "port": "8001",
-    "keep_ckpts": 3
+    "keep_ckpts": 3,
+    "fft_sizes": [384, 683, 171],
+    "hop_sizes": [30, 60, 10],
+    "win_lengths": [150, 300, 60],
+    "window": "hann_window"
   },
   "data": {
     "training_files": "filelists/44k/train.txt",
@@ -47,14 +51,21 @@
       [1, 3, 5],
       [1, 3, 5]
     ],
-    "upsample_rates": [8, 8, 2, 2, 2],
+    "upsample_rates": [4, 4],
     "upsample_initial_channel": 512,
-    "upsample_kernel_sizes": [16, 16, 4, 4, 4],
+    "upsample_kernel_sizes": [16, 16],
     "n_layers_q": 3,
     "use_spectral_norm": false,
     "gin_channels": 256,
     "ssl_dim": 256,
-    "n_speakers": 200
+    "n_speakers": 200,
+    "type_": "mb-istft",
+    "gen_istft_n_fft": 16,
+    "gen_istft_hop_size": 4,
+    "subbands": 8
   },
-  "spk": {}
+  "spk": {
+    "34j": 0,
+    "kiritan": 1
+  }
 }

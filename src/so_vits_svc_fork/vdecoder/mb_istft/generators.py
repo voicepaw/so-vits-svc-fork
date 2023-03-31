@@ -168,7 +168,7 @@ class Multiband_iSTFT_Generator(torch.nn.Module):
             hop_length=self.gen_istft_hop_size,
             win_length=self.gen_istft_n_fft,
         ).to(x.device)
-        pqmf = PQMF(x.device)
+        pqmf = PQMF(x.device, subbands=self.subbands).to(x.device, dtype=x.dtype)
 
         x = self.conv_pre(x)  # [B, ch, length]
 
