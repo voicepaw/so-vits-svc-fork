@@ -217,6 +217,7 @@ def train_and_evaluate(
         with autocast(enabled=hps.train.fp16_run):
             (
                 y_hat,
+                y_hat_mb,
                 ids_slice,
                 z_mask,
                 (z, z_p, m_p, logs_p, m_q, logs_q),
@@ -270,12 +271,12 @@ def train_and_evaluate(
 
                 # MB-iSTFT-VITS
                 loss_subband = torch.tensor(0.0)
-                if hps.model.__dict__.get("type_") == "mb-istft-vits":
+                if hps.model.type_ == "mb-istft":
                     from .vdecoder.mb_istft.loss import subband_stft_loss
                     from .vdecoder.mb_istft.pqmf import PQMF
 
-                    y_mb = PQMF(y.device).analysis(y)
-                    loss_subband = subband_stft_loss(hps, y_mb, y_hat)
+                    y_mb = PQMF(y.device, hps.model.subbands).analysis(y)
+                    loss_subband = subband_stft_loss(hps, y_mb, y_hat_mb)
                 loss_gen_all += loss_subband
 
         optim_g.zero_grad()
@@ -295,7 +296,7 @@ def train_and_evaluate(
                     "melspectrogram": loss_mel.item(),
                     "kl_divergence": loss_kl.item(),
                 }
-                if hps.model.__dict__.get("type_") == "mb-istft-vits":
+                if hps.model.type_ == "mb-istft":
                     losses["subband_stft"] = loss_subband.item()
                 LOG.info(
                     "Train Epoch: {} [{:.0f}%]".format(
@@ -317,10 +318,10 @@ def train_and_evaluate(
                         "loss/g/mel": loss_mel,
                         "loss/g/kl": loss_kl,
                         "loss/g/lf0": loss_lf0,
-                        # MB-iSTFT-VITS
-                        "loss/g/subband": loss_subband,
                     }
                 )
+                if hps.model.type_ == "mb-istft":
+                    scalar_dict["loss/g/subband"] = loss_subband
 
                 # scalar_dict.update({"loss/g/{}".format(i): v for i, v in enumerate(losses_gen)})
                 # scalar_dict.update({"loss/d_r/{}".format(i): v for i, v in enumerate(losses_disc_r)})
