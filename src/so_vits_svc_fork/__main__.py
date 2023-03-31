@@ -222,7 +222,9 @@ def infer(
     output_path = Path(output_path)
     model_path = Path(model_path)
     if model_path.is_dir():
-        model_path = list(sorted(model_path.glob("*.pth")))[-1]
+        model_path = list(
+            sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)
+        )[-1]
         LOG.info(f"Since model_path is a directory, use {model_path}")
     config_path = Path(config_path)
     if cluster_model_path is not None:
@@ -381,7 +383,9 @@ def vc(
     if cluster_model_path is not None:
         cluster_model_path = Path(cluster_model_path)
     if model_path.is_dir():
-        model_path = list(sorted(model_path.glob("*.pth")))[-1]
+        model_path = list(
+            sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)
+        )[-1]
         LOG.info(f"Since model_path is a directory, use {model_path}")
 
     realtime(
