@@ -286,8 +286,11 @@ class SineGen(torch.nn.Module):
         with torch.no_grad():
             # f0_buf = torch.zeros(f0.shape[0], f0.shape[1], self.dim, device=f0.device)
             # fundamental component
+            # fn = torch.multiply(
+            #    f0, torch.FloatTensor([[range(1, self.harmonic_num + 2)]]).to(f0.device)
+            # )
             fn = torch.multiply(
-                f0, torch.FloatTensor([[range(1, self.harmonic_num + 2)]]).to(f0.device)
+                f0, torch.arange(1, self.harmonic_num + 2).to(f0.device).to(f0.dtype)
             )
 
             # generate sine waveforms
