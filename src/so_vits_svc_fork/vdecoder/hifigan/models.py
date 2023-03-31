@@ -1,5 +1,3 @@
-import json
-import os
 from logging import getLogger
 
 import numpy as np
@@ -9,31 +7,11 @@ import torch.nn.functional as F
 from torch.nn import AvgPool1d, Conv1d, Conv2d, ConvTranspose1d
 from torch.nn.utils import remove_weight_norm, spectral_norm, weight_norm
 
-from .env import AttrDict
 from .utils import get_padding, init_weights
 
 LOG = getLogger(__name__)
 
 LRELU_SLOPE = 0.1
-
-
-def load_model(model_path, device="cuda"):
-    config_file = os.path.join(os.path.split(model_path)[0], "config.json")
-    with open(config_file) as f:
-        data = f.read()
-
-    global h
-    json_config = json.loads(data)
-    h = AttrDict(json_config)
-
-    generator = Generator(h).to(device)
-
-    cp_dict = torch.load(model_path)
-    generator.load_state_dict(cp_dict["generator"])
-    generator.eval()
-    generator.remove_weight_norm()
-    del cp_dict
-    return generator, h
 
 
 class ResBlock1(torch.nn.Module):
@@ -621,37 +599,3 @@ class MultiScaleDiscriminator(torch.nn.Module):
             fmap_gs.append(fmap_g)
 
         return y_d_rs, y_d_gs, fmap_rs, fmap_gs
-
-
-def feature_loss(fmap_r, fmap_g):
-    loss = 0
-    for dr, dg in zip(fmap_r, fmap_g):
-        for rl, gl in zip(dr, dg):
-            loss += torch.mean(torch.abs(rl - gl))
-
-    return loss * 2
-
-
-def discriminator_loss(disc_real_outputs, disc_generated_outputs):
-    loss = 0
-    r_losses = []
-    g_losses = []
-    for dr, dg in zip(disc_real_outputs, disc_generated_outputs):
-        r_loss = torch.mean((1 - dr) ** 2)
-        g_loss = torch.mean(dg**2)
-        loss += r_loss + g_loss
-        r_losses.append(r_loss.item())
-        g_losses.append(g_loss.item())
-
-    return loss, r_losses, g_losses
-
-
-def generator_loss(disc_outputs):
-    loss = 0
-    gen_losses = []
-    for dg in disc_outputs:
-        l = torch.mean((1 - dg) ** 2)
-        gen_losses.append(l)
-        loss += l
-
-    return loss, gen_losses
