@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.4 (2023-03-31)
+### Fix
+* **deps:** Update dependency gradio to v3.24.1 ([#196](https://github.com/34j/so-vits-svc-fork/issues/196)) ([`4fa141b`](https://github.com/34j/so-vits-svc-fork/commit/4fa141b210cb9b80bc7f75176fb01b18352c91cd))
+
 ## v2.1.3 (2023-03-31)
 ### Fix
 * **deps:** Update dependency gradio to v3.24.0 ([#192](https://github.com/34j/so-vits-svc-fork/issues/192)) ([`4e441cb`](https://github.com/34j/so-vits-svc-fork/commit/4e441cb30429e4a47afd261d69e32ec5f86564c9))
