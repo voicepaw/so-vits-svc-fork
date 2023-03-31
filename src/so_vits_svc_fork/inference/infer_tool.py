@@ -94,7 +94,7 @@ class Svc:
         config_path: str,
         device: torch.device | str | None = None,
         cluster_model_path: Path | str | None = None,
-        half: bool = True,
+        half: bool = False,
     ):
         self.net_g_path = net_g_path
         if device is None:
