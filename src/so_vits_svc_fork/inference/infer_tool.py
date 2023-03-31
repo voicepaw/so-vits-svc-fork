@@ -94,6 +94,7 @@ class Svc:
         config_path: str,
         device: torch.device | str | None = None,
         cluster_model_path: Path | str | None = None,
+        half: bool = True,
     ):
         self.net_g_path = net_g_path
         if device is None:
@@ -106,6 +107,7 @@ class Svc:
         self.hop_size = self.hps_ms.data.hop_length
         self.spk2id = self.hps_ms.spk
         self.hubert_model = utils.get_hubert_model().to(self.dev)
+        self.half = half
         self.load_model()
         if cluster_model_path is not None and Path(cluster_model_path).exists():
             self.cluster_model = cluster.get_cluster_model(cluster_model_path)
@@ -117,7 +119,7 @@ class Svc:
             **self.hps_ms.model,
         )
         _ = utils.load_checkpoint(self.net_g_path, self.net_g_ms, None)
-        if "half" in self.net_g_path and torch.cuda.is_available():
+        if self.half:
             _ = self.net_g_ms.half().eval().to(self.dev)
         else:
             _ = self.net_g_ms.eval().to(self.dev)
@@ -205,8 +207,10 @@ class Svc:
         c, f0, uv = self.get_unit_f0(
             audio, transpose, cluster_infer_ratio, speaker, f0_method
         )
-        if "half" in self.net_g_path and torch.cuda.is_available():
+        if self.half:
             c = c.half()
+            f0 = f0.half()
+            uv = uv.half()
 
         # inference
         with torch.no_grad():
