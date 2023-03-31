@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.3 (2023-03-31)
+### Fix
+* **deps:** Update dependency gradio to v3.24.0 ([#192](https://github.com/34j/so-vits-svc-fork/issues/192)) ([`4e441cb`](https://github.com/34j/so-vits-svc-fork/commit/4e441cb30429e4a47afd261d69e32ec5f86564c9))
+
+### Documentation
+* Add sbersier as a contributor for ideas, and userTesting ([#185](https://github.com/34j/so-vits-svc-fork/issues/185)) ([`a655bf4`](https://github.com/34j/so-vits-svc-fork/commit/a655bf47dde4ad2506283997987bce3a09229c57))
+* Add ColdCawfee as a contributor for bug ([#177](https://github.com/34j/so-vits-svc-fork/issues/177)) ([`87a09e6`](https://github.com/34j/so-vits-svc-fork/commit/87a09e654a0e8f064293750779b743abf2897ebb))
+
 ## v2.1.2 (2023-03-28)
 ### Fix
 * **gui:** Fix wrong devices set as default ([#176](https://github.com/34j/so-vits-svc-fork/issues/176)) ([`6265f8f`](https://github.com/34j/so-vits-svc-fork/commit/6265f8f93e8facd4f58aab906bfcb23e05d4032b))
