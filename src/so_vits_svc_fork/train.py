@@ -39,7 +39,7 @@ def train(config_path: Path | str, model_path: Path | str):
     model_path = Path(model_path)
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
-    utils.ensure_pretrained_model(model_path)
+    # utils.ensure_pretrained_model(model_path)
     hps = utils.get_hparams(config_path, model_path)
 
     n_gpus = torch.cuda.device_count()
