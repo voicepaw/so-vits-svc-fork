@@ -1214,14 +1214,14 @@ tool = ["click (>=6.0.0)"]
 
 [[package]]
 name = "gradio"
-version = "3.23.0"
+version = "3.24.0"
 description = "Python library for easily interacting with trained machine learning models"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "gradio-3.23.0-py3-none-any.whl", hash = "sha256:1f637f80e4b740892c3cc5ec559158afe2b6b97f0a18eca588c235ddedddc7ec"},
-    {file = "gradio-3.23.0.tar.gz", hash = "sha256:bfb9f59d799271029e6309207c7f42ed8adb297dcb8bbe31c83c3ebf32dbe193"},
+    {file = "gradio-3.24.0-py3-none-any.whl", hash = "sha256:cedd67f7cbd17764b3613fb4df274a7c450c74e31a2e3229097d43cb4ffa50c7"},
+    {file = "gradio-3.24.0.tar.gz", hash = "sha256:4ac2bf531b3c0ff5ec9e93959f2d1dbc49eac1767bafa2d80f8950a3bc40c4ed"},
 ]
 
 [package.dependencies]
@@ -1230,7 +1230,7 @@ aiohttp = "*"
 altair = ">=4.2.0"
 fastapi = "*"
 ffmpy = "*"
-fsspec = "*"
+gradio-client = ">=0.0.5"
 httpx = "*"
 huggingface-hub = ">=0.13.0"
 jinja2 = "*"
@@ -1251,6 +1251,25 @@ semantic-version = "*"
 typing-extensions = "*"
 uvicorn = "*"
 websockets = ">=10.0"
+
+[[package]]
+name = "gradio-client"
+version = "0.0.5"
+description = "Python library for easily interacting with trained machine learning models"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "gradio_client-0.0.5-py3-none-any.whl", hash = "sha256:ca4167ebae72d920ebec2be47010cf60e31e0296ad9baac771befb17b87f0eef"},
+    {file = "gradio_client-0.0.5.tar.gz", hash = "sha256:dc6479a119314aac0bbf6821da6e946df17f048cc571559379a89590618f7b5d"},
+]
+
+[package.dependencies]
+fsspec = "*"
+huggingface-hub = ">=0.13.0"
+packaging = "*"
+requests = "*"
+websockets = "*"
 
 [[package]]
 name = "grpcio"
