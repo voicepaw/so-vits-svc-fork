@@ -99,9 +99,9 @@ def mel_spectrogram_torch(
     y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin, fmax, center=False
 ):
     if torch.min(y) < -1.0:
-        LOG.info("min value is ", torch.min(y))
+        LOG.info(f"min value is {torch.min(y)}")
     if torch.max(y) > 1.0:
-        LOG.info("max value is ", torch.max(y))
+        LOG.info(f"max value is {torch.max(y)}")
 
     global mel_basis, hann_window
     dtype_device = str(y.dtype) + "_" + str(y.device)
