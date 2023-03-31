@@ -267,6 +267,17 @@ def train_and_evaluate(
                 loss_gen, losses_gen = generator_loss(y_d_hat_g)
                 loss_lf0 = F.mse_loss(pred_lf0, lf0)
                 loss_gen_all = loss_gen + loss_fm + loss_mel + loss_kl + loss_lf0
+
+                # MB-iSTFT-VITS
+                loss_subband = torch.tensor(0.0)
+                if hps.model.__dict__.get("type_") == "mb-istft-vits":
+                    from .vdecoder.mb_istft.loss import subband_stft_loss
+                    from .vdecoder.mb_istft.pqmf import PQMF
+
+                    y_mb = PQMF(y.device).analysis(y)
+                    loss_subband = subband_stft_loss(hps, y_mb, y_hat)
+                loss_gen_all += loss_subband
+
         optim_g.zero_grad()
         scaler.scale(loss_gen_all).backward()
         scaler.unscale_(optim_g)
@@ -277,15 +288,21 @@ def train_and_evaluate(
         if rank == 0:
             if global_step % hps.train.log_interval == 0:
                 lr = optim_g.param_groups[0]["lr"]
-                losses = [loss_disc, loss_gen, loss_fm, loss_mel, loss_kl]
+                losses = {
+                    "discriminator": loss_disc.item(),
+                    "generator": loss_gen.item(),
+                    "feature_matching": loss_fm.item(),
+                    "melspectrogram": loss_mel.item(),
+                    "kl_divergence": loss_kl.item(),
+                }
+                if hps.model.__dict__.get("type_") == "mb-istft-vits":
+                    losses["subband_stft"] = loss_subband.item()
                 LOG.info(
                     "Train Epoch: {} [{:.0f}%]".format(
                         epoch, 100.0 * batch_idx / len(train_loader)
                     )
                 )
-                LOG.info(
-                    f"Losses: {[x.item() for x in losses]}, step: {global_step}, lr: {lr}"
-                )
+                LOG.info(f"Losses: {losses}, step: {global_step}, lr: {lr}")
 
                 scalar_dict = {
                     "loss/g/total": loss_gen_all,
@@ -300,6 +317,8 @@ def train_and_evaluate(
                         "loss/g/mel": loss_mel,
                         "loss/g/kl": loss_kl,
                         "loss/g/lf0": loss_lf0,
+                        # MB-iSTFT-VITS
+                        "loss/g/subband": loss_subband,
                     }
                 )
 

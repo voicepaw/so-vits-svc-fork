@@ -1,3 +1,6 @@
+from logging import getLogger
+from typing import Literal
+
 import torch
 from torch import nn
 from torch.nn import Conv1d, Conv2d
@@ -12,6 +15,8 @@ from . import utils
 from .modules.commons import get_padding
 from .utils import f0_to_coarse
 from .vdecoder.hifigan.models import Generator
+
+LOG = getLogger(__name__)
 
 
 class ResidualCouplingBlock(nn.Module):
@@ -392,7 +397,11 @@ class SynthesizerTrn(nn.Module):
         ssl_dim,
         n_speakers,
         sampling_rate=44100,
-        **kwargs
+        type_: Literal["hifi-gan", "istft", "ms-istft", "mb-istft"] = "hifi-gan",
+        gen_istft_n_fft: int = 16,
+        gen_istft_hop_size: int = 4,
+        subbands: bool = False,
+        **kwargs,
     ):
         super().__init__()
         self.spec_channels = spec_channels
@@ -436,7 +445,29 @@ class SynthesizerTrn(nn.Module):
             "upsample_kernel_sizes": upsample_kernel_sizes,
             "gin_channels": gin_channels,
         }
-        self.dec = Generator(h=hps)
+
+        LOG.info(f"Decoder type: {type_}")
+        if type_ == "hifi-gan":
+            self.dec = Generator(h=hps)
+            self.mb = False
+        else:
+            from .vdecoder.mb_istft.generators import (
+                Multiband_iSTFT_Generator,
+                Multistream_iSTFT_Generator,
+                iSTFT_Generator,
+            )
+
+            # gen_istft_n_fft, gen_istft_hop_size, subbands
+            if type_ == "istft":
+                self.dec = iSTFT_Generator(**hps)
+            elif type_ == "ms-istft":
+                self.dec = Multistream_iSTFT_Generator(**hps)
+            elif type_ == "mb-istft":
+                self.dec = Multiband_iSTFT_Generator(**hps)
+            else:
+                raise ValueError(f"Unknown type: {type_}")
+            self.mb = True
+
         self.enc_q = Encoder(
             spec_channels,
             inter_channels,
@@ -485,10 +516,15 @@ class SynthesizerTrn(nn.Module):
         )
 
         # nsf decoder
-        o = self.dec(z_slice, g=g, f0=pitch_slice)
-
+        # MB-iSTFT-VITS
+        if self.dec:
+            o, o_mb = self.dec(z_slice, g=g)
+        else:
+            o = self.dec(z_slice, g=g, f0=pitch_slice)
+            o_mb = None
         return (
             o,
+            o_mb,
             ids_slice,
             spec_mask,
             (z, z_p, m_p, logs_p, m_q, logs_q),
@@ -515,5 +551,10 @@ class SynthesizerTrn(nn.Module):
             x, x_mask, f0=f0_to_coarse(f0), noice_scale=noice_scale
         )
         z = self.flow(z_p, c_mask, g=g, reverse=True)
-        o = self.dec(z * c_mask, g=g, f0=f0)
+
+        # MB-iSTFT-VITS
+        if self.mb:
+            o, o_mb = self.dec(z * c_mask, g=g)
+        else:
+            o = self.dec(z * c_mask, g=g, f0=f0)
         return o
