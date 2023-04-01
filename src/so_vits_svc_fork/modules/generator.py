@@ -11,6 +11,11 @@ from so_vits_svc_fork.f0 import f0_to_coarse
 from so_vits_svc_fork.modules import commons as commons
 from so_vits_svc_fork.modules.decoders.f0 import F0Decoder
 from so_vits_svc_fork.modules.decoders.hifigan import Generator
+from so_vits_svc_fork.modules.decoders.mb_istft import (
+    Multiband_iSTFT_Generator,
+    Multistream_iSTFT_Generator,
+    iSTFT_Generator,
+)
 from so_vits_svc_fork.modules.encoders import Encoder, TextEncoder
 from so_vits_svc_fork.modules.flows import ResidualCouplingBlock
 
@@ -108,11 +113,6 @@ class SynthesizerTrn(nn.Module):
                 "gen_istft_hop_size": gen_istft_hop_size,
                 "subbands": subbands,
             }
-            from .vdecoder.mb_istft.generators import (
-                Multiband_iSTFT_Generator,
-                Multistream_iSTFT_Generator,
-                iSTFT_Generator,
-            )
 
             # gen_istft_n_fft, gen_istft_hop_size, subbands
             if type_ == "istft":

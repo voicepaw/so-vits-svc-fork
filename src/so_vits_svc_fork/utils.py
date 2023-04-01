@@ -7,6 +7,8 @@ from logging import getLogger
 from pathlib import Path
 from typing import Any
 
+import matplotlib
+import matplotlib.pylab as plt
 import numpy as np
 import requests
 import torch
@@ -254,15 +256,7 @@ def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth"):
 
 
 def plot_spectrogram_to_numpy(spectrogram):
-    global MATPLOTLIB_FLAG
-    if not MATPLOTLIB_FLAG:
-        import matplotlib
-
-        matplotlib.use("Agg")
-        MATPLOTLIB_FLAG = True
-    import matplotlib.pylab as plt
-    import numpy as np
-
+    matplotlib.use("Agg")
     fig, ax = plt.subplots(figsize=(10, 2))
     im = ax.imshow(spectrogram, aspect="auto", origin="lower", interpolation="none")
     plt.colorbar(im, ax=ax)
@@ -314,7 +308,6 @@ def get_hparams_from_file(config_path: Path | str) -> HParams:
 
 def repeat_expand_2d(content: ndarray, target_len: int) -> ndarray:
     # content : [h, t]
-
     src_len = content.shape[-1]
     target = torch.zeros([content.shape[0], target_len], dtype=torch.float).to(
         content.device
@@ -332,12 +325,7 @@ def repeat_expand_2d(content: ndarray, target_len: int) -> ndarray:
 
 
 def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
-    import matplotlib
-
     matplotlib.use("Agg")
-    import matplotlib.pylab as plt
-    import numpy as np
-
     fig, ax = plt.subplots(figsize=(10, 2))
     plt.plot(x)
     plt.plot(y)

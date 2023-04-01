@@ -6,8 +6,8 @@ from torch.nn import Conv1d, ConvTranspose1d
 from torch.nn import functional as F
 from torch.nn.utils import remove_weight_norm, weight_norm
 
-from ...modules import modules
-from ...modules.commons import get_padding, init_weights
+from ....modules import modules
+from ....modules.commons import get_padding, init_weights
 from ._pqmf import PQMF
 from ._stft import TorchSTFT
 

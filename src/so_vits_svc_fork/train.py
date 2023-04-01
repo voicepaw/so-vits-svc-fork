@@ -22,13 +22,11 @@ import so_vits_svc_fork.utils
 
 from . import utils
 from .data_utils import TextAudioCollate, TextAudioSpeakerLoader
+from .hparams import HParams
 from .modules.descriminators import MultiPeriodDiscriminator
 from .modules.generator import SynthesizerTrn
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
-
-# os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'INFO'
-
 
 LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
@@ -50,7 +48,7 @@ def train(config_path: Path | str, model_path: Path | str):
     os.environ["MASTER_PORT"] = hps.train.port
 
     mp.spawn(
-        run,
+        _run,
         nprocs=n_gpus,
         args=(
             n_gpus,
@@ -59,7 +57,7 @@ def train(config_path: Path | str, model_path: Path | str):
     )
 
 
-def run(rank, n_gpus, hps):
+def _run(rank: int, n_gpus: int, hps: HParams):
     global global_step
     if rank == 0:
         LOG.info(hps)
@@ -158,7 +156,7 @@ def run(rank, n_gpus, hps):
 
     for epoch in trange(epoch_str, hps.train.epochs + 1):
         if rank == 0:
-            train_and_evaluate(
+            _train_and_evaluate(
                 rank,
                 epoch,
                 hps,
@@ -170,7 +168,7 @@ def run(rank, n_gpus, hps):
                 [writer, writer_eval],
             )
         else:
-            train_and_evaluate(
+            _train_and_evaluate(
                 rank,
                 epoch,
                 hps,
@@ -185,7 +183,7 @@ def run(rank, n_gpus, hps):
         scheduler_d.step()
 
 
-def train_and_evaluate(
+def _train_and_evaluate(
     rank, epoch, hps, nets, optims, schedulers, scaler, loaders, writers
 ):
     net_g, net_d = nets
@@ -357,7 +355,7 @@ def train_and_evaluate(
 
             if global_step % hps.train.eval_interval == 0:
                 LOG.info("Saving checkpoints...")
-                evaluate(hps, net_g, eval_loader, writer_eval)
+                _evaluate(hps, net_g, eval_loader, writer_eval)
                 utils.save_checkpoint(
                     net_g,
                     optim_g,
@@ -390,7 +388,7 @@ def train_and_evaluate(
         start_time = now
 
 
-def evaluate(hps, generator, eval_loader, writer_eval):
+def _evaluate(hps, generator, eval_loader, writer_eval):
     generator.eval()
     image_dict = {}
     audio_dict = {}

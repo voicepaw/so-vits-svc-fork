@@ -2,43 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7aacf003-229b-4eb0-80a4-ff105dc3c3d4" name="変更" comment="">
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/f0.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/descriminators.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/encoders.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/flows.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/generator.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocessing/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/data_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/data_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/infer_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/infer_tool.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/models.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/onnx_export.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/onnx_export.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/onnxexport/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/f0.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/onnxexport/model_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/model_onnx.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_flist_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocessing/preprocess_flist_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_hubert_f0.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocessing/preprocess_hubert_f0.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_resample.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocessing/preprocess_resample.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_speaker_diarization.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocessing/preprocess_speaker_diarization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_split.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocessing/preprocess_split.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocessing/preprocess_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/spec_gen.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/utils./f0py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/utils./f0py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/hparams.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/hifigan/_models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/hifigan/_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/mb_istft/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/hifigan/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/mb_istft/generators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/_generators.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/mb_istft/loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/_loss.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/mb_istft/pqmf.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/_pqmf.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/mb_istft/stft.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/_stft.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/mb_istft/stft_loss.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/_stft_loss.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/hubert/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/hubert_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/hubert/hubert_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/hubert_model_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/hubert/hubert_model_onnx.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/put_hubert_ckpt_here" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/_generators.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/decoders/mb_istft/_generators.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/generator.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/generator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/utils/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/utils/f0py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/1.wav" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/10.wav" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/2.wav" beforeDir="false" />
@@ -50,7 +22,6 @@
       <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/8.wav" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/9.wav" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/あ.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -91,10 +62,10 @@
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\modules" />
+      <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\inference" />
       <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\onnxexport" />
       <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\preprocessing" />
       <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\modules\decoders" />
-      <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\vdecoder\mb_istft\_pqmf.py" />
     </key>
   </component>
   <component name="RunManager" selected="Python.so-vits-svc-fork">
@@ -160,7 +131,7 @@
       <workItem from="1678932243084" duration="593000" />
       <workItem from="1680174456649" duration="1005000" />
       <workItem from="1680251014707" duration="2800000" />
-      <workItem from="1680319074742" duration="1776000" />
+      <workItem from="1680319074742" duration="2743000" />
     </task>
     <servers />
   </component>
