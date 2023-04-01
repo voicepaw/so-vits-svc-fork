@@ -151,9 +151,14 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
 
     scaler = GradScaler(enabled=hps.train.fp16_run)
 
-    LOG.info("Start training")
+    LOG.info(
+        "Start training..."
+        "Note: You do not need to wait until the progress bar is full."
+    )
 
-    for epoch in trange(epoch_str, hps.train.epochs + 1):
+    for epoch in trange(
+        epoch_str, hps.train.epochs + 1, initial=epoch_str, total=hps.train.epochs
+    ):
         if rank == 0:
             _train_and_evaluate(
                 rank,
