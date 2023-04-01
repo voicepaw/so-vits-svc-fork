@@ -50,14 +50,11 @@ def train(config_path: Path | str, model_path: Path | str):
     mp.spawn(
         _run,
         nprocs=n_gpus,
-        args=(
-            n_gpus,
-            hps,
-        ),
+        args=(n_gpus, hps, True),
     )
 
 
-def _run(rank: int, n_gpus: int, hps: HParams):
+def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
     global global_step
     if rank == 0:
         LOG.info(hps)
@@ -118,7 +115,7 @@ def _run(rank: int, n_gpus: int, hps: HParams):
     net_g = DDP(net_g, device_ids=[rank])  # , find_unused_parameters=True)
     net_d = DDP(net_d, device_ids=[rank])
 
-    skip_optimizer = False
+    skip_optimizer = reset_optimizer
     try:
         _, _, _, epoch_str = utils.load_checkpoint(
             utils.latest_checkpoint_path(hps.model_dir, "G_*.pth"),
@@ -272,7 +269,7 @@ def _train_and_evaluate(
 
                 # MB-iSTFT-VITS
                 loss_subband = torch.tensor(0.0)
-                if hps.model.type_ == "mb-istft":
+                if hps.model.__dict__.get("type_") == "mb-istft":
                     from .modules.decoders.mb_istft import PQMF, subband_stft_loss
 
                     y_mb = PQMF(y.device, hps.model.subbands).analysis(y)
@@ -296,7 +293,7 @@ def _train_and_evaluate(
                     "melspectrogram": loss_mel.item(),
                     "kl_divergence": loss_kl.item(),
                 }
-                if hps.model.type_ == "mb-istft":
+                if hps.model.__dict__.get("type_") == "mb-istft":
                     losses["subband_stft"] = loss_subband.item()
                 LOG.info(
                     "Train Epoch: {} [{:.0f}%]".format(
@@ -320,7 +317,7 @@ def _train_and_evaluate(
                         "loss/g/lf0": loss_lf0,
                     }
                 )
-                if hps.model.type_ == "mb-istft":
+                if hps.model.__dict__.get("type_") == "mb-istft":
                     scalar_dict["loss/g/subband"] = loss_subband
 
                 # scalar_dict.update({"loss/g/{}".format(i): v for i, v in enumerate(losses_gen)})

@@ -650,7 +650,7 @@ def main():
                     future.cancel()
                     future = None
             elif event == "onnx_export":
-                from so_vits_svc_fork.modules.onnx.onnx_export import onnx_export
+                from so_vits_svc_fork.modules.onnx._export import onnx_export
 
                 try:
                     onnx_export(

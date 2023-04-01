@@ -5,7 +5,7 @@ from pathlib import Path
 import torch
 
 from so_vits_svc_fork import utils
-from so_vits_svc_fork.modules.onnx.model_onnx import SynthesizerTrn
+from so_vits_svc_fork.modules.onnx._model import SynthesizerTrn
 
 
 def onnx_export(

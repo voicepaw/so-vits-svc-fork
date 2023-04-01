@@ -744,7 +744,7 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
         output_path = output_path / (input_path.stem + ".onnx")
     config_path = Path(config_path)
     device_ = torch.device(device)
-    from so_vits_svc_fork.modules.onnx.onnx_export import onnx_export
+    from so_vits_svc_fork.modules.onnx._export import onnx_export
 
     onnx_export(
         input_path=input_path,

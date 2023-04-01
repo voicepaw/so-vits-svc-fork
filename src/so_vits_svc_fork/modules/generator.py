@@ -1,3 +1,4 @@
+import warnings
 from logging import getLogger
 from typing import Any, Literal, Sequence
 
@@ -5,8 +6,6 @@ import torch
 from torch import nn
 
 import so_vits_svc_fork.f0
-
-LOG = getLogger(__name__)
 from so_vits_svc_fork.f0 import f0_to_coarse
 from so_vits_svc_fork.modules import commons as commons
 from so_vits_svc_fork.modules.decoders.f0 import F0Decoder
@@ -18,6 +17,8 @@ from so_vits_svc_fork.modules.decoders.mb_istft import (
 )
 from so_vits_svc_fork.modules.encoders import Encoder, TextEncoder
 from so_vits_svc_fork.modules.flows import ResidualCouplingBlock
+
+LOG = getLogger(__name__)
 
 
 class SynthesizerTrn(nn.Module):
@@ -70,6 +71,15 @@ class SynthesizerTrn(nn.Module):
         self.segment_size = segment_size
         self.gin_channels = gin_channels
         self.ssl_dim = ssl_dim
+        self.n_speakers = n_speakers
+        self.sampling_rate = sampling_rate
+        self.type_ = type_
+        self.gen_istft_n_fft = gen_istft_n_fft
+        self.gen_istft_hop_size = gen_istft_hop_size
+        self.subbands = subbands
+        if kwargs:
+            warnings.warn(f"Unused arguments: {kwargs}")
+
         self.emb_g = nn.Embedding(n_speakers, gin_channels)
 
         self.pre = nn.Conv1d(ssl_dim, hidden_channels, kernel_size=5, padding=2)
@@ -174,9 +184,9 @@ class SynthesizerTrn(nn.Module):
         )
 
         # MB-iSTFT-VITS
-        if self.dec:
+        if self.mb:
             o, o_mb = self.dec(z_slice, g=g)
-        # nsf decoder
+        # HiFi-GAN
         else:
             o = self.dec(z_slice, g=g, f0=pitch_slice)
             o_mb = None
