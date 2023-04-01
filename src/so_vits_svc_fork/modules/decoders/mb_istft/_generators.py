@@ -8,8 +8,8 @@ from torch.nn.utils import remove_weight_norm, weight_norm
 
 from ...modules import modules
 from ...modules.commons import get_padding, init_weights
-from .pqmf import PQMF
-from .stft import TorchSTFT
+from ._pqmf import PQMF
+from ._stft import TorchSTFT
 
 
 class iSTFT_Generator(torch.nn.Module):

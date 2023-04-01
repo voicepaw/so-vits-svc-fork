@@ -16,11 +16,14 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 
+import so_vits_svc_fork.f0
 import so_vits_svc_fork.modules.commons as commons
+import so_vits_svc_fork.utils
 
 from . import utils
 from .data_utils import TextAudioCollate, TextAudioSpeakerLoader
-from .models import MultiPeriodDiscriminator, SynthesizerTrn
+from .modules.descriminators import MultiPeriodDiscriminator
+from .modules.generator import SynthesizerTrn
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
 
@@ -272,8 +275,7 @@ def train_and_evaluate(
                 # MB-iSTFT-VITS
                 loss_subband = torch.tensor(0.0)
                 if hps.model.type_ == "mb-istft":
-                    from .vdecoder.mb_istft.loss import subband_stft_loss
-                    from .vdecoder.mb_istft.pqmf import PQMF
+                    from .modules.decoders.mb_istft import PQMF, subband_stft_loss
 
                     y_mb = PQMF(y.device, hps.model.subbands).analysis(y)
                     loss_subband = subband_stft_loss(hps, y_mb, y_hat_mb)
@@ -336,11 +338,11 @@ def train_and_evaluate(
                     "all/mel": utils.plot_spectrogram_to_numpy(
                         mel[0].data.cpu().numpy()
                     ),
-                    "all/lf0": utils.plot_data_to_numpy(
+                    "all/lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
                         lf0[0, 0, :].cpu().numpy(),
                         pred_lf0[0, 0, :].detach().cpu().numpy(),
                     ),
-                    "all/norm_lf0": utils.plot_data_to_numpy(
+                    "all/norm_lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
                         lf0[0, 0, :].cpu().numpy(),
                         norm_lf0[0, 0, :].detach().cpu().numpy(),
                     ),

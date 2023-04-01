@@ -4,8 +4,8 @@ from pathlib import Path
 
 import torch
 
-from . import utils
-from .onnxexport.model_onnx import SynthesizerTrn
+from so_vits_svc_fork import utils
+from so_vits_svc_fork.modules.onnx.model_onnx import SynthesizerTrn
 
 
 def onnx_export(

@@ -48,7 +48,7 @@ class PQMF(torch.nn.Module):
         https://ieeexplore.ieee.org/document/258122
     """
 
-    def __init__(self, device, subbands=4, taps=62, cutoff_ratio=0.15, beta=9.0):
+    def __init__(self, device, subbands=8, taps=62, cutoff_ratio=0.15, beta=9.0):
         """Initialize PQMF module.
         Args:
             subbands (int): The number of subbands.

@@ -1,4 +1,4 @@
-from .stft_loss import MultiResolutionSTFTLoss
+from ._stft_loss import MultiResolutionSTFTLoss
 
 
 def subband_stft_loss(h, y_mb, y_hat_mb):

@@ -6,6 +6,8 @@ import torch
 import torch.utils.data
 import torchaudio
 
+import so_vits_svc_fork.f0
+
 from . import utils
 from .modules.mel_processing import spectrogram_torch
 from .utils import load_filepaths_and_text
@@ -65,7 +67,7 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
         spk = torch.LongTensor([self.spk_map[spk]])
 
         f0 = np.load(filename + ".f0.npy")
-        f0, uv = utils.interpolate_f0(f0)
+        f0, uv = so_vits_svc_fork.f0.interpolate_f0(f0)
         f0 = torch.FloatTensor(f0)
         uv = torch.FloatTensor(uv)
 

@@ -12,9 +12,10 @@ import torch
 from cm_time import timer
 from numpy import dtype, float32, ndarray
 
+import so_vits_svc_fork.f0
 from so_vits_svc_fork import cluster, utils
-from so_vits_svc_fork.models import SynthesizerTrn
 
+from ..modules.generator import SynthesizerTrn
 from ..utils import HUBERT_SAMPLING_RATE
 
 LOG = getLogger(__name__)
@@ -134,13 +135,13 @@ class Svc:
             "crepe", "crepe-tiny", "parselmouth", "dio", "harvest"
         ] = "dio",
     ):
-        f0 = utils.compute_f0(
+        f0 = so_vits_svc_fork.f0.compute_f0(
             audio,
             sampling_rate=self.target_sample,
             hop_length=self.hop_size,
             method=f0_method,
         )
-        f0, uv = utils.interpolate_f0(f0)
+        f0, uv = so_vits_svc_fork.f0.interpolate_f0(f0)
         f0 = torch.FloatTensor(f0)
         uv = torch.FloatTensor(uv)
         f0 = f0 * 2 ** (tran / 12)
@@ -257,7 +258,7 @@ class Svc:
         chunk_length_min = chunk_length_min = (
             int(
                 min(
-                    sr / utils.f0_min * 20 + 1,
+                    sr / so_vits_svc_fork.f0.f0_min * 20 + 1,
                     chunk_seconds * sr,
                 )
             )
@@ -543,7 +544,9 @@ class RealtimeVC2:
         self.input_audio_store = np.concatenate([self.input_audio_store, input_audio])
         LOG.info(f"input_audio_store: {self.input_audio_store.shape}")
         sr = self.svc_model.target_sample
-        chunk_length_min = int(min(sr / utils.f0_min * 20 + 1, chunk_seconds * sr)) // 2
+        chunk_length_min = (
+            int(min(sr / so_vits_svc_fork.f0.f0_min * 20 + 1, chunk_seconds * sr)) // 2
+        )
         LOG.info(f"Chunk length min: {chunk_length_min}")
         chunk_list = list(
             split_silence(

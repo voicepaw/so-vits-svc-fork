@@ -208,7 +208,7 @@ def infer(
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     """Inference"""
-    from .inference_main import infer
+    from so_vits_svc_fork.inference.inference_main import infer
 
     if not auto_predict_f0:
         LOG.warning(
@@ -367,7 +367,7 @@ def vc(
     passthrough_original: bool = False,
 ) -> None:
     """Realtime inference from microphone"""
-    from .inference_main import realtime
+    from so_vits_svc_fork.inference.inference_main import realtime
 
     if auto_predict_f0:
         LOG.warning(
@@ -455,7 +455,7 @@ def pre_resample(
     hop_seconds: float,
 ) -> None:
     """Preprocessing part 1: resample"""
-    from .preprocess_resample import preprocess_resample
+    from so_vits_svc_fork.preprocessing.preprocess_resample import preprocess_resample
 
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -498,7 +498,7 @@ def pre_config(
     config_path: Path,
 ):
     """Preprocessing part 2: config"""
-    from .preprocess_flist_config import preprocess_config
+    from so_vits_svc_fork.preprocessing.preprocess_flist_config import preprocess_config
 
     input_dir = Path(input_dir)
     filelist_path = Path(filelist_path)
@@ -556,7 +556,7 @@ def pre_hubert(
 ) -> None:
     """Preprocessing part 3: hubert
     If the HuBERT model is not found, it will be downloaded automatically."""
-    from .preprocess_hubert_f0 import preprocess_hubert_f0
+    from so_vits_svc_fork.preprocessing.preprocess_hubert_f0 import preprocess_hubert_f0
 
     input_dir = Path(input_dir)
     config_path = Path(config_path)
@@ -622,7 +622,9 @@ def pre_sd(
 
     if max_speakers == 1:
         LOG.warning("Consider using pre-split if max_speakers == 1")
-    from .preprocess_speaker_diarization import preprocess_speaker_diarization
+    from so_vits_svc_fork.preprocessing.preprocess_speaker_diarization import (
+        preprocess_speaker_diarization,
+    )
 
     preprocess_speaker_diarization(
         input_dir=input_dir,
@@ -673,7 +675,7 @@ def pre_split(
     sr: int,
 ):
     """Split audio files into multiple files"""
-    from .preprocess_split import preprocess_split
+    from so_vits_svc_fork.preprocessing.preprocess_split import preprocess_split
 
     preprocess_split(
         input_dir=input_dir,
@@ -742,7 +744,7 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
         output_path = output_path / (input_path.stem + ".onnx")
     config_path = Path(config_path)
     device_ = torch.device(device)
-    from .onnx_export import onnx_export
+    from so_vits_svc_fork.modules.onnx.onnx_export import onnx_export
 
     onnx_export(
         input_path=input_path,

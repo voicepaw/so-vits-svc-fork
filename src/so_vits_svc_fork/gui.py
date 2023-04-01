@@ -548,7 +548,7 @@ def main():
             elif event == "config_path":
                 update_speaker()
             elif event == "infer":
-                from .inference_main import infer
+                from so_vits_svc_fork.inference.inference_main import infer
 
                 input_path = Path(values["input_path"])
                 output_path = (
@@ -600,7 +600,7 @@ def main():
                 _, _, input_device_indices, output_device_indices = get_devices(
                     update=False
                 )
-                from .inference_main import realtime
+                from so_vits_svc_fork.inference.inference_main import realtime
 
                 if future:
                     LOG.info("Canceling previous task")
@@ -650,7 +650,7 @@ def main():
                     future.cancel()
                     future = None
             elif event == "onnx_export":
-                from .onnx_export import onnx_export
+                from so_vits_svc_fork.modules.onnx.onnx_export import onnx_export
 
                 try:
                     onnx_export(

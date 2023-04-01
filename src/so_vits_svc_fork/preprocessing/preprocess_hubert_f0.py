@@ -11,9 +11,11 @@ import torch
 from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
-from . import utils
+import so_vits_svc_fork.f0
+from so_vits_svc_fork import utils
+from so_vits_svc_fork.utils import HUBERT_SAMPLING_RATE
+
 from .preprocess_utils import check_hubert_min_duration
-from .utils import HUBERT_SAMPLING_RATE
 
 LOG = getLogger(__name__)
 
@@ -48,7 +50,7 @@ def _process_one(
     # Compute f0
     f0_path = filepath.parent / (filepath.name + ".f0.npy")
     if (not f0_path.exists()) or force_rebuild:
-        f0 = utils.compute_f0(
+        f0 = so_vits_svc_fork.f0.compute_f0(
             audio, sampling_rate=sampling_rate, hop_length=hop_length, method=f0_method
         )
         np.save(f0_path, f0)
