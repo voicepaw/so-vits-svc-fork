@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v2.1.5 (2023-04-01)
+### Fix
+* **deps:** Update dependency tensorboard to v2.12.1 ([#199](https://github.com/34j/so-vits-svc-fork/issues/199)) ([`0ccda1c`](https://github.com/34j/so-vits-svc-fork/commit/0ccda1ccb34b8125abe369f738b06de7b77c8efc))
+
 ## v2.1.4 (2023-03-31)
 ### Fix
 * **deps:** Update dependency gradio to v3.24.1 ([#196](https://github.com/34j/so-vits-svc-fork/issues/196)) ([`4fa141b`](https://github.com/34j/so-vits-svc-fork/commit/4fa141b210cb9b80bc7f75176fb01b18352c91cd))
