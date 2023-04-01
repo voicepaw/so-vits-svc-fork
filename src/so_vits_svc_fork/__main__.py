@@ -93,7 +93,20 @@ def cli():
     type=bool,
     help="launch tensorboard",
 )
-def train(config_path: Path, model_path: Path, tensorboard: bool = False):
+@click.option(
+    "-r",
+    "--reset-optimizer",
+    default=False,
+    type=bool,
+    help="reset optimizer",
+    is_flag=True,
+)
+def train(
+    config_path: Path,
+    model_path: Path,
+    tensorboard: bool = False,
+    reset_optimizer: bool = False,
+):
     """Train model
     If D_0.pth or G_0.pth not found, automatically download from hub."""
     from .train import train
@@ -112,7 +125,9 @@ def train(config_path: Path, model_path: Path, tensorboard: bool = False):
         url = tb.launch()
         webbrowser.open(url)
 
-    train(config_path=config_path, model_path=model_path)
+    train(
+        config_path=config_path, model_path=model_path, reset_optimizer=reset_optimizer
+    )
 
 
 @cli.command()

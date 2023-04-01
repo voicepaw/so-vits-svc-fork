@@ -34,7 +34,9 @@ global_step = 0
 start_time = time.time()
 
 
-def train(config_path: Path | str, model_path: Path | str):
+def train(
+    config_path: Path | str, model_path: Path | str, reset_optimizer: bool = False
+):
     """Assume Single Node Multi GPUs Training Only"""
     config_path = Path(config_path)
     model_path = Path(model_path)
@@ -50,7 +52,7 @@ def train(config_path: Path | str, model_path: Path | str):
     mp.spawn(
         _run,
         nprocs=n_gpus,
-        args=(n_gpus, hps, True),
+        args=(n_gpus, hps, reset_optimizer),
     )
 
 
