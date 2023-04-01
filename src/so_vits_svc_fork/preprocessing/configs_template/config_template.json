@@ -1,13 +1,13 @@
 {
   "train": {
-    "log_interval": 200,
-    "eval_interval": 800,
+    "log_interval": 50,
+    "eval_interval": 100,
     "seed": 1234,
     "epochs": 10000,
     "learning_rate": 0.0001,
     "betas": [0.8, 0.99],
     "eps": 1e-9,
-    "batch_size": 2,
+    "batch_size": 18,
     "fp16_run": false,
     "lr_decay": 0.999875,
     "segment_size": 10240,
