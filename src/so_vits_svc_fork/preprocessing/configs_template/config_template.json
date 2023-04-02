@@ -34,7 +34,8 @@
     "win_length": 2048,
     "n_mel_channels": 80,
     "mel_fmin": 0.0,
-    "mel_fmax": 22050
+    "mel_fmax": 22050,
+    "contentvec_final_proj": false
   },
   "model": {
     "inter_channels": 192,
@@ -51,7 +52,7 @@
       [1, 3, 5],
       [1, 3, 5]
     ],
-    "upsample_rates": [4, 4],
+    "upsample_rates": [4, 8],
     "upsample_initial_channel": 512,
     "upsample_kernel_sizes": [16, 16],
     "n_layers_q": 3,
@@ -62,7 +63,7 @@
     "type_": "mb-istft",
     "gen_istft_n_fft": 16,
     "gen_istft_hop_size": 4,
-    "subbands": 8
+    "subbands": 4
   },
   "spk": {
     "34j": 0,

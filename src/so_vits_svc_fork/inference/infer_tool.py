@@ -16,7 +16,6 @@ import so_vits_svc_fork.f0
 from so_vits_svc_fork import cluster, utils
 
 from ..modules.generator import SynthesizerTrn
-from ..utils import HUBERT_SAMPLING_RATE
 
 LOG = getLogger(__name__)
 
@@ -91,39 +90,38 @@ class Svc:
     def __init__(
         self,
         *,
-        net_g_path: str,
-        config_path: str,
+        net_g_path: Path | str,
+        config_path: Path | str,
         device: torch.device | str | None = None,
         cluster_model_path: Path | str | None = None,
         half: bool = False,
     ):
         self.net_g_path = net_g_path
         if device is None:
-            self.dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         else:
-            self.dev = torch.device(device)
-        self.net_g_ms = None
-        self.hps_ms = utils.get_hparams_from_file(config_path)
-        self.target_sample = self.hps_ms.data.sampling_rate
-        self.hop_size = self.hps_ms.data.hop_length
-        self.spk2id = self.hps_ms.spk
-        self.hubert_model = utils.get_hubert_model().to(self.dev)
-        self.half = half
+            self.device = torch.device(device)
+        self.hps = utils.get_hparams(config_path)
+        self.target_sample = self.hps.data.sampling_rate
+        self.hop_size = self.hps.data.hop_length
+        self.spk2id = self.hps.spk
+        self.hubert_model = utils.get_hubert_model(self.device)
+        self.dtype = torch.float16 if half else torch.float32
+        self.contentvec_final_proj = self.hps.data.__dict__.get(
+            "contentvec_final_proj", True
+        )
         self.load_model()
         if cluster_model_path is not None and Path(cluster_model_path).exists():
             self.cluster_model = cluster.get_cluster_model(cluster_model_path)
 
     def load_model(self):
-        self.net_g_ms = SynthesizerTrn(
-            self.hps_ms.data.filter_length // 2 + 1,
-            self.hps_ms.train.segment_size // self.hps_ms.data.hop_length,
-            **self.hps_ms.model,
+        self.net_g = SynthesizerTrn(
+            self.hps.data.filter_length // 2 + 1,
+            self.hps.train.segment_size // self.hps.data.hop_length,
+            **self.hps.model,
         )
-        _ = utils.load_checkpoint(self.net_g_path, self.net_g_ms, None)
-        if self.half:
-            _ = self.net_g_ms.half().eval().to(self.dev)
-        else:
-            _ = self.net_g_ms.eval().to(self.dev)
+        _ = utils.load_checkpoint(self.net_g_path, self.net_g, None)
+        _ = self.net_g.eval().to(self.device, dtype=self.dtype)
 
     def get_unit_f0(
         self,
@@ -142,24 +140,26 @@ class Svc:
             method=f0_method,
         )
         f0, uv = so_vits_svc_fork.f0.interpolate_f0(f0)
-        f0 = torch.FloatTensor(f0)
-        uv = torch.FloatTensor(uv)
+        f0 = torch.as_tensor(f0, dtype=self.dtype, device=self.device)
+        uv = torch.as_tensor(uv, dtype=self.dtype, device=self.device)
         f0 = f0 * 2 ** (tran / 12)
-        f0 = f0.unsqueeze(0).to(self.dev)
-        uv = uv.unsqueeze(0).to(self.dev)
+        f0 = f0.unsqueeze(0)
+        uv = uv.unsqueeze(0)
 
-        wav16k = librosa.resample(
-            audio, orig_sr=self.target_sample, target_sr=HUBERT_SAMPLING_RATE
-        )
-        wav16k = torch.from_numpy(wav16k).to(self.dev)
-        c = utils.get_hubert_content(self.hubert_model, wav_16k_tensor=wav16k)
+        c = utils.get_content(
+            self.hubert_model,
+            audio,
+            self.device,
+            self.target_sample,
+            self.contentvec_final_proj,
+        ).to(self.dtype)
         c = utils.repeat_expand_2d(c.squeeze(0), f0.shape[1])
 
         if cluster_infer_ratio != 0:
             cluster_c = cluster.get_cluster_center_result(
                 self.cluster_model, c.cpu().numpy().T, speaker
             ).T
-            cluster_c = torch.FloatTensor(cluster_c).to(self.dev)
+            cluster_c = torch.FloatTensor(cluster_c).to(self.device)
             c = cluster_infer_ratio * cluster_c + (1 - cluster_infer_ratio) * c
 
         c = c.unsqueeze(0)
@@ -202,21 +202,17 @@ class Svc:
         elif len(speaker_candidates) == 0:
             raise ValueError(f"Speaker_id {speaker_id} is not found.")
         speaker = speaker_candidates[0][0]
-        sid = torch.LongTensor([int(speaker_id)]).to(self.dev).unsqueeze(0)
+        sid = torch.LongTensor([int(speaker_id)]).to(self.device).unsqueeze(0)
 
         # get unit f0
         c, f0, uv = self.get_unit_f0(
             audio, transpose, cluster_infer_ratio, speaker, f0_method
         )
-        if self.half:
-            c = c.half()
-            f0 = f0.half()
-            uv = uv.half()
 
         # inference
         with torch.no_grad():
             with timer() as t:
-                audio = self.net_g_ms.infer(
+                audio = self.net_g.infer(
                     c,
                     f0=f0,
                     g=sid,

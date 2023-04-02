@@ -82,7 +82,7 @@ def ensure_hubert_model(**tqdm_kwargs: Any) -> Path:
     return vec_path
 
 
-def get_hubert_model() -> HubertModel:
+def get_hubert_model(device: torch.device) -> HubertModel:
     vec_path = ensure_hubert_model()
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
@@ -90,24 +90,40 @@ def get_hubert_model() -> HubertModel:
         suffix="",
     )
     model = models[0]
-    model.eval()
-    return model
+    return model.eval().to(device)
+
+
+import warnings
+
+import torchaudio
 
 
 def get_content(
-    cmodel: HubertModel, audio: torch.Tensor, wrong_legacy_proj: bool = False
-) -> ndarray:
-    with torch.no_grad(), timer() as t:
-        c = cmodel.extract_features(
-            audio.squeeze(1),
-            padding_mask=torch.BoolTensor(audio.shape).fill_(False),
-            output_layer=9,
+    cmodel: HubertModel,
+    audio: torch.Tensor | ndarray[Any, Any],
+    device: torch.device | str,
+    sr: int,
+    legacy_final_proj: bool = False,
+) -> torch.Tensor:
+    print(cmodel.final_proj)
+    audio = torch.as_tensor(audio)
+    if sr != HUBERT_SAMPLING_RATE:
+        audio = torchaudio.transforms.Resample(sr, HUBERT_SAMPLING_RATE)(audio).to(
+            device
         )
-        if wrong_legacy_proj:
+    if audio.ndim == 1:
+        audio = audio.unsqueeze(0)
+    with torch.no_grad(), timer() as t:
+        params = {"output_layer": 9} if legacy_final_proj else {}
+        c: torch.Tensor = cmodel.extract_features(audio, **params)[0]
+        if legacy_final_proj:
+            warnings.warn("legacy_final_proj is deprecated")
             assert hasattr(cmodel, "final_proj")
-            c = cmodel.final_proj(c[0])
-    c = c.transpose(1, 2)
-    wav_len = audio.shape[-1] / 16000
+            assert isinstance(cmodel.final_proj, torch.nn.Module)
+            c = cmodel.final_proj(c)
+        c = c.transpose(1, 2)
+        # print(c.shape)
+    wav_len = audio.shape[-1] / HUBERT_SAMPLING_RATE
     LOG.info(
         f"HuBERT inference time  : {t.elapsed:.3f}s, RTF: {t.elapsed / wav_len:.3f}"
     )
@@ -235,7 +251,7 @@ def summarize(
     histograms: dict[str, ndarray] = {},
     images: dict[str, ndarray] = {},
     audios: dict[str, ndarray] = {},
-    audio_sampling_rate: int = 22050,
+    audio_sampling_rate: int | None = None,
 ) -> None:
     for k, v in scalars.items():
         writer.add_scalar(k, v, global_step)
@@ -244,6 +260,8 @@ def summarize(
     for k, v in images.items():
         writer.add_image(k, v, global_step, dataformats="HWC")
     for k, v in audios.items():
+        if audio_sampling_rate is None:
+            raise ValueError("audio_sampling_rate must be provided")
         writer.add_audio(k, v, global_step, audio_sampling_rate)
 
 
@@ -280,7 +298,9 @@ def load_filepaths_and_text(filename: Path | str, split="|"):
     return filepaths_and_text
 
 
-def get_hparams(config_path: Path, model_path: Path, init: bool = True) -> HParams:
+def get_backup_hparams(
+    config_path: Path, model_path: Path, init: bool = True
+) -> HParams:
     model_path.mkdir(parents=True, exist_ok=True)
     config_save_path = model_path / "config.json"
     if init:
@@ -298,17 +318,17 @@ def get_hparams(config_path: Path, model_path: Path, init: bool = True) -> HPara
     return hparams
 
 
-def get_hparams_from_file(config_path: Path | str) -> HParams:
+def get_hparams(config_path: Path | str) -> HParams:
     config = json.loads(Path(config_path).read_text())
     hparams = HParams(**config)
     return hparams
 
 
-def repeat_expand_2d(content: ndarray, target_len: int) -> ndarray:
+def repeat_expand_2d(content: torch.Tensor, target_len: int) -> torch.Tensor:
     # content : [h, t]
     src_len = content.shape[-1]
-    target = torch.zeros([content.shape[0], target_len], dtype=torch.float).to(
-        content.device
+    target = torch.zeros(
+        [content.shape[0], target_len], dtype=content.dtype, device=content.device
     )
     temp = torch.arange(src_len + 1) * target_len / src_len
     current_pos = 0
@@ -318,7 +338,6 @@ def repeat_expand_2d(content: ndarray, target_len: int) -> ndarray:
         else:
             current_pos += 1
             target[:, i] = content[:, current_pos]
-
     return target
 
 

@@ -453,7 +453,7 @@ def main():
 
         config_path = Path(values["config_path"])
         if config_path.exists() and config_path.is_file():
-            hp = utils.get_hparams_from_file(values["config_path"])
+            hp = utils.get_hparams(values["config_path"])
             LOG.debug(f"Loaded config from {values['config_path']}")
             window["speaker"].update(
                 values=list(hp.__dict__["spk"].keys()), set_to_index=0

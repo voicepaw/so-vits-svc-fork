@@ -43,7 +43,7 @@ def train(
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
     # utils.ensure_pretrained_model(model_path)
-    hps = utils.get_hparams(config_path, model_path)
+    hps = utils.get_backup_hparams(config_path, model_path)
 
     n_gpus = torch.cuda.device_count()
     os.environ["MASTER_ADDR"] = "localhost"
