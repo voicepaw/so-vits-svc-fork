@@ -105,7 +105,6 @@ def get_content(
     sr: int,
     legacy_final_proj: bool = False,
 ) -> torch.Tensor:
-    print(cmodel.final_proj)
     audio = torch.as_tensor(audio)
     if sr != HUBERT_SAMPLING_RATE:
         audio = torchaudio.transforms.Resample(sr, HUBERT_SAMPLING_RATE)(audio).to(
