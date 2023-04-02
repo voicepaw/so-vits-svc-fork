@@ -122,9 +122,13 @@ svc --model-path <model-path> source.wav
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
 
-#### Google Colab
+#### Cloud
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/34j/so-vits-svc-fork/blob/main/notebooks/so-vits-svc-fork-4.0.ipynb)
+[![Open In Paperspace](https://img.shields.io/badge/Open%20in-Paperspace-blue?style=flat-square&logo=paperspace)](https://console.paperspace.com/github/34j/so-vits-svc-fork-paperspace/blob/main/so-vits-svc-fork-4.0-paperspace.ipynb)
+[![Paperspace Referral](https://img.shields.io/badge/Referral-9VJN74I-blue?style=flat-square&logo=paperspace)](https://www.paperspace.com/?r=9VJN74I)[^p]
+
+[^p]: Note that the referral rewards are Paperspace credits and not cash. It was a tough decision but inserted because debugging and building the initial model requires a large amount of computing power and the developer has no income.
 
 #### Local
 
