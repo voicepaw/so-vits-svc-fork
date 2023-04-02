@@ -9,6 +9,7 @@ from pathlib import Path
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
+from torch import nn
 from torch.cuda.amp import GradScaler, autocast
 from torch.nn import functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -164,23 +165,23 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
                 rank,
                 epoch,
                 hps,
-                [net_g, net_d],
-                [optim_g, optim_d],
-                [scheduler_g, scheduler_d],
+                (net_g, net_d),
+                (optim_g, optim_d),
+                (scheduler_g, scheduler_d),
                 scaler,
-                [train_loader, eval_loader],
-                [writer, writer_eval],
+                (train_loader, eval_loader),
+                (writer, writer_eval),
             )
         else:
             _train_and_evaluate(
                 rank,
                 epoch,
                 hps,
-                [net_g, net_d],
-                [optim_g, optim_d],
-                [scheduler_g, scheduler_d],
+                (net_g, net_d),
+                (optim_g, optim_d),
+                (scheduler_g, scheduler_d),
                 scaler,
-                [train_loader, None],
+                (train_loader, None),
                 None,
             )
         scheduler_g.step()
@@ -188,7 +189,17 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
 
 
 def _train_and_evaluate(
-    rank, epoch, hps, nets, optims, schedulers, scaler, loaders, writers
+    rank: int,
+    epoch: int,
+    hps: HParams,
+    nets: tuple[nn.Module, nn.Module],
+    optims: tuple[torch.optim.Optimizer, torch.optim.Optimizer],
+    schedulers: tuple[
+        torch.optim.lr_scheduler.ExponentialLR, torch.optim.lr_scheduler.ExponentialLR
+    ],
+    scaler: GradScaler,
+    loaders: tuple[DataLoader, DataLoader | None],
+    writers: None | tuple[SummaryWriter, SummaryWriter],
 ):
     net_g, net_d = nets
     optim_g, optim_d = optims
@@ -392,7 +403,12 @@ def _train_and_evaluate(
         start_time = now
 
 
-def _evaluate(hps, generator, eval_loader, writer_eval):
+def _evaluate(
+    hps: HParams,
+    generator: torch.nn.Module,
+    eval_loader: torch.utils.data.DataLoader,
+    writer_eval: SummaryWriter,
+) -> None:
     generator.eval()
     image_dict = {}
     audio_dict = {}
