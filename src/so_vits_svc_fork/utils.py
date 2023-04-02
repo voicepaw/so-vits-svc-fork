@@ -181,7 +181,11 @@ def load_checkpoint(
         and not skip_optimizer
         and checkpoint_dict["optimizer"] is not None
     ):
-        optimizer.load_state_dict(checkpoint_dict["optimizer"])
+        try:
+            optimizer.load_state_dict(checkpoint_dict["optimizer"])
+        except Exception as e:
+            LOG.exception(e)
+            LOG.warning("Failed to load optimizer state")
     saved_state_dict = checkpoint_dict["model"]
     if hasattr(model, "module"):
         state_dict = model.module.state_dict()
