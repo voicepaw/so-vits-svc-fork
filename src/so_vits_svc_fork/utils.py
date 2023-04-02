@@ -29,65 +29,100 @@ HUBERT_SAMPLING_RATE = 16000
 def download_file(
     url: str,
     filepath: Path | str,
-    chunk_size: int = 4 * 1024,
+    chunk_size: int = 64 * 1024,
     tqdm_cls: type = tqdm,
+    skip_if_exists: bool = False,
+    overwrite: bool = False,
     **tqdm_kwargs: Any,
 ):
+    if skip_if_exists is True and overwrite is True:
+        raise ValueError("skip_if_exists and overwrite cannot be both True")
     filepath = Path(filepath)
     filepath.parent.mkdir(parents=True, exist_ok=True)
     temppath = filepath.parent / f"{filepath.name}.download"
     if filepath.exists():
-        raise FileExistsError(f"{filepath} already exists")
+        if skip_if_exists:
+            return
+        elif not overwrite:
+            filepath.unlink()
+        else:
+            raise FileExistsError(f"{filepath} already exists")
     temppath.unlink(missing_ok=True)
     resp = requests.get(url, stream=True)
     total = int(resp.headers.get("content-length", 0))
-    with temppath.open("wb") as f, tqdm_cls(
-        total=total,
-        unit="iB",
-        unit_scale=True,
-        unit_divisor=1024,
-        **tqdm_kwargs,
-    ) as pbar:
+    kwargs = (
+        dict(
+            total=total,
+            unit="iB",
+            unit_scale=True,
+            unit_divisor=1024,
+            desc=f"Downloading {filepath.name}",
+        )
+        | tqdm_kwargs
+    )
+    with temppath.open("wb") as f, tqdm_cls(**kwargs) as pbar:
         for data in resp.iter_content(chunk_size=chunk_size):
             size = f.write(data)
             pbar.update(size)
     temppath.rename(filepath)
 
 
-def ensure_pretrained_model(folder_path: Path, **tqdm_kwargs: Any) -> None:
-    model_urls = [
-        # "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
-        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
-        # "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/D_0.pth",
-        "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth",
-    ]
-    for model_url in model_urls:
-        model_path = folder_path / model_url.split("/")[-1]
-        if not model_path.exists():
-            download_file(
-                model_url,
-                model_path,
-                desc=f"Downloading {model_path.name}",
-                **tqdm_kwargs,
+PRETRAINED_MODEL_URLS = {
+    "hifi-gan": [
+        [
+            "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
+            "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth",
+        ],
+        [
+            "https://huggingface.co/Himawari00/so-vits-svc4.0-pretrain-models/resolve/main/D_0.pth",
+            "https://huggingface.co/Himawari00/so-vits-svc4.0-pretrain-models/resolve/main/G_0.pth",
+        ],
+    ],
+    "contentvec": [
+        [
+            "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/checkpoint_best_legacy_500.pt"
+        ],
+        [
+            "https://huggingface.co/Himawari00/so-vits-svc4.0-pretrain-models/resolve/main/checkpoint_best_legacy_500.pt"
+        ],
+        [
+            "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
+        ],
+    ],
+}
+from joblib import Parallel, delayed
+
+
+def ensure_pretrained_model(
+    folder_path: Path | str, type_: str, **tqdm_kwargs: Any
+) -> tuple[Path, ...] | None:
+    folder_path = Path(folder_path)
+    models_candidates = PRETRAINED_MODEL_URLS.get(type_, None)
+    if models_candidates is None:
+        LOG.warning(f"Unknown pretrained model type: {type_}")
+        return
+    for model_urls in models_candidates:
+        paths = [folder_path / model_url.split("/")[-1] for model_url in model_urls]
+        try:
+            Parallel(n_jobs=len(paths))(
+                [
+                    delayed(download_file)(
+                        url, path, position=i, skip_if_exists=True, **tqdm_kwargs
+                    )
+                    for i, (url, path) in enumerate(zip(model_urls, paths))
+                ]
             )
-
-
-def ensure_hubert_model(**tqdm_kwargs: Any) -> Path:
-    vec_path = Path("checkpoint_best_legacy_500.pt")
-    vec_path.parent.mkdir(parents=True, exist_ok=True)
-    if not vec_path.exists():
-        # url = "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
-        # url = "https://huggingface.co/innnky/contentvec/resolve/main/checkpoint_best_legacy_500.pt"
-        url = "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/checkpoint_best_legacy_500.pt"
-        download_file(url, vec_path, desc="Downloading Hubert model", **tqdm_kwargs)
-    return vec_path
+            return tuple(paths)
+        except Exception as e:
+            LOG.exception(e)
+    return
 
 
 def get_hubert_model(device: torch.device) -> HubertModel:
-    vec_path = ensure_hubert_model()
+    (path,) = ensure_pretrained_model(Path("."), "contentvec")
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
-        [vec_path.as_posix()],
+        [path.as_posix()],
         suffix="",
     )
     model = models[0]

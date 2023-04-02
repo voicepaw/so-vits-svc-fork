@@ -43,9 +43,9 @@ def train(
     model_path = Path(model_path)
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
-    # utils.ensure_pretrained_model(model_path)
-    hps = utils.get_backup_hparams(config_path, model_path)
 
+    hps = utils.get_backup_hparams(config_path, model_path)
+    utils.ensure_pretrained_model(model_path, hps.model.get("type_", "hifi-gan"))
     n_gpus = torch.cuda.device_count()
     os.environ["MASTER_ADDR"] = "localhost"
     os.environ["MASTER_PORT"] = hps.train.port
@@ -290,7 +290,7 @@ def _train_and_evaluate(
 
                 # MB-iSTFT-VITS
                 loss_subband = torch.tensor(0.0)
-                if hps.model.__dict__.get("type_") == "mb-istft":
+                if hps.model.get("type_") == "mb-istft":
                     from .modules.decoders.mb_istft import PQMF, subband_stft_loss
 
                     y_mb = PQMF(y.device, hps.model.subbands).analysis(y)
@@ -314,7 +314,7 @@ def _train_and_evaluate(
                     "melspectrogram": loss_mel.item(),
                     "kl_divergence": loss_kl.item(),
                 }
-                if hps.model.__dict__.get("type_") == "mb-istft":
+                if hps.model.get("type_") == "mb-istft":
                     losses["subband_stft"] = loss_subband.item()
                 LOG.info(
                     "Train Epoch: {} [{:.0f}%]".format(
@@ -338,7 +338,7 @@ def _train_and_evaluate(
                         "loss/g/lf0": loss_lf0,
                     }
                 )
-                if hps.model.__dict__.get("type_") == "mb-istft":
+                if hps.model.get("type_") == "mb-istft":
                     scalar_dict["loss/g/subband"] = loss_subband
 
                 # scalar_dict.update({"loss/g/{}".format(i): v for i, v in enumerate(losses_gen)})

@@ -11,7 +11,7 @@ import torch
 from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
-from .utils import ensure_hubert_model
+from .utils import ensure_pretrained_model
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
@@ -85,16 +85,16 @@ def get_devices(
 
 def main():
     try:
-        ensure_hubert_model(tqdm_cls=tqdm_tk)
+        ensure_pretrained_model(".", "contentvec", tqdm_cls=tqdm_tk)
     except Exception as e:
         LOG.exception(e)
         LOG.info("Trying tqdm.std...")
         try:
-            ensure_hubert_model()
+            ensure_pretrained_model(".", "contentvec")
         except Exception as e:
             LOG.exception(e)
             try:
-                ensure_hubert_model(disable=True)
+                ensure_pretrained_model(".", "contentvec", disabled=True)
             except Exception as e:
                 LOG.exception(e)
                 LOG.error(

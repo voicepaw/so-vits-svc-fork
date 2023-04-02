@@ -95,7 +95,7 @@ def preprocess_hubert_f0(
 ):
     input_dir = Path(input_dir)
     config_path = Path(config_path)
-    utils.ensure_hubert_model()
+    utils.ensure_pretrained_model(".", "contentvec")
     hps = utils.get_hparams(config_path)
     if n_jobs is None:
         memory = get_total_gpu_memory("free")
