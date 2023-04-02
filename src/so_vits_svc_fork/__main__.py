@@ -223,7 +223,7 @@ def infer(
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     """Inference"""
-    from so_vits_svc_fork.inference.inference_main import infer
+    from so_vits_svc_fork.inference.main import infer
 
     if not auto_predict_f0:
         LOG.warning(
@@ -382,7 +382,7 @@ def vc(
     passthrough_original: bool = False,
 ) -> None:
     """Realtime inference from microphone"""
-    from so_vits_svc_fork.inference.inference_main import realtime
+    from so_vits_svc_fork.inference.main import realtime
 
     if auto_predict_f0:
         LOG.warning(

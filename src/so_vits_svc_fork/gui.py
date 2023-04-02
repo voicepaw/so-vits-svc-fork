@@ -548,7 +548,7 @@ def main():
             elif event == "config_path":
                 update_speaker()
             elif event == "infer":
-                from so_vits_svc_fork.inference.inference_main import infer
+                from so_vits_svc_fork.inference.main import infer
 
                 input_path = Path(values["input_path"])
                 output_path = (
@@ -600,7 +600,7 @@ def main():
                 _, _, input_device_indices, output_device_indices = get_devices(
                     update=False
                 )
-                from so_vits_svc_fork.inference.inference_main import realtime
+                from so_vits_svc_fork.inference.main import realtime
 
                 if future:
                     LOG.info("Canceling previous task")

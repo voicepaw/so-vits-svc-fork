@@ -10,7 +10,7 @@ IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
 class TestMain(TestCase):
     def test_import(self):
         import so_vits_svc_fork.cluster.train_cluster  # noqa
-        import so_vits_svc_fork.inference.inference_main  # noqa
+        import so_vits_svc_fork.inference.main  # noqa
         import so_vits_svc_fork.modules.onnx._export  # noqa
         import so_vits_svc_fork.preprocessing.preprocess_flist_config  # noqa
         import so_vits_svc_fork.preprocessing.preprocess_hubert_f0  # noqa
@@ -21,7 +21,7 @@ class TestMain(TestCase):
     def test_infer(self):
         if IS_CI:
             raise SkipTest("Skip inference test on CI")
-        from so_vits_svc_fork.inference.inference_main import infer  # noqa
+        from so_vits_svc_fork.inference.main import infer  # noqa
 
         # infer("tests/dataset_raw/34j/1.wav", "tests/configs/config.json", "tests/logs/44k")
 
