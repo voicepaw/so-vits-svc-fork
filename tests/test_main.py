@@ -11,7 +11,8 @@ class TestMain(TestCase):
     def test_import(self):
         import so_vits_svc_fork.cluster.train_cluster  # noqa
         import so_vits_svc_fork.inference.main  # noqa
-        import so_vits_svc_fork.modules.onnx._export  # noqa
+
+        # import so_vits_svc_fork.modules.onnx._export  # noqa
         import so_vits_svc_fork.preprocessing.preprocess_flist_config  # noqa
         import so_vits_svc_fork.preprocessing.preprocess_hubert_f0  # noqa
         import so_vits_svc_fork.preprocessing.preprocess_resample  # noqa

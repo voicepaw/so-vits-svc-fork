@@ -760,6 +760,7 @@ def clean():
     help="device to use",
 )
 def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
+    raise NotImplementedError("ONNX export is not yet supported")
     """Export model to onnx"""
     input_path = Path(input_path)
     if input_path.is_dir():

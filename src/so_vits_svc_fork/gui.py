@@ -433,7 +433,7 @@ def main():
                 sg.Button("(Re)Start Voice Changer", key="start_vc"),
                 sg.Button("Stop Voice Changer", key="stop_vc"),
                 sg.Push(),
-                sg.Button("ONNX Export", key="onnx_export"),
+                # sg.Button("ONNX Export", key="onnx_export"),
             ],
         ]
     )
@@ -650,9 +650,10 @@ def main():
                     future.cancel()
                     future = None
             elif event == "onnx_export":
-                from so_vits_svc_fork.modules.onnx._export import onnx_export
-
                 try:
+                    raise NotImplementedError("ONNX export is not implemented yet.")
+                    from so_vits_svc_fork.modules.onnx._export import onnx_export
+
                     onnx_export(
                         input_path=Path(values["model_path"]),
                         output_path=Path(values["model_path"]).with_suffix(".onnx"),
