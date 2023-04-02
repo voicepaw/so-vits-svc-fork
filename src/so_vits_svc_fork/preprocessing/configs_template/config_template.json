@@ -58,15 +58,12 @@
     "n_layers_q": 3,
     "use_spectral_norm": false,
     "gin_channels": 256,
-    "ssl_dim": 256,
+    "ssl_dim": 768,
     "n_speakers": 200,
-    "type_": "mb-istft",
+    "type_": "ms-istft",
     "gen_istft_n_fft": 16,
     "gen_istft_hop_size": 4,
     "subbands": 4
   },
-  "spk": {
-    "34j": 0,
-    "kiritan": 1
-  }
+  "spk": {}
 }
