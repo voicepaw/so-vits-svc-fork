@@ -8,15 +8,17 @@ from typing import Iterable, Literal
 import librosa
 import numpy as np
 import torch
-from joblib import Parallel, cpu_count, delayed
+from joblib import Parallel, delayed
 from tqdm import tqdm
 
 import so_vits_svc_fork.f0
 from so_vits_svc_fork import utils
 
+from ..utils import get_total_gpu_memory
 from .preprocess_utils import check_hubert_min_duration
 
 LOG = getLogger(__name__)
+HUBERT_MEMORY = 1250
 
 
 def _process_one(
@@ -87,7 +89,7 @@ def _process_batch(
 def preprocess_hubert_f0(
     input_dir: Path | str,
     config_path: Path | str,
-    n_jobs: int = 4,
+    n_jobs: int | None = None,
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
 ):
@@ -95,9 +97,13 @@ def preprocess_hubert_f0(
     config_path = Path(config_path)
     utils.ensure_hubert_model()
     hps = utils.get_hparams(config_path)
+    if n_jobs is None:
+        memory = get_total_gpu_memory("free")
+        n_jobs = memory // HUBERT_MEMORY
+        LOG.info(f"n_jobs automatically set to {n_jobs}, memory: {memory} MiB")
 
     filepaths = list(input_dir.rglob("*.wav"))
-    n_jobs = min(cpu_count(), len(filepaths) // 32 + 1, n_jobs)
+    n_jobs = min(len(filepaths) // 16 + 1, n_jobs)
     shuffle(filepaths)
     filepath_chunks = np.array_split(filepaths, n_jobs)
     Parallel(n_jobs=n_jobs)(

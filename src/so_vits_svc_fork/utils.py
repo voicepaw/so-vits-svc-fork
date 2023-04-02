@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 from itertools import groupby
 from logging import getLogger
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, Sequence
 
 import matplotlib
 import matplotlib.pylab as plt
@@ -352,3 +353,16 @@ def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
     data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
     plt.close()
     return data
+
+
+def get_gpu_memory(type_: Literal["total", "free", "used"]) -> Sequence[int]:
+    command = f"nvidia-smi --query-gpu=memory.{type_} --format=csv"
+    memory_free_info = (
+        subprocess.check_output(command.split()).decode("ascii").split("\n")[:-1][1:]
+    )
+    memory_free_values = [int(x.split()[0]) for i, x in enumerate(memory_free_info)]
+    return memory_free_values
+
+
+def get_total_gpu_memory(type_: Literal["total", "free", "used"]) -> int:
+    return sum(get_gpu_memory(type_))
