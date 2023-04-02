@@ -15,7 +15,7 @@ from numpy import dtype, float32, ndarray
 import so_vits_svc_fork.f0
 from so_vits_svc_fork import cluster, utils
 
-from ..modules.generator import SynthesizerTrn
+from ..modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
 

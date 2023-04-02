@@ -25,9 +25,9 @@ from . import utils
 from .data_utils import TextAudioCollate, TextAudioSpeakerLoader
 from .hparams import HParams
 from .modules.descriminators import MultiPeriodDiscriminator
-from .modules.generator import SynthesizerTrn
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
+from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
