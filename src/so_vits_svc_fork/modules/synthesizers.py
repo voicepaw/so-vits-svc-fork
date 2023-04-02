@@ -82,7 +82,10 @@ class SynthesizerTrn(nn.Module):
 
         self.emb_g = nn.Embedding(n_speakers, gin_channels)
 
-        self.pre = nn.Conv1d(ssl_dim, hidden_channels, kernel_size=5, padding=2)
+        if ssl_dim is None:
+            self.pre = nn.LazyConv1d(hidden_channels, kernel_size=5, padding=2)
+        else:
+            self.pre = nn.Conv1d(ssl_dim, hidden_channels, kernel_size=5, padding=2)
 
         self.enc_p = TextEncoder(
             inter_channels,
