@@ -39,7 +39,7 @@ class TestMain(TestCase):
             "tests/filelists/train.txt",
             "tests/filelists/val.txt",
             "tests/filelists/test.txt",
-            "tests/configs/config.json",
+            "tests/configs/44k/config.json",
         )
 
         if IS_CI:
