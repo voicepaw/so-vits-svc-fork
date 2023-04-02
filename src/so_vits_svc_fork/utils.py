@@ -265,10 +265,13 @@ def summarize(
         writer.add_audio(k, v, global_step, audio_sampling_rate)
 
 
-def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path:
+def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path | None:
     dir_path = Path(dir_path)
     name_key = lambda p: int(re.match(r"._(\d+)\.pth", p.name).group(1))
-    return list(sorted(dir_path.glob(regex), key=name_key))[-1]
+    paths = list(sorted(dir_path.glob(regex), key=name_key))
+    if len(paths) == 0:
+        return None
+    return paths[-1]
 
 
 def plot_spectrogram_to_numpy(spectrogram: ndarray) -> ndarray:

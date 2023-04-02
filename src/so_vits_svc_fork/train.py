@@ -115,31 +115,34 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
         betas=hps.train.betas,
         eps=hps.train.eps,
     )
-    net_g = DDP(net_g, device_ids=[rank])  # , find_unused_parameters=True)
+    net_g = DDP(net_g, device_ids=[rank])
     net_d = DDP(net_d, device_ids=[rank])
 
-    skip_optimizer = reset_optimizer
-    try:
-        _, _, _, epoch_str = utils.load_checkpoint(
-            utils.latest_checkpoint_path(hps.model_dir, "G_*.pth"),
-            net_g,
-            optim_g,
-            skip_optimizer,
-        )
-        _, _, _, epoch_str = utils.load_checkpoint(
-            utils.latest_checkpoint_path(hps.model_dir, "D_*.pth"),
-            net_d,
-            optim_d,
-            skip_optimizer,
-        )
-        epoch_str = max(epoch_str, 1)
-        global_step = (epoch_str - 1) * len(train_loader)
-    except Exception as e:
-        LOG.exception(e)
-        LOG.info("No checkpoint found, start from scratch")
+    latest_g_path = utils.latest_checkpoint_path(hps.model_dir, "G_*.pth")
+    latest_d_path = utils.latest_checkpoint_path(hps.model_dir, "D_*.pth")
+    if latest_g_path is not None and latest_d_path is not None:
+        try:
+            _, _, _, epoch_str = utils.load_checkpoint(
+                latest_g_path,
+                net_g,
+                optim_g,
+                reset_optimizer,
+            )
+            _, _, _, epoch_str = utils.load_checkpoint(
+                latest_d_path,
+                net_d,
+                optim_d,
+                reset_optimizer,
+            )
+            epoch_str = max(epoch_str, 1)
+            global_step = (epoch_str - 1) * len(train_loader)
+        except Exception as e:
+            raise RuntimeError("Failed to load checkpoint") from e
+    else:
+        LOG.warning("No checkpoint found. Start from scratch.")
         epoch_str = 1
         global_step = 0
-    if skip_optimizer:
+    if reset_optimizer:
         epoch_str = 1
         global_step = 0
 
