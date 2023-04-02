@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "so-vits-svc-fork"
-version = "2.1.2"
+version = "2.1.5"
 description = "A fork of so-vits-svc."
 authors = ["34j <34j.95a2p@simplelogin.com>"]
 license = "MIT"
