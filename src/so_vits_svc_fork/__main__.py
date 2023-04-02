@@ -485,6 +485,9 @@ def pre_resample(
     )
 
 
+from so_vits_svc_fork.preprocessing.preprocess_flist_config import CONFIG_TEMPLATE_DIR
+
+
 @cli.command()
 @click.option(
     "-i",
@@ -507,10 +510,18 @@ def pre_resample(
     default=Path("./configs/44k/config.json"),
     help="path to config",
 )
+@click.option(
+    "-t",
+    "--config-type",
+    type=click.Choice([x.stem for x in CONFIG_TEMPLATE_DIR.rglob("*.json")]),
+    default="so-vits-svc-4.0v1",
+    help="config type",
+)
 def pre_config(
     input_dir: Path,
     filelist_path: Path,
     config_path: Path,
+    config_type: str,
 ):
     """Preprocessing part 2: config"""
     from so_vits_svc_fork.preprocessing.preprocess_flist_config import preprocess_config
@@ -524,6 +535,7 @@ def pre_config(
         val_list_path=filelist_path / "val.txt",
         test_list_path=filelist_path / "test.txt",
         config_path=config_path,
+        config_name=config_type,
     )
 
 
