@@ -130,7 +130,7 @@ svc --model-path <model-path> source.wav
 [![Open In Paperspace](https://img.shields.io/badge/Open%20in-Paperspace-blue?style=flat-square&logo=paperspace)](https://console.paperspace.com/github/34j/so-vits-svc-fork-paperspace/blob/main/so-vits-svc-fork-4.0-paperspace.ipynb)
 [![Paperspace Referral](<https://img.shields.io/badge/Referral%20($10)-9VJN74I-blue?style=flat-square&logo=paperspace>)](https://www.paperspace.com/?r=9VJN74I)[^p]
 
-If you do not have access to a GPU with more than 10 GB of VRAM, we recommend Google Colab's free plan for light users and PaperSpace's Pro/Growth plan for heavy users. Conversely, if you have a high-end GPU, we do not recommend it at all.
+If you do not have access to a GPU with more than 10 GB of VRAM, we recommend Google Colab's free plan for light users and Paperspace's Pro/Growth plan for heavy users. Conversely, if you have a high-end GPU, we do not recommend it at all.
 
 [^p]: If you register a referral code and then add a payment method, you may save about $5 on your first month's monthly billing. Note that both referral rewards are Paperspace credits and not cash. It was a tough decision but inserted because debugging and training the initial model requires a large amount of computing power and the developer is a student.
 
