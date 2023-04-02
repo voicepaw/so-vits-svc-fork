@@ -13,6 +13,8 @@ import numpy as np
 import requests
 import torch
 from cm_time import timer
+from fairseq import checkpoint_utils
+from fairseq.models.hubert.hubert import HubertModel
 from numpy import ndarray
 from scipy.io.wavfile import read
 from tqdm import tqdm
@@ -28,7 +30,7 @@ def download_file(
     filepath: Path | str,
     chunk_size: int = 4 * 1024,
     tqdm_cls: type = tqdm,
-    **kwargs,
+    **tqdm_kwargs: Any,
 ):
     filepath = Path(filepath)
     filepath.parent.mkdir(parents=True, exist_ok=True)
@@ -43,7 +45,7 @@ def download_file(
         unit="iB",
         unit_scale=True,
         unit_divisor=1024,
-        **kwargs,
+        **tqdm_kwargs,
     ) as pbar:
         for data in resp.iter_content(chunk_size=chunk_size):
             size = f.write(data)
@@ -51,7 +53,7 @@ def download_file(
     temppath.rename(filepath)
 
 
-def ensure_pretrained_model(folder_path: Path, **kwargs) -> None:
+def ensure_pretrained_model(folder_path: Path, **tqdm_kwargs: Any) -> None:
     model_urls = [
         # "https://huggingface.co/innnky/sovits_pretrained/resolve/main/sovits4/G_0.pth",
         "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
@@ -62,24 +64,26 @@ def ensure_pretrained_model(folder_path: Path, **kwargs) -> None:
         model_path = folder_path / model_url.split("/")[-1]
         if not model_path.exists():
             download_file(
-                model_url, model_path, desc=f"Downloading {model_path.name}", **kwargs
+                model_url,
+                model_path,
+                desc=f"Downloading {model_path.name}",
+                **tqdm_kwargs,
             )
 
 
-def ensure_hubert_model(**kwargs) -> Path:
+def ensure_hubert_model(**tqdm_kwargs: Any) -> Path:
     vec_path = Path("checkpoint_best_legacy_500.pt")
     vec_path.parent.mkdir(parents=True, exist_ok=True)
     if not vec_path.exists():
         # url = "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
         # url = "https://huggingface.co/innnky/contentvec/resolve/main/checkpoint_best_legacy_500.pt"
         url = "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/checkpoint_best_legacy_500.pt"
-        download_file(url, vec_path, desc="Downloading Hubert model", **kwargs)
+        download_file(url, vec_path, desc="Downloading Hubert model", **tqdm_kwargs)
     return vec_path
 
 
-def get_hubert_model():
+def get_hubert_model() -> HubertModel:
     vec_path = ensure_hubert_model()
-    from fairseq import checkpoint_utils
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
         [vec_path.as_posix()],
@@ -90,43 +94,32 @@ def get_hubert_model():
     return model
 
 
-def get_hubert_content(hmodel, wav_16k_tensor):
-    with timer() as t:
-        feats = wav_16k_tensor
-        if feats.dim() == 2:  # double channels
-            feats = feats.mean(-1)
-        assert feats.dim() == 1, feats.dim()
-        feats = feats.view(1, -1)
-        padding_mask = torch.BoolTensor(feats.shape).fill_(False)
-        inputs = {
-            "source": feats.to(wav_16k_tensor.device),
-            "padding_mask": padding_mask.to(wav_16k_tensor.device),
-            "output_layer": 9,  # layer 9
-        }
-        with torch.no_grad():
-            logits = hmodel.extract_features(**inputs)
-            feats = hmodel.final_proj(logits[0])
-        res = feats.transpose(1, 2)
-    wav_len = wav_16k_tensor.shape[-1] / 16000
+def get_content(
+    cmodel: HubertModel, audio: torch.Tensor, wrong_legacy_proj: bool = False
+) -> ndarray:
+    with torch.no_grad(), timer() as t:
+        c = cmodel.extract_features(
+            audio.squeeze(1),
+            padding_mask=torch.BoolTensor(audio.shape).fill_(False),
+            output_layer=9,
+        )
+        if wrong_legacy_proj:
+            assert hasattr(cmodel, "final_proj")
+            c = cmodel.final_proj(c[0])
+    c = c.transpose(1, 2)
+    wav_len = audio.shape[-1] / 16000
     LOG.info(
         f"HuBERT inference time  : {t.elapsed:.3f}s, RTF: {t.elapsed / wav_len:.3f}"
     )
-    return res
-
-
-def get_content(cmodel: Any, y: ndarray) -> ndarray:
-    with torch.no_grad():
-        c = cmodel.extract_features(y.squeeze(1))[0]
-    c = c.transpose(1, 2)
     return c
 
 
 def load_checkpoint(
-    checkpoint_path: Any,
-    model: Any,
-    optimizer: Any = None,
+    checkpoint_path: Path | str,
+    model: torch.nn.Module,
+    optimizer: torch.optim.Optimizer | None = None,
     skip_optimizer: bool = False,
-):
+) -> tuple[torch.nn.Module, torch.optim.Optimizer | None, float, int]:
     if not Path(checkpoint_path).is_file():
         raise FileNotFoundError(f"File {checkpoint_path} not found")
     checkpoint_dict = torch.load(checkpoint_path, map_location="cpu")
@@ -146,8 +139,6 @@ def load_checkpoint(
     new_state_dict = {}
     for k, v in state_dict.items():
         try:
-            # assert "dec" in k or "disc" in k
-            # print("load", k)
             new_state_dict[k] = saved_state_dict[k]
             assert saved_state_dict[k].shape == v.shape, (
                 saved_state_dict[k].shape,
@@ -166,7 +157,11 @@ def load_checkpoint(
 
 
 def save_checkpoint(
-    model, optimizer, learning_rate, iteration, checkpoint_path
+    model: torch.nn.Module,
+    optimizer: torch.optim.Optimizer,
+    learning_rate: float,
+    iteration: int,
+    checkpoint_path: Path | str,
 ) -> None:
     LOG.info(
         "Saving model and optimizer state at iteration {} to {}".format(
@@ -190,7 +185,7 @@ def save_checkpoint(
 
 def clean_checkpoints(
     path_to_models: Path | str, n_ckpts_to_keep: int = 2, sort_by_time: bool = True
-):
+) -> None:
     """Freeing up space by deleting saved ckpts
 
     Arguments:
@@ -230,15 +225,18 @@ def clean_checkpoints(
             to_delete.unlink()
 
 
+from torch.utils.tensorboard.writer import SummaryWriter
+
+
 def summarize(
-    writer,
-    global_step,
-    scalars={},
-    histograms={},
-    images={},
-    audios={},
-    audio_sampling_rate=22050,
-):
+    writer: SummaryWriter,
+    global_step: int,
+    scalars: dict[str, float] = {},
+    histograms: dict[str, ndarray] = {},
+    images: dict[str, ndarray] = {},
+    audios: dict[str, ndarray] = {},
+    audio_sampling_rate: int = 22050,
+) -> None:
     for k, v in scalars.items():
         writer.add_scalar(k, v, global_step)
     for k, v in histograms.items():
@@ -249,13 +247,13 @@ def summarize(
         writer.add_audio(k, v, global_step, audio_sampling_rate)
 
 
-def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth"):
+def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path:
     dir_path = Path(dir_path)
     name_key = lambda p: int(re.match(r"._(\d+)\.pth", p.name).group(1))
     return list(sorted(dir_path.glob(regex), key=name_key))[-1]
 
 
-def plot_spectrogram_to_numpy(spectrogram):
+def plot_spectrogram_to_numpy(spectrogram: ndarray) -> ndarray:
     matplotlib.use("Agg")
     fig, ax = plt.subplots(figsize=(10, 2))
     im = ax.imshow(spectrogram, aspect="auto", origin="lower", interpolation="none")
@@ -271,7 +269,7 @@ def plot_spectrogram_to_numpy(spectrogram):
     return data
 
 
-def load_wav_to_torch(full_path: Path | str):
+def load_wav_to_torch(full_path: Path | str) -> tuple[torch.Tensor, int]:
     sampling_rate, data = read(full_path)
     return torch.FloatTensor(data.astype(np.float32)), sampling_rate
 
