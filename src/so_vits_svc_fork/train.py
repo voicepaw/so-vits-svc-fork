@@ -84,7 +84,7 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
         collate_fn=collate_fn,
     )
     if rank == 0:
-        eval_dataset = TextAudioSpeakerLoader(hps)
+        eval_dataset = TextAudioSpeakerLoader(hps, is_validation=True)
         eval_loader = DataLoader(
             eval_dataset,
             num_workers=0,

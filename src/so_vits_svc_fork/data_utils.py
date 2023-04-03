@@ -15,10 +15,14 @@ from .hparams import HParams
 
 
 class TextAudioSpeakerLoader(torch.utils.data.Dataset):
-    def __init__(self, hps: HParams):
+    def __init__(self, hps: HParams, is_validation: bool = False):
         self.datapaths = [
             Path(x).parent / (Path(x).name + ".data.pt")
-            for x in Path(hps.data.training_files).read_text().splitlines()
+            for x in Path(
+                hps.data.validation_files if is_validation else hps.data.training_files
+            )
+            .read_text()
+            .splitlines()
         ]
         self.hps = hps
         random.seed(hps.train.seed)
