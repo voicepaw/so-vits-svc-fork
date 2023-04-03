@@ -17,7 +17,6 @@ from cm_time import timer
 from fairseq import checkpoint_utils
 from fairseq.models.hubert.hubert import HubertModel
 from numpy import ndarray
-from scipy.io.wavfile import read
 from tqdm import tqdm
 
 from so_vits_svc_fork.hparams import HParams
@@ -143,8 +142,10 @@ def get_content(
 ) -> torch.Tensor:
     audio = torch.as_tensor(audio)
     if sr != HUBERT_SAMPLING_RATE:
-        audio = torchaudio.transforms.Resample(sr, HUBERT_SAMPLING_RATE)(audio).to(
-            device
+        audio = (
+            torchaudio.transforms.Resample(sr, HUBERT_SAMPLING_RATE)
+            .cuda()(audio)
+            .to(device)
         )
     if audio.ndim == 1:
         audio = audio.unsqueeze(0)
@@ -157,7 +158,6 @@ def get_content(
             assert isinstance(cmodel.final_proj, torch.nn.Module)
             c = cmodel.final_proj(c)
         c = c.transpose(1, 2)
-        # print(c.shape)
     wav_len = audio.shape[-1] / HUBERT_SAMPLING_RATE
     LOG.info(
         f"HuBERT inference time  : {t.elapsed:.3f}s, RTF: {t.elapsed / wav_len:.3f}"
@@ -329,17 +329,6 @@ def plot_spectrogram_to_numpy(spectrogram: ndarray) -> ndarray:
     return data
 
 
-def load_wav_to_torch(full_path: Path | str) -> tuple[torch.Tensor, int]:
-    sampling_rate, data = read(full_path)
-    return torch.FloatTensor(data.astype(np.float32)), sampling_rate
-
-
-def load_filepaths_and_text(filename: Path | str, split="|"):
-    with open(filename, encoding="utf-8") as f:
-        filepaths_and_text = [line.strip().split(split) for line in f]
-    return filepaths_and_text
-
-
 def get_backup_hparams(
     config_path: Path, model_path: Path, init: bool = True
 ) -> HParams:
@@ -391,14 +380,22 @@ def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
     return data
 
 
-def get_gpu_memory(type_: Literal["total", "free", "used"]) -> Sequence[int]:
+def get_gpu_memory(type_: Literal["total", "free", "used"]) -> Sequence[int] | None:
     command = f"nvidia-smi --query-gpu=memory.{type_} --format=csv"
-    memory_free_info = (
-        subprocess.check_output(command.split()).decode("ascii").split("\n")[:-1][1:]
-    )
-    memory_free_values = [int(x.split()[0]) for i, x in enumerate(memory_free_info)]
-    return memory_free_values
+    try:
+        memory_free_info = (
+            subprocess.check_output(command.split())
+            .decode("ascii")
+            .split("\n")[:-1][1:]
+        )
+        memory_free_values = [int(x.split()[0]) for i, x in enumerate(memory_free_info)]
+        return memory_free_values
+    except Exception:
+        return
 
 
-def get_total_gpu_memory(type_: Literal["total", "free", "used"]) -> int:
-    return sum(get_gpu_memory(type_))
+def get_total_gpu_memory(type_: Literal["total", "free", "used"]) -> int | None:
+    memories = get_gpu_memory(type_)
+    if memories is None:
+        return
+    return sum(memories)

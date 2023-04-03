@@ -8,12 +8,15 @@ from typing import Iterable, Literal
 import librosa
 import numpy as np
 import torch
+from fairseq.models.hubert import HubertModel
 from joblib import Parallel, delayed
 from tqdm import tqdm
 
 import so_vits_svc_fork.f0
 from so_vits_svc_fork import utils
 
+from ..hparams import HParams
+from ..modules.mel_processing import mel_spectrogram_torch, spectrogram_torch
 from ..utils import get_total_gpu_memory
 from .preprocess_utils import check_hubert_min_duration
 
@@ -25,65 +28,84 @@ HUBERT_MEMORY_CREPE = 2600
 def _process_one(
     *,
     filepath: Path,
-    hubert_model,
-    sampling_rate: int,
-    hop_length: int,
+    content_model: HubertModel,
     device: Literal["cuda", "cpu"] = "cuda",
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
-    legacy_final_proj: bool = False,
+    hps: HParams,
 ):
-    audio, sr = librosa.load(filepath, sr=sampling_rate)
+    audio, sr = librosa.load(filepath, sr=hps.data.sampling_rate, mono=True)
 
     if not check_hubert_min_duration(audio, sr):
         LOG.info(f"Skip {filepath} because it is too short.")
         return
 
-    # Compute HuBERT content
-    soft_path = filepath.parent / (filepath.name + ".soft.pt")
-    if (not soft_path.exists()) or force_rebuild:
-        c = utils.get_content(
-            hubert_model, audio, device, sr=sr, legacy_final_proj=legacy_final_proj
-        )
-        torch.save(c.cpu(), soft_path)
-    else:
-        LOG.info(f"Skip {filepath} because {soft_path} exists.")
+    data_path = filepath.parent / (filepath.name + ".data.pt")
+    if data_path.exists() and not force_rebuild:
+        return
 
     # Compute f0
-    f0_path = filepath.parent / (filepath.name + ".f0.npy")
-    if (not f0_path.exists()) or force_rebuild:
-        f0 = so_vits_svc_fork.f0.compute_f0(
-            audio, sampling_rate=sampling_rate, hop_length=hop_length, method=f0_method
-        )
-        np.save(f0_path, f0)
-    else:
-        LOG.info(f"Skip {filepath} because {f0_path} exists.")
+    f0 = so_vits_svc_fork.f0.compute_f0(
+        audio, sampling_rate=sr, hop_length=hps.data.hop_length, method=f0_method
+    )
+    f0, uv = so_vits_svc_fork.f0.interpolate_f0(f0)
+    f0 = torch.from_numpy(f0).float()
+    uv = torch.from_numpy(uv).float()
+
+    # Compute HuBERT content
+    audio = torch.from_numpy(audio).float().cuda()
+    c = utils.get_content(
+        content_model,
+        audio,
+        device,
+        sr=sr,
+        legacy_final_proj=hps.data.get("contentvec_final_proj", True),
+    )
+    c = utils.repeat_expand_2d(c.squeeze(0), f0.shape[0])
     torch.cuda.empty_cache()
 
+    # Compute spectrogram
+    spec = spectrogram_torch(audio, hps)
+    mel_spec = mel_spectrogram_torch(audio, hps)
+    torch.cuda.empty_cache()
 
-def _process_batch(
-    *,
-    filepaths: Iterable[Path],
-    sampling_rate: int,
-    hop_length: int,
-    pbar_position: int,
-    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
-    force_rebuild: bool = False,
-    legacy_final_proj: bool = False,
-):
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    hubert_model = utils.get_hubert_model(device)
+    # fix lengths
+    lmin = min(spec.shape[1], mel_spec.shape[1], f0.shape[0], uv.shape[0], c.shape[1])
+    spec, mel_spec, f0, uv, c = (
+        spec[:, :lmin],
+        mel_spec[:, :lmin],
+        f0[:lmin],
+        uv[:lmin],
+        c[:, :lmin],
+    )
+
+    # get speaker id
+    spk_name = filepath.parent.name
+    spk = hps.spk.__dict__[spk_name]
+    spk = torch.tensor(spk).long()
+    assert (
+        spec.shape[1] == mel_spec.shape[1] == f0.shape[0] == uv.shape[0] == c.shape[1]
+    ), (spec.shape, mel_spec.shape, f0.shape, uv.shape, c.shape)
+    data = {
+        "spec": spec,
+        "mel_spec": mel_spec,
+        "f0": f0,
+        "uv": uv,
+        "content": c,
+        "audio": audio.unsqueeze(0),
+        "spk": spk,
+    }
+    torch.save(data, data_path)
+
+
+def _process_batch(filepaths: Iterable[Path], pbar_position: int, **kwargs):
+    content_model = utils.get_hubert_model("cuda")
 
     for filepath in tqdm(filepaths, position=pbar_position):
         _process_one(
+            content_model=content_model,
             filepath=filepath,
-            hubert_model=hubert_model,
-            sampling_rate=sampling_rate,
-            hop_length=hop_length,
-            device=device,
-            f0_method=f0_method,
-            force_rebuild=force_rebuild,
-            legacy_final_proj=legacy_final_proj,
+            **kwargs,
         )
 
 
@@ -100,8 +122,10 @@ def preprocess_hubert_f0(
     hps = utils.get_hparams(config_path)
     if n_jobs is None:
         memory = get_total_gpu_memory("free")
-        n_jobs = memory // (
-            HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY
+        n_jobs = (
+            memory // (HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY)
+            if memory is not None
+            else 1
         )
         LOG.info(f"n_jobs automatically set to {n_jobs}, memory: {memory} MiB")
 
@@ -112,12 +136,10 @@ def preprocess_hubert_f0(
     Parallel(n_jobs=n_jobs)(
         delayed(_process_batch)(
             filepaths=chunk,
-            sampling_rate=hps.data.sampling_rate,
-            hop_length=hps.data.hop_length,
             pbar_position=pbar_position,
             f0_method=f0_method,
             force_rebuild=force_rebuild,
-            legacy_final_proj=hps.data.__dict__.get("contentvec_final_proj", True),
+            hps=hps,
         )
         for (pbar_position, chunk) in enumerate(filepath_chunks)
     )
