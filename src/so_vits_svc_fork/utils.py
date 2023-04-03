@@ -144,7 +144,7 @@ def get_content(
     if sr != HUBERT_SAMPLING_RATE:
         audio = (
             torchaudio.transforms.Resample(sr, HUBERT_SAMPLING_RATE)
-            .cuda()(audio)
+            .to(audio.device)(audio)
             .to(device)
         )
     if audio.ndim == 1:
