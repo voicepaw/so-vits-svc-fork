@@ -487,7 +487,7 @@ class RealtimeVC(Crossfader):
             min_rms = 10 ** (db_thresh / 20)
             if rms < min_rms:
                 LOG.info(f"Skip silence: RMS={rms:.2f} < {min_rms:.2f}")
-                return input_audio.copy()
+                return np.zeros_like(input_audio)
             else:
                 LOG.info(f"Start inference: RMS={rms:.2f} >= {min_rms:.2f}")
                 infered_audio_c, _ = self.svc_model.infer(
