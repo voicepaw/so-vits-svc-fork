@@ -265,7 +265,7 @@ class Generator(torch.nn.Module):
             for j, (k, d) in enumerate(
                 zip(h["resblock_kernel_sizes"], h["resblock_dilation_sizes"])
             ):
-                self.resblocks.append(resblock(h, ch, k, d))
+                self.resblocks.append(resblock(ch, k, d))
 
         self.conv_post = weight_norm(Conv1d(ch, 1, 7, 1, padding=3))
         self.ups.apply(init_weights)
