@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.0 (2023-04-03)
+### Feature
+* Add quickvc, fix usage of ContentVec, remove onnx support ([#197](https://github.com/34j/so-vits-svc-fork/issues/197)) ([`1a6c021`](https://github.com/34j/so-vits-svc-fork/commit/1a6c021cd102b48b44e006decebc165062df8a95))
+
+### Breaking
+* The module structure has been completely changed, and some of the default values for configurations have also been changed. ([`1a6c021`](https://github.com/34j/so-vits-svc-fork/commit/1a6c021cd102b48b44e006decebc165062df8a95))
+
+### Documentation
+* **readme:** Update allcontributors link for @MashiroSA ([#210](https://github.com/34j/so-vits-svc-fork/issues/210)) ([`650524b`](https://github.com/34j/so-vits-svc-fork/commit/650524bb37997326e924814632c6202b76660f77))
+* **readme:** Add paperspace referral ([#209](https://github.com/34j/so-vits-svc-fork/issues/209)) ([`7280012`](https://github.com/34j/so-vits-svc-fork/commit/7280012df66b5ea71291e5a80bb22451f0ca236e))
+* **readme:** Add paperspace link and add more description, add a link for zh-CN docs ([#208](https://github.com/34j/so-vits-svc-fork/issues/208)) ([`bc4b122`](https://github.com/34j/so-vits-svc-fork/commit/bc4b1229e4ad9c046fda38334c4c6d22548356c2))
+
 ## v2.1.5 (2023-04-01)
 ### Fix
 * **deps:** Update dependency tensorboard to v2.12.1 ([#199](https://github.com/34j/so-vits-svc-fork/issues/199)) ([`0ccda1c`](https://github.com/34j/so-vits-svc-fork/commit/0ccda1ccb34b8125abe369f738b06de7b77c8efc))
