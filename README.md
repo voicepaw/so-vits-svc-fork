@@ -37,13 +37,15 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 ## Features not available in the original repo
 
 - **Realtime voice conversion** (enhanced in v1.1.0)
-- More accurate pitch estimation using CREPE
-- GUI available
-- Unified command-line interface (no need to run Python scripts)
+- Integrates [`QuickVC`](https://github.com/quickvc/QuickVC-VoiceConversion)
+- Fixed misuse of `ContentVec` in the original repository.[^c]
+- More accurate pitch estimation using [`CREPE`](https://github.com/marl/crepe/).
+- GUI and unified CLI available
 - Ready to use just by installing with `pip`.
-- Automatically download pretrained base model and HuBERT model
+- Automatically download pretrained models.
 - Code completely formatted with black, isort, autoflake etc.
-- Other minor differences
+
+[^c]: [#206](https://github.com/34j/so-vits-svc-fork/issues/206)
 
 ## Installation
 
@@ -53,23 +55,53 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
   <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
 </a>
 
-### [Creating a Virtual Environment](https://github.com/34j/so-vits-svc-fork/wiki#creating-a-virtual-environment)
+### Manual installation
 
-### Install
+<details>
+  <summary>Creating a virtual environment</summary>
+
+Windows:
+
+```shell
+py -3.10 -m venv venv
+venv\Scripts\activate
+```
+
+Linux/MacOS:
+
+```shell
+python3.10 -m venv venv
+source venv/bin/activate
+```
+
+Anaconda:
+
+```shell
+conda create -n so-vits-svc-fork python=3.10 pip
+conda activate so-vits-svc-fork
+```
+
+Installing without creating a virtual environment may cause a `PermissionError` if Python is installed in Program Files, etc.
+
+</details>
 
 Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 python -m pip install -U pip setuptools wheel
-pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
+pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install -U so-vits-svc-fork
 ```
 
-- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
-- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows (#120).
+<details>
+  <summary>Notes</summary>
+
+- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118`.
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu118` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows ([#120](https://github.com/34j/so-vits-svc-fork/issues/120)).
 - If `fairseq` raises an error:
   - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
   - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
+  </details>
 
 ### Update
 
@@ -98,13 +130,13 @@ svcg
 - Realtime (from microphone)
 
 ```shell
-svc vc --model-path <model-path>
+svc vc
 ```
 
 - File
 
 ```shell
-svc --model-path <model-path> source.wav
+svc infer source.wav
 ```
 
 [Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on HuggingFace.
@@ -119,8 +151,8 @@ svc --model-path <model-path> source.wav
 #### Before training
 
 - If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
-- If your dataset is a long audio file with multiple speakers, use `svc sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
 - If your dataset is a long audio file with a single speaker, use `svc split` to split the dataset into multiple files (using `librosa`).
+- If your dataset is a long audio file with multiple speakers, use `svc sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
 
@@ -130,7 +162,7 @@ svc --model-path <model-path> source.wav
 [![Open In Paperspace](https://img.shields.io/badge/Open%20in-Paperspace-blue?style=flat-square&logo=paperspace)](https://console.paperspace.com/github/34j/so-vits-svc-fork-paperspace/blob/main/so-vits-svc-fork-4.0-paperspace.ipynb)
 [![Paperspace Referral](<https://img.shields.io/badge/Referral%20($10)-9VJN74I-blue?style=flat-square&logo=paperspace>)](https://www.paperspace.com/?r=9VJN74I)[^p]
 
-If you do not have access to a GPU with more than 10 GB of VRAM, the free plan of Google Colab is recommended for light users and the Pro/Growth plan of Paperspace is recommended for heavy users. Conversely, if you have a high-end GPU, the use of cloud services is not recommended.
+If you do not have access to a GPU with more than 10 GB of VRAM, the free plan of Google Colab is recommended for light users and the Pro/Growth plan of Paperspace is recommended for heavy users. Conversely, if you have access to a high-end GPU, the use of cloud services is not recommended.
 
 [^p]: If you register a referral code and then add a payment method, you may save about $5 on your first month's monthly billing. Note that both referral rewards are Paperspace credits and not cash. It was a tough decision but inserted because debugging and training the initial model requires a large amount of computing power and the developer is a student.
 
@@ -148,8 +180,9 @@ svc train -t
 #### Notes
 
 - Dataset audio duration per file should be <~ 10s or VRAM will run out.
-- To change the f0 inference method to CREPE, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
-- It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. The default value is optimized for Tesla T4 (16GB VRAM), but training is possible without that much VRAM.
+- It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity.
+- To use `CREPE`, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`.
+- To use `QuickVC`, replace `svc pre-config` with `svc pre-config -t quickvc`.
 - Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
 
 ### Further help

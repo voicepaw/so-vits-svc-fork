@@ -93,7 +93,20 @@ def cli():
     type=bool,
     help="launch tensorboard",
 )
-def train(config_path: Path, model_path: Path, tensorboard: bool = False):
+@click.option(
+    "-r",
+    "--reset-optimizer",
+    default=False,
+    type=bool,
+    help="reset optimizer",
+    is_flag=True,
+)
+def train(
+    config_path: Path,
+    model_path: Path,
+    tensorboard: bool = False,
+    reset_optimizer: bool = False,
+):
     """Train model
     If D_0.pth or G_0.pth not found, automatically download from hub."""
     from .train import train
@@ -112,7 +125,9 @@ def train(config_path: Path, model_path: Path, tensorboard: bool = False):
         url = tb.launch()
         webbrowser.open(url)
 
-    train(config_path=config_path, model_path=model_path)
+    train(
+        config_path=config_path, model_path=model_path, reset_optimizer=reset_optimizer
+    )
 
 
 @cli.command()
@@ -208,7 +223,7 @@ def infer(
     device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
 ):
     """Inference"""
-    from .inference_main import infer
+    from so_vits_svc_fork.inference.main import infer
 
     if not auto_predict_f0:
         LOG.warning(
@@ -222,7 +237,9 @@ def infer(
     output_path = Path(output_path)
     model_path = Path(model_path)
     if model_path.is_dir():
-        model_path = list(sorted(model_path.glob("*.pth")))[-1]
+        model_path = list(
+            sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)
+        )[-1]
         LOG.info(f"Since model_path is a directory, use {model_path}")
     config_path = Path(config_path)
     if cluster_model_path is not None:
@@ -365,7 +382,7 @@ def vc(
     passthrough_original: bool = False,
 ) -> None:
     """Realtime inference from microphone"""
-    from .inference_main import realtime
+    from so_vits_svc_fork.inference.main import realtime
 
     if auto_predict_f0:
         LOG.warning(
@@ -381,7 +398,9 @@ def vc(
     if cluster_model_path is not None:
         cluster_model_path = Path(cluster_model_path)
     if model_path.is_dir():
-        model_path = list(sorted(model_path.glob("*.pth")))[-1]
+        model_path = list(
+            sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)
+        )[-1]
         LOG.info(f"Since model_path is a directory, use {model_path}")
 
     realtime(
@@ -451,7 +470,7 @@ def pre_resample(
     hop_seconds: float,
 ) -> None:
     """Preprocessing part 1: resample"""
-    from .preprocess_resample import preprocess_resample
+    from so_vits_svc_fork.preprocessing.preprocess_resample import preprocess_resample
 
     input_dir = Path(input_dir)
     output_dir = Path(output_dir)
@@ -464,6 +483,9 @@ def pre_resample(
         frame_seconds=frame_seconds,
         hop_seconds=hop_seconds,
     )
+
+
+from so_vits_svc_fork.preprocessing.preprocess_flist_config import CONFIG_TEMPLATE_DIR
 
 
 @cli.command()
@@ -488,13 +510,21 @@ def pre_resample(
     default=Path("./configs/44k/config.json"),
     help="path to config",
 )
+@click.option(
+    "-t",
+    "--config-type",
+    type=click.Choice([x.stem for x in CONFIG_TEMPLATE_DIR.rglob("*.json")]),
+    default="so-vits-svc-4.0v1",
+    help="config type",
+)
 def pre_config(
     input_dir: Path,
     filelist_path: Path,
     config_path: Path,
+    config_type: str,
 ):
     """Preprocessing part 2: config"""
-    from .preprocess_flist_config import preprocess_config
+    from so_vits_svc_fork.preprocessing.preprocess_flist_config import preprocess_config
 
     input_dir = Path(input_dir)
     filelist_path = Path(filelist_path)
@@ -505,6 +535,7 @@ def pre_config(
         val_list_path=filelist_path / "val.txt",
         test_list_path=filelist_path / "test.txt",
         config_path=config_path,
+        config_name=config_type,
     )
 
 
@@ -527,7 +558,7 @@ def pre_config(
     "-n",
     "--n-jobs",
     type=int,
-    default=4,
+    default=None,
     help="number of jobs (optimal value may depend on your VRAM capacity and audio duration per file)",
 )
 @click.option(
@@ -552,7 +583,7 @@ def pre_hubert(
 ) -> None:
     """Preprocessing part 3: hubert
     If the HuBERT model is not found, it will be downloaded automatically."""
-    from .preprocess_hubert_f0 import preprocess_hubert_f0
+    from so_vits_svc_fork.preprocessing.preprocess_hubert_f0 import preprocess_hubert_f0
 
     input_dir = Path(input_dir)
     config_path = Path(config_path)
@@ -618,7 +649,9 @@ def pre_sd(
 
     if max_speakers == 1:
         LOG.warning("Consider using pre-split if max_speakers == 1")
-    from .preprocess_speaker_diarization import preprocess_speaker_diarization
+    from so_vits_svc_fork.preprocessing.preprocess_speaker_diarization import (
+        preprocess_speaker_diarization,
+    )
 
     preprocess_speaker_diarization(
         input_dir=input_dir,
@@ -669,7 +702,7 @@ def pre_split(
     sr: int,
 ):
     """Split audio files into multiple files"""
-    from .preprocess_split import preprocess_split
+    from so_vits_svc_fork.preprocessing.preprocess_split import preprocess_split
 
     preprocess_split(
         input_dir=input_dir,
@@ -727,6 +760,7 @@ def clean():
     help="device to use",
 )
 def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
+    raise NotImplementedError("ONNX export is not yet supported")
     """Export model to onnx"""
     input_path = Path(input_path)
     if input_path.is_dir():
@@ -738,7 +772,7 @@ def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) ->
         output_path = output_path / (input_path.stem + ".onnx")
     config_path = Path(config_path)
     device_ = torch.device(device)
-    from .onnx_export import onnx_export
+    from so_vits_svc_fork.modules.onnx._export import onnx_export
 
     onnx_export(
         input_path=input_path,

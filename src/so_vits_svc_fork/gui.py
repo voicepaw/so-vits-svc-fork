@@ -11,7 +11,7 @@ import torch
 from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
-from .utils import ensure_hubert_model
+from .utils import ensure_pretrained_model
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
@@ -85,16 +85,16 @@ def get_devices(
 
 def main():
     try:
-        ensure_hubert_model(tqdm_cls=tqdm_tk)
+        ensure_pretrained_model(".", "contentvec", tqdm_cls=tqdm_tk)
     except Exception as e:
         LOG.exception(e)
         LOG.info("Trying tqdm.std...")
         try:
-            ensure_hubert_model()
+            ensure_pretrained_model(".", "contentvec")
         except Exception as e:
             LOG.exception(e)
             try:
-                ensure_hubert_model(disable=True)
+                ensure_pretrained_model(".", "contentvec", disabled=True)
             except Exception as e:
                 LOG.exception(e)
                 LOG.error(
@@ -433,7 +433,7 @@ def main():
                 sg.Button("(Re)Start Voice Changer", key="start_vc"),
                 sg.Button("Stop Voice Changer", key="stop_vc"),
                 sg.Push(),
-                sg.Button("ONNX Export", key="onnx_export"),
+                # sg.Button("ONNX Export", key="onnx_export"),
             ],
         ]
     )
@@ -453,7 +453,7 @@ def main():
 
         config_path = Path(values["config_path"])
         if config_path.exists() and config_path.is_file():
-            hp = utils.get_hparams_from_file(values["config_path"])
+            hp = utils.get_hparams(values["config_path"])
             LOG.debug(f"Loaded config from {values['config_path']}")
             window["speaker"].update(
                 values=list(hp.__dict__["spk"].keys()), set_to_index=0
@@ -548,7 +548,7 @@ def main():
             elif event == "config_path":
                 update_speaker()
             elif event == "infer":
-                from .inference_main import infer
+                from so_vits_svc_fork.inference.main import infer
 
                 input_path = Path(values["input_path"])
                 output_path = (
@@ -600,7 +600,7 @@ def main():
                 _, _, input_device_indices, output_device_indices = get_devices(
                     update=False
                 )
-                from .inference_main import realtime
+                from so_vits_svc_fork.inference.main import realtime
 
                 if future:
                     LOG.info("Canceling previous task")
@@ -650,9 +650,10 @@ def main():
                     future.cancel()
                     future = None
             elif event == "onnx_export":
-                from .onnx_export import onnx_export
-
                 try:
+                    raise NotImplementedError("ONNX export is not implemented yet.")
+                    from so_vits_svc_fork.modules.onnx._export import onnx_export
+
                     onnx_export(
                         input_path=Path(values["model_path"]),
                         output_path=Path(values["model_path"]).with_suffix(".onnx"),

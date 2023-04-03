@@ -9,6 +9,7 @@ from pathlib import Path
 import torch
 import torch.distributed as dist
 import torch.multiprocessing as mp
+from torch import nn
 from torch.cuda.amp import GradScaler, autocast
 from torch.nn import functional as F
 from torch.nn.parallel import DistributedDataParallel as DDP
@@ -16,16 +17,17 @@ from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 from tqdm import trange
 
+import so_vits_svc_fork.f0
 import so_vits_svc_fork.modules.commons as commons
+import so_vits_svc_fork.utils
 
 from . import utils
 from .data_utils import TextAudioCollate, TextAudioSpeakerLoader
-from .models import MultiPeriodDiscriminator, SynthesizerTrn
+from .hparams import HParams
+from .modules.descriminators import MultiPeriodDiscriminator
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
-
-# os.environ['TORCH_DISTRIBUTED_DEBUG'] = 'INFO'
-
+from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
@@ -33,30 +35,29 @@ global_step = 0
 start_time = time.time()
 
 
-def train(config_path: Path | str, model_path: Path | str):
+def train(
+    config_path: Path | str, model_path: Path | str, reset_optimizer: bool = False
+):
     """Assume Single Node Multi GPUs Training Only"""
     config_path = Path(config_path)
     model_path = Path(model_path)
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA is not available.")
-    utils.ensure_pretrained_model(model_path)
-    hps = utils.get_hparams(config_path, model_path)
 
+    hps = utils.get_backup_hparams(config_path, model_path)
+    utils.ensure_pretrained_model(model_path, hps.model.get("type_", "hifi-gan"))
     n_gpus = torch.cuda.device_count()
     os.environ["MASTER_ADDR"] = "localhost"
     os.environ["MASTER_PORT"] = hps.train.port
 
     mp.spawn(
-        run,
+        _run,
         nprocs=n_gpus,
-        args=(
-            n_gpus,
-            hps,
-        ),
+        args=(n_gpus, hps, reset_optimizer),
     )
 
 
-def run(rank, n_gpus, hps):
+def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
     global global_step
     if rank == 0:
         LOG.info(hps)
@@ -114,31 +115,34 @@ def run(rank, n_gpus, hps):
         betas=hps.train.betas,
         eps=hps.train.eps,
     )
-    net_g = DDP(net_g, device_ids=[rank])  # , find_unused_parameters=True)
+    net_g = DDP(net_g, device_ids=[rank])
     net_d = DDP(net_d, device_ids=[rank])
 
-    skip_optimizer = False
-    try:
-        _, _, _, epoch_str = utils.load_checkpoint(
-            utils.latest_checkpoint_path(hps.model_dir, "G_*.pth"),
-            net_g,
-            optim_g,
-            skip_optimizer,
-        )
-        _, _, _, epoch_str = utils.load_checkpoint(
-            utils.latest_checkpoint_path(hps.model_dir, "D_*.pth"),
-            net_d,
-            optim_d,
-            skip_optimizer,
-        )
-        epoch_str = max(epoch_str, 1)
-        global_step = (epoch_str - 1) * len(train_loader)
-    except Exception as e:
-        LOG.exception(e)
-        LOG.info("No checkpoint found, start from scratch")
+    latest_g_path = utils.latest_checkpoint_path(hps.model_dir, "G_*.pth")
+    latest_d_path = utils.latest_checkpoint_path(hps.model_dir, "D_*.pth")
+    if latest_g_path is not None and latest_d_path is not None:
+        try:
+            _, _, _, epoch_str = utils.load_checkpoint(
+                latest_g_path,
+                net_g,
+                optim_g,
+                reset_optimizer,
+            )
+            _, _, _, epoch_str = utils.load_checkpoint(
+                latest_d_path,
+                net_d,
+                optim_d,
+                reset_optimizer,
+            )
+            epoch_str = max(epoch_str, 1)
+            global_step = (epoch_str - 1) * len(train_loader)
+        except Exception as e:
+            raise RuntimeError("Failed to load checkpoint") from e
+    else:
+        LOG.warning("No checkpoint found. Start from scratch.")
         epoch_str = 1
         global_step = 0
-    if skip_optimizer:
+    if reset_optimizer:
         epoch_str = 1
         global_step = 0
 
@@ -151,39 +155,54 @@ def run(rank, n_gpus, hps):
 
     scaler = GradScaler(enabled=hps.train.fp16_run)
 
-    LOG.info("Start training")
+    LOG.info(
+        "Start training..."
+        "Note: You do not need to wait until the progress bar is full."
+    )
 
-    for epoch in trange(epoch_str, hps.train.epochs + 1):
+    for epoch in trange(
+        epoch_str, hps.train.epochs + 1, initial=epoch_str, total=hps.train.epochs
+    ):
         if rank == 0:
-            train_and_evaluate(
+            _train_and_evaluate(
                 rank,
                 epoch,
                 hps,
-                [net_g, net_d],
-                [optim_g, optim_d],
-                [scheduler_g, scheduler_d],
+                (net_g, net_d),
+                (optim_g, optim_d),
+                (scheduler_g, scheduler_d),
                 scaler,
-                [train_loader, eval_loader],
-                [writer, writer_eval],
+                (train_loader, eval_loader),
+                (writer, writer_eval),
             )
         else:
-            train_and_evaluate(
+            _train_and_evaluate(
                 rank,
                 epoch,
                 hps,
-                [net_g, net_d],
-                [optim_g, optim_d],
-                [scheduler_g, scheduler_d],
+                (net_g, net_d),
+                (optim_g, optim_d),
+                (scheduler_g, scheduler_d),
                 scaler,
-                [train_loader, None],
+                (train_loader, None),
                 None,
             )
         scheduler_g.step()
         scheduler_d.step()
 
 
-def train_and_evaluate(
-    rank, epoch, hps, nets, optims, schedulers, scaler, loaders, writers
+def _train_and_evaluate(
+    rank: int,
+    epoch: int,
+    hps: HParams,
+    nets: tuple[nn.Module, nn.Module],
+    optims: tuple[torch.optim.Optimizer, torch.optim.Optimizer],
+    schedulers: tuple[
+        torch.optim.lr_scheduler.ExponentialLR, torch.optim.lr_scheduler.ExponentialLR
+    ],
+    scaler: GradScaler,
+    loaders: tuple[DataLoader, DataLoader | None],
+    writers: None | tuple[SummaryWriter, SummaryWriter],
 ):
     net_g, net_d = nets
     optim_g, optim_d = optims
@@ -217,6 +236,7 @@ def train_and_evaluate(
         with autocast(enabled=hps.train.fp16_run):
             (
                 y_hat,
+                y_hat_mb,
                 ids_slice,
                 z_mask,
                 (z, z_p, m_p, logs_p, m_q, logs_q),
@@ -267,6 +287,16 @@ def train_and_evaluate(
                 loss_gen, losses_gen = generator_loss(y_d_hat_g)
                 loss_lf0 = F.mse_loss(pred_lf0, lf0)
                 loss_gen_all = loss_gen + loss_fm + loss_mel + loss_kl + loss_lf0
+
+                # MB-iSTFT-VITS
+                loss_subband = torch.tensor(0.0)
+                if hps.model.get("type_") == "mb-istft":
+                    from .modules.decoders.mb_istft import PQMF, subband_stft_loss
+
+                    y_mb = PQMF(y.device, hps.model.subbands).analysis(y)
+                    loss_subband = subband_stft_loss(hps, y_mb, y_hat_mb)
+                loss_gen_all += loss_subband
+
         optim_g.zero_grad()
         scaler.scale(loss_gen_all).backward()
         scaler.unscale_(optim_g)
@@ -277,15 +307,21 @@ def train_and_evaluate(
         if rank == 0:
             if global_step % hps.train.log_interval == 0:
                 lr = optim_g.param_groups[0]["lr"]
-                losses = [loss_disc, loss_gen, loss_fm, loss_mel, loss_kl]
+                losses = {
+                    "discriminator": loss_disc.item(),
+                    "generator": loss_gen.item(),
+                    "feature_matching": loss_fm.item(),
+                    "melspectrogram": loss_mel.item(),
+                    "kl_divergence": loss_kl.item(),
+                }
+                if hps.model.get("type_") == "mb-istft":
+                    losses["subband_stft"] = loss_subband.item()
                 LOG.info(
                     "Train Epoch: {} [{:.0f}%]".format(
                         epoch, 100.0 * batch_idx / len(train_loader)
                     )
                 )
-                LOG.info(
-                    f"Losses: {[x.item() for x in losses]}, step: {global_step}, lr: {lr}"
-                )
+                LOG.info(f"Losses: {losses}, step: {global_step}, lr: {lr}")
 
                 scalar_dict = {
                     "loss/g/total": loss_gen_all,
@@ -302,6 +338,8 @@ def train_and_evaluate(
                         "loss/g/lf0": loss_lf0,
                     }
                 )
+                if hps.model.get("type_") == "mb-istft":
+                    scalar_dict["loss/g/subband"] = loss_subband
 
                 # scalar_dict.update({"loss/g/{}".format(i): v for i, v in enumerate(losses_gen)})
                 # scalar_dict.update({"loss/d_r/{}".format(i): v for i, v in enumerate(losses_disc_r)})
@@ -316,11 +354,11 @@ def train_and_evaluate(
                     "all/mel": utils.plot_spectrogram_to_numpy(
                         mel[0].data.cpu().numpy()
                     ),
-                    "all/lf0": utils.plot_data_to_numpy(
+                    "all/lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
                         lf0[0, 0, :].cpu().numpy(),
                         pred_lf0[0, 0, :].detach().cpu().numpy(),
                     ),
-                    "all/norm_lf0": utils.plot_data_to_numpy(
+                    "all/norm_lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
                         lf0[0, 0, :].cpu().numpy(),
                         norm_lf0[0, 0, :].detach().cpu().numpy(),
                     ),
@@ -335,7 +373,7 @@ def train_and_evaluate(
 
             if global_step % hps.train.eval_interval == 0:
                 LOG.info("Saving checkpoints...")
-                evaluate(hps, net_g, eval_loader, writer_eval)
+                _evaluate(hps, net_g, eval_loader, writer_eval)
                 utils.save_checkpoint(
                     net_g,
                     optim_g,
@@ -368,7 +406,12 @@ def train_and_evaluate(
         start_time = now
 
 
-def evaluate(hps, generator, eval_loader, writer_eval):
+def _evaluate(
+    hps: HParams,
+    generator: torch.nn.Module,
+    eval_loader: torch.utils.data.DataLoader,
+    writer_eval: SummaryWriter,
+) -> None:
     generator.eval()
     image_dict = {}
     audio_dict = {}

@@ -11,6 +11,7 @@ from librosa import get_duration
 from tqdm import tqdm
 
 LOG = getLogger(__name__)
+CONFIG_TEMPLATE_DIR = Path(__file__).parent / "config_templates"
 
 
 def preprocess_config(
@@ -19,6 +20,7 @@ def preprocess_config(
     val_list_path: Path | str,
     test_list_path: Path | str,
     config_path: Path | str,
+    config_name: str,
 ):
     input_dir = Path(input_dir)
     train_list_path = Path(train_list_path)
@@ -76,7 +78,9 @@ def preprocess_config(
     config = deepcopy(
         json.loads(
             (
-                Path(__file__).parent / "configs_template" / "config_template.json"
+                CONFIG_TEMPLATE_DIR / f"{config_name}.json"
+                if not config_name.endswith(".json")
+                else config_name
             ).read_text()
         )
     )

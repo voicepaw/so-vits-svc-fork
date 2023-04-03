@@ -2,61 +2,35 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7aacf003-229b-4eb0-80a4-ff105dc3c3d4" name="変更" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/1-bug_report.md" beforeDir="false" afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/1-bug_report.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/2-feature-request.md" beforeDir="false" afterPath="$PROJECT_DIR$/.github/ISSUE_TEMPLATE/2-feature-request.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/ci.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/ci.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/hacktoberfest.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/hacktoberfest.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/issue-manager.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/issue-manager.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/labels.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/labels.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitpod.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.gitpod.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/so-vits-svc-fork.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/so-vits-svc-fork.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/watcherTasks.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/watcherTasks.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.pre-commit-config.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.pre-commit-config.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.readthedocs.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.readthedocs.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README_zh_CN.md" beforeDir="false" afterPath="$PROJECT_DIR$/README_zh_CN.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/commitlint.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/commitlint.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/renovate.json" beforeDir="false" afterPath="$PROJECT_DIR$/renovate.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/cluster/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/cluster/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/cluster/train_cluster.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/cluster/train_cluster.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/configs_template/config_template.json" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/configs_template/config_template.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/data_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/data_utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/hubert_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/hubert_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/hubert_model_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/hubert/hubert_model_onnx.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/infer_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/infer_tool.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/infer_tool_grad.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/infer_tool_grad.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/slicer.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/inference/slicer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/inference_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/inference_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/attentions.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/attentions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/commons.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/commons.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/losses.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/losses.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/mel_processing.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/mel_processing.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/modules.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/modules.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/onnx_export.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/onnx_export.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/onnxexport/model_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/onnxexport/model_onnx.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_flist_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_flist_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_hubert_f0.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/preprocess_hubert_f0.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/resample.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/resample.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/spec_gen.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/spec_gen.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/train.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/train.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/nvSTFT.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/nvSTFT.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/vdecoder/hifigan/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/__main__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/gui.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/model_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/_model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/onnx_export.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/_export.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/1.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/10.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/2.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/3.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/4.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/5.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/6.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/7.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/8.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/9.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/あ.wav" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -65,6 +39,9 @@
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2N3U7T2ZqSld9sk8NQi5nSwUOO9" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -79,6 +56,15 @@
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
 }</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\modules" />
+      <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\inference" />
+      <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\onnxexport" />
+      <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\preprocessing" />
+      <recent name="C:\Users\m\MyMain\dev\so-vits-svc-fork\src\so_vits_svc_fork\modules\decoders" />
+    </key>
+  </component>
   <component name="RunManager" selected="Python.so-vits-svc-fork">
     <configuration name="so-vits-svc-fork" type="PythonConfigurationType" factoryName="Python">
       <module name="so-vits-svc-fork" />
@@ -140,6 +126,9 @@
       <updated>1678892092249</updated>
       <workItem from="1678892093553" duration="810000" />
       <workItem from="1678932243084" duration="593000" />
+      <workItem from="1680174456649" duration="1005000" />
+      <workItem from="1680251014707" duration="2800000" />
+      <workItem from="1680319074742" duration="3292000" />
     </task>
     <servers />
   </component>

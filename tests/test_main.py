@@ -10,41 +10,49 @@ IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
 class TestMain(TestCase):
     def test_import(self):
         import so_vits_svc_fork.cluster.train_cluster  # noqa
-        import so_vits_svc_fork.inference_main  # noqa
-        import so_vits_svc_fork.onnx_export  # noqa
-        import so_vits_svc_fork.preprocess_flist_config  # noqa
-        import so_vits_svc_fork.preprocess_hubert_f0  # noqa
-        import so_vits_svc_fork.preprocess_resample  # noqa
-        import so_vits_svc_fork.preprocess_split  # noqa
+        import so_vits_svc_fork.inference.main  # noqa
+
+        # import so_vits_svc_fork.modules.onnx._export  # noqa
+        import so_vits_svc_fork.preprocessing.preprocess_flist_config  # noqa
+        import so_vits_svc_fork.preprocessing.preprocess_hubert_f0  # noqa
+        import so_vits_svc_fork.preprocessing.preprocess_resample  # noqa
+        import so_vits_svc_fork.preprocessing.preprocess_split  # noqa
         import so_vits_svc_fork.train  # noqa
 
     def test_infer(self):
         if IS_CI:
             raise SkipTest("Skip inference test on CI")
-        from so_vits_svc_fork.inference_main import infer  # noqa
+        from so_vits_svc_fork.inference.main import infer  # noqa
 
         # infer("tests/dataset_raw/34j/1.wav", "tests/configs/config.json", "tests/logs/44k")
 
     def test_preprocess(self):
-        from so_vits_svc_fork.preprocess_resample import preprocess_resample
+        from so_vits_svc_fork.preprocessing.preprocess_resample import (
+            preprocess_resample,
+        )
 
         preprocess_resample(
             "tests/dataset_raw", "tests/dataset/44k", 44100, n_jobs=1 if IS_CI else -1
         )
 
-        from so_vits_svc_fork.preprocess_flist_config import preprocess_config
+        from so_vits_svc_fork.preprocessing.preprocess_flist_config import (
+            preprocess_config,
+        )
 
         preprocess_config(
             "tests/dataset/44k",
             "tests/filelists/train.txt",
             "tests/filelists/val.txt",
             "tests/filelists/test.txt",
-            "tests/configs/config.json",
+            "tests/configs/44k/config.json",
+            "so-vits-svc-4.0v1",
         )
 
         if IS_CI:
             raise SkipTest("Skip hubert and f0 test on CI")
-        from so_vits_svc_fork.preprocess_hubert_f0 import preprocess_hubert_f0
+        from so_vits_svc_fork.preprocessing.preprocess_hubert_f0 import (
+            preprocess_hubert_f0,
+        )
 
         preprocess_hubert_f0("tests/dataset/44k", "tests/configs/44k/config.json")
 
