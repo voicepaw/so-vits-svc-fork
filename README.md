@@ -37,13 +37,15 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 ## Features not available in the original repo
 
 - **Realtime voice conversion** (enhanced in v1.1.0)
+- Integrates [`QuickVC`](https://github.com/quickvc/QuickVC-VoiceConversion)
+- Fixed misuse of `ContentVec` in the original repository.[^c]
 - More accurate pitch estimation using CREPE
-- GUI available
-- Unified command-line interface (no need to run Python scripts)
+- GUI and unified CLI available
 - Ready to use just by installing with `pip`.
-- Automatically download pretrained base model and HuBERT model
+- Automatically download pretrained models
 - Code completely formatted with black, isort, autoflake etc.
-- Other minor differences
+
+[^c]: [#206](https://github.com/34j/so-vits-svc-fork/issues/206)
 
 ## Installation
 
@@ -53,9 +55,32 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
   <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
 </a>
 
-### [Creating a Virtual Environment](https://github.com/34j/so-vits-svc-fork/wiki#creating-a-virtual-environment)
+<details>
+  <summary>Creating a virtual environment</summary>
+  Windows:
 
-### Install
+```shell
+py -3.10 -m venv venv
+venv\Scripts\activate
+```
+
+Linux/MacOS:
+
+```shell
+python3.10 -m venv venv
+source venv/bin/activate
+```
+
+Anaconda:
+
+```shell
+conda create -n so-vits-svc-fork python=3.10 pip
+conda activate so-vits-svc-fork
+```
+
+Installing without creating a virtual environment may cause a `PermissionError` if Python is installed in Program Files, etc.
+
+</details>
 
 Install this via pip (or your favourite package manager that uses pip):
 
@@ -65,11 +90,14 @@ pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu1
 pip install -U so-vits-svc-fork
 ```
 
-- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
-- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows (#120).
-- If `fairseq` raises an error:
-  - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
-  - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
+<details>
+  <summary>Notes</summary>
+  - If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
+  - If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows (#120).
+  - If `fairseq` raises an error:
+    - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
+    - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
+</details>
 
 ### Update
 
@@ -95,17 +123,21 @@ svcg
 
 #### CLI
 
-- Realtime (from microphone)
+<details>
+  <summary>CLI</summary>
+  - Realtime (from microphone)
 
 ```shell
-svc vc --model-path <model-path>
+svc vc
 ```
 
 - File
 
 ```shell
-svc --model-path <model-path> source.wav
+svc infer source.wav
 ```
+
+</details>
 
 [Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on HuggingFace.
 
@@ -130,7 +162,7 @@ svc --model-path <model-path> source.wav
 [![Open In Paperspace](https://img.shields.io/badge/Open%20in-Paperspace-blue?style=flat-square&logo=paperspace)](https://console.paperspace.com/github/34j/so-vits-svc-fork-paperspace/blob/main/so-vits-svc-fork-4.0-paperspace.ipynb)
 [![Paperspace Referral](<https://img.shields.io/badge/Referral%20($10)-9VJN74I-blue?style=flat-square&logo=paperspace>)](https://www.paperspace.com/?r=9VJN74I)[^p]
 
-If you do not have access to a GPU with more than 10 GB of VRAM, the free plan of Google Colab is recommended for light users and the Pro/Growth plan of Paperspace is recommended for heavy users. Conversely, if you have a high-end GPU, the use of cloud services is not recommended.
+If you do not have access to a GPU with more than 10 GB of VRAM, the free plan of Google Colab is recommended for light users and the Pro/Growth plan of Paperspace is recommended for heavy users. Conversely, if you have access to a high-end GPU, the use of cloud services is not recommended.
 
 [^p]: If you register a referral code and then add a payment method, you may save about $5 on your first month's monthly billing. Note that both referral rewards are Paperspace credits and not cash. It was a tough decision but inserted because debugging and training the initial model requires a large amount of computing power and the developer is a student.
 
