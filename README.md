@@ -55,6 +55,8 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
   <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
 </a>
 
+### Manual installation
+
 <details>
   <summary>Creating a virtual environment</summary>
 
