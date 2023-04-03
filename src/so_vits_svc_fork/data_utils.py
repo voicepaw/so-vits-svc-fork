@@ -25,7 +25,7 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
         random.shuffle(self.datapaths)
 
     def __getitem__(self, index: int) -> dict[str, torch.Tensor]:
-        data = torch.load(self.datapaths[index], weights_only=True)
+        data = torch.load(self.datapaths[index], weights_only=True, map_location="cpu")
 
         # cut long data randomly
         spec_len = data["mel_spec"].shape[1]
