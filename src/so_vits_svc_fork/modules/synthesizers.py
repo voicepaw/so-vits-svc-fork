@@ -50,7 +50,7 @@ class SynthesizerTrn(nn.Module):
         type_: Literal["hifi-gan", "istft", "ms-istft", "mb-istft"] = "hifi-gan",
         gen_istft_n_fft: int = 16,
         gen_istft_hop_size: int = 4,
-        subbands: int = 8,
+        subbands: int = 4,
         **kwargs: Any,
     ):
         super().__init__()
