@@ -224,10 +224,8 @@ class Svc:
             LOG.info(
                 f"Inferece time: {t.elapsed:.2f}s, RTF: {t.elapsed / audio_duration:.2f}"
             )
-        return audio, audio.shape[-1]
-
-    def clear_empty(self):
         torch.cuda.empty_cache()
+        return audio, audio.shape[-1]
 
     def infer_silence(
         self,
@@ -300,6 +298,9 @@ class Svc:
                 # fade_len = int(self.target_sample * fade_seconds)
                 # _audio[:fade_len] = _audio[:fade_len] * np.linspace(0, 1, fade_len)
                 # _audio[-fade_len:] = _audio[-fade_len:] * np.linspace(1, 0, fade_len)
+
+                # empty cache
+                torch.cuda.empty_cache()
             result_audio = np.concatenate([result_audio, audio_chunk_infer])
         result_audio = result_audio[: audio.shape[0]]
         return result_audio
