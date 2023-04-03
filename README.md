@@ -89,15 +89,15 @@ Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 python -m pip install -U pip setuptools wheel
-pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117
+pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install -U so-vits-svc-fork
 ```
 
 <details>
   <summary>Notes</summary>
 
-- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
-- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows ([#120](https://github.com/34j/so-vits-svc-fork/issues/120)).
+- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118`.
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu118` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows ([#120](https://github.com/34j/so-vits-svc-fork/issues/120)).
 - If `fairseq` raises an error:
   - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
   - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
@@ -180,8 +180,9 @@ svc train -t
 #### Notes
 
 - Dataset audio duration per file should be <~ 10s or VRAM will run out.
-- To change the f0 inference method to CREPE, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
 - It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity.
+- To use `CREPE`, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`.
+- To use `QuickVC`, replace `svc pre-config` with `svc pre-config -t quickvc`.
 - Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
 
 ### Further help
