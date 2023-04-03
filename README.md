@@ -95,7 +95,7 @@ pip install -U so-vits-svc-fork
   <summary>Notes</summary>
 
 - If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
-- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows (#120).
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows ([#120](https://github.com/34j/so-vits-svc-fork/issues/120)).
 - If `fairseq` raises an error:
   - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
   - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
@@ -125,9 +125,6 @@ svcg
 
 #### CLI
 
-<details>
-  <summary>CLI</summary>
-
 - Realtime (from microphone)
 
 ```shell
@@ -139,8 +136,6 @@ svc vc
 ```shell
 svc infer source.wav
 ```
-
-</details>
 
 [Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on HuggingFace.
 
@@ -154,8 +149,8 @@ svc infer source.wav
 #### Before training
 
 - If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
-- If your dataset is a long audio file with multiple speakers, use `svc sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
 - If your dataset is a long audio file with a single speaker, use `svc split` to split the dataset into multiple files (using `librosa`).
+- If your dataset is a long audio file with multiple speakers, use `svc sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
 
