@@ -39,10 +39,10 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 - **Realtime voice conversion** (enhanced in v1.1.0)
 - Integrates [`QuickVC`](https://github.com/quickvc/QuickVC-VoiceConversion)
 - Fixed misuse of `ContentVec` in the original repository.[^c]
-- More accurate pitch estimation using CREPE
+- More accurate pitch estimation using [`CREPE`](https://github.com/marl/crepe/).
 - GUI and unified CLI available
 - Ready to use just by installing with `pip`.
-- Automatically download pretrained models
+- Automatically download pretrained models.
 - Code completely formatted with black, isort, autoflake etc.
 
 [^c]: [#206](https://github.com/34j/so-vits-svc-fork/issues/206)
