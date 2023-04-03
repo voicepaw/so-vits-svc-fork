@@ -6,6 +6,8 @@ import torch
 import torch.nn.functional as F
 import torch.utils.data
 
+from .hparams import HParams
+
 # import h5py
 
 
@@ -13,18 +15,35 @@ import torch.utils.data
 
 
 class TextAudioSpeakerLoader(torch.utils.data.Dataset):
-    def __init__(self, audiopaths, hps):
+    def __init__(self, hps: HParams):
         self.datapaths = [
             Path(x).parent / (Path(x).name + ".data.pt")
             for x in Path(hps.data.training_files).read_text().splitlines()
         ]
+        self.hps = hps
         random.seed(hps.train.seed)
         random.shuffle(self.datapaths)
 
-    def __getitem__(self, index):
-        return torch.load(self.datapaths[index], weights_only=True)
+    def __getitem__(self, index: int) -> dict[str, torch.Tensor]:
+        data = torch.load(self.datapaths[index], weights_only=True)
 
-    def __len__(self):
+        # cut long data randomly
+        spec_len = data["mel_spec"].shape[1]
+        hop_len = self.hps.data.hop_length
+        MAX_SPEC_LEN = 800
+        if spec_len > MAX_SPEC_LEN:
+            start = random.randint(0, spec_len - MAX_SPEC_LEN)
+            end = start + MAX_SPEC_LEN - 10
+            for key in data.keys():
+                if key == "audio":
+                    data[key] = data[key][:, start * hop_len : end * hop_len]
+                elif key == "spk":
+                    continue
+                else:
+                    data[key] = data[key][..., start:end]
+        return data
+
+    def __len__(self) -> int:
         return len(self.datapaths)
 
 
@@ -44,7 +63,9 @@ class TextAudioCollate:
     and unsqueeze() to reshape tensors to match the dimensions of the destination tensor.
     """
 
-    def __call__(self, batch):
+    def __call__(
+        self, batch: Sequence[dict[str, torch.Tensor]]
+    ) -> tuple[torch.Tensor, ...]:
         batch = [b for b in batch if b is not None]
         lengths = torch.tensor([b["mel_spec"].shape[1] for b in batch]).long()
         batch = list(sorted(batch, key=lambda x: x["mel_spec"].shape[1], reverse=True))

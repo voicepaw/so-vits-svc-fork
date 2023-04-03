@@ -74,7 +74,7 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
     torch.manual_seed(hps.train.seed)
     torch.cuda.set_device(rank)
     collate_fn = TextAudioCollate()
-    train_dataset = TextAudioSpeakerLoader(hps.data.training_files, hps)
+    train_dataset = TextAudioSpeakerLoader(hps)
     train_loader = DataLoader(
         train_dataset,
         num_workers=0,
@@ -84,7 +84,7 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
         collate_fn=collate_fn,
     )
     if rank == 0:
-        eval_dataset = TextAudioSpeakerLoader(hps.data.validation_files, hps)
+        eval_dataset = TextAudioSpeakerLoader(hps)
         eval_loader = DataLoader(
             eval_dataset,
             num_workers=0,
