@@ -97,6 +97,7 @@ def _process_one(
         "audio": audio,
         "spk": spk,
     }
+    data = {k: v.cpu() for k, v in data.items()}
     torch.save(data, data_path)
 
 

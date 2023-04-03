@@ -41,6 +41,7 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
                     continue
                 else:
                     data[key] = data[key][..., start:end]
+        torch.cuda.empty_cache()
         return data
 
     def __len__(self) -> int:
