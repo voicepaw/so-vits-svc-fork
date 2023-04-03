@@ -16,8 +16,8 @@ def spectrogram_torch(audio: torch.Tensor, hps: HParams) -> torch.Tensor:
         win_length=hps.data.win_length,
         hop_length=hps.data.hop_length,
         power=1.0,
-        normalized=False,
         window_fn=torch.hann_window,
+        normalized=False,
     ).to(audio.device)(audio)
 
 
@@ -27,6 +27,8 @@ def spec_to_mel_torch(spec: torch.Tensor, hps: HParams) -> torch.Tensor:
         sample_rate=hps.data.sampling_rate,
         f_min=hps.data.mel_fmin,
         f_max=hps.data.mel_fmax,
+        mel_scale="slaney",
+        norm="slaney",
     ).to(spec.device)(spec)
 
 
@@ -40,6 +42,8 @@ def mel_spectrogram_torch(audio: torch.Tensor, hps: HParams) -> torch.Tensor:
         f_min=hps.data.mel_fmin,
         f_max=hps.data.mel_fmax,
         power=1.0,
-        normalized=False,
         window_fn=torch.hann_window,
+        mel_scale="slaney",
+        norm="slaney",
+        normalized=False,
     ).to(audio.device)(audio)
