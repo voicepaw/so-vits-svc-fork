@@ -8,6 +8,7 @@ from typing import Iterable, Literal
 import librosa
 import numpy as np
 import torch
+import torchaudio
 from fairseq.models.hubert import HubertModel
 from joblib import Parallel, delayed
 from tqdm import tqdm
@@ -16,7 +17,7 @@ import so_vits_svc_fork.f0
 from so_vits_svc_fork import utils
 
 from ..hparams import HParams
-from ..modules.mel_processing import mel_spectrogram_torch, spectrogram_torch
+from ..modules.mel_processing import spec_to_mel_torch, spectrogram_torch
 from ..utils import get_total_gpu_memory
 from .preprocess_utils import check_hubert_min_duration
 
@@ -65,8 +66,9 @@ def _process_one(
     torch.cuda.empty_cache()
 
     # Compute spectrogram
-    spec = spectrogram_torch(audio, hps)
-    mel_spec = mel_spectrogram_torch(audio, hps)
+    audio, sr = torchaudio.load(filepath)
+    spec = spectrogram_torch(audio, hps).squeeze(0)
+    mel_spec = spec_to_mel_torch(spec, hps)
     torch.cuda.empty_cache()
 
     # fix lengths
@@ -92,7 +94,7 @@ def _process_one(
         "f0": f0,
         "uv": uv,
         "content": c,
-        "audio": audio.unsqueeze(0),
+        "audio": audio,
         "spk": spk,
     }
     torch.save(data, data_path)

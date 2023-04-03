@@ -232,7 +232,7 @@ def _train_and_evaluate(
             ) = net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
 
             y_mel = commons.slice_segments(
-                mel, ids_slice, hps.train.segment_size // hps.data.hop_length + 1
+                mel, ids_slice, hps.train.segment_size // hps.data.hop_length
             )
             y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), hps)
             y = commons.slice_segments(
