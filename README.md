@@ -57,7 +57,8 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 <details>
   <summary>Creating a virtual environment</summary>
-  Windows:
+
+Windows:
 
 ```shell
 py -3.10 -m venv venv
@@ -92,12 +93,13 @@ pip install -U so-vits-svc-fork
 
 <details>
   <summary>Notes</summary>
-  - If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
-  - If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows (#120).
-  - If `fairseq` raises an error:
-    - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
-    - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
-</details>
+
+- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu117`.
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu117` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows (#120).
+- If `fairseq` raises an error:
+  - If it prompts [`Microsoft C++ Build Tools`](https://visualstudio.microsoft.com/visual-cpp-build-tools/) is not installed. please install it.
+  - If it prompts that some dll is missing, reinstalling `Microsoft Visual C++ 2022` and `Windows SDK` may help.
+  </details>
 
 ### Update
 
@@ -125,7 +127,8 @@ svcg
 
 <details>
   <summary>CLI</summary>
-  - Realtime (from microphone)
+
+- Realtime (from microphone)
 
 ```shell
 svc vc
@@ -181,7 +184,7 @@ svc train -t
 
 - Dataset audio duration per file should be <~ 10s or VRAM will run out.
 - To change the f0 inference method to CREPE, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`. You may need to reduce `--n-jobs` due to performance issues.
-- It is recommended to change the batch_size in `config.json` before the `train` command to match the VRAM capacity. The default value is optimized for Tesla T4 (16GB VRAM), but training is possible without that much VRAM.
+- It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity.
 - Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
 
 ### Further help
