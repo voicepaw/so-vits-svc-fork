@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.1 (2023-04-03)
+### Fix
+* Remove possible leak in unused code ([#203](https://github.com/34j/so-vits-svc-fork/issues/203)) ([`e921c3d`](https://github.com/34j/so-vits-svc-fork/commit/e921c3dc018ea783b4c26375a04f499a45ad9df0))
+
+### Performance
+* **utils:** Better implementation of repeat_expand_2d ([#216](https://github.com/34j/so-vits-svc-fork/issues/216)) ([`ef30a9d`](https://github.com/34j/so-vits-svc-fork/commit/ef30a9d5ae60fdde5f6b44d6cea8cee0a40dd3e9))
+
 ## v3.0.0 (2023-04-03)
 ### Feature
 * Add quickvc, fix usage of ContentVec, remove onnx support ([#197](https://github.com/34j/so-vits-svc-fork/issues/197)) ([`1a6c021`](https://github.com/34j/so-vits-svc-fork/commit/1a6c021cd102b48b44e006decebc165062df8a95))
