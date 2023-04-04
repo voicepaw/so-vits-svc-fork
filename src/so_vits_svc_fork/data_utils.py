@@ -1,5 +1,5 @@
-import random
 from pathlib import Path
+from random import Random
 from typing import Sequence
 
 import torch
@@ -7,11 +7,6 @@ import torch.nn.functional as F
 import torch.utils.data
 
 from .hparams import HParams
-
-# import h5py
-
-
-# Multi speaker version
 
 
 class TextAudioSpeakerLoader(torch.utils.data.Dataset):
@@ -25,8 +20,9 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
             .splitlines()
         ]
         self.hps = hps
-        random.seed(hps.train.seed)
-        random.shuffle(self.datapaths)
+        self.random = Random(hps.train.seed)
+        self.random.shuffle(self.datapaths)
+        self.max_spec_len = 800
 
     def __getitem__(self, index: int) -> dict[str, torch.Tensor]:
         data = torch.load(self.datapaths[index], weights_only=True, map_location="cpu")
@@ -34,10 +30,9 @@ class TextAudioSpeakerLoader(torch.utils.data.Dataset):
         # cut long data randomly
         spec_len = data["mel_spec"].shape[1]
         hop_len = self.hps.data.hop_length
-        MAX_SPEC_LEN = 800
-        if spec_len > MAX_SPEC_LEN:
-            start = random.randint(0, spec_len - MAX_SPEC_LEN)
-            end = start + MAX_SPEC_LEN - 10
+        if spec_len > self.max_spec_len:
+            start = self.random.randint(0, spec_len - self.max_spec_len)
+            end = start + self.max_spec_len - 10
             for key in data.keys():
                 if key == "audio":
                     data[key] = data[key][:, start * hop_len : end * hop_len]
