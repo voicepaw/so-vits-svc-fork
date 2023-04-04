@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import multiprocessing
 import os
 import time
 from logging import getLogger
@@ -26,7 +25,7 @@ from .data_utils import TextAudioCollate, TextAudioSpeakerLoader
 from .hparams import HParams
 from .modules.descriminators import MultiPeriodDiscriminator
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
-from .modules.mel_processing import mel_spectrogram_torch, spec_to_mel_torch
+from .modules.mel_processing import mel_spectrogram_torch
 from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
@@ -75,21 +74,20 @@ def _run(rank: int, n_gpus: int, hps: HParams, reset_optimizer: bool = False):
     torch.manual_seed(hps.train.seed)
     torch.cuda.set_device(rank)
     collate_fn = TextAudioCollate()
-    train_dataset = TextAudioSpeakerLoader(hps.data.training_files, hps)
-    num_workers = 5 if multiprocessing.cpu_count() > 4 else multiprocessing.cpu_count()
+    train_dataset = TextAudioSpeakerLoader(hps)
     train_loader = DataLoader(
         train_dataset,
-        num_workers=num_workers,
+        num_workers=0,
         shuffle=False,
         pin_memory=True,
         batch_size=hps.train.batch_size,
         collate_fn=collate_fn,
     )
     if rank == 0:
-        eval_dataset = TextAudioSpeakerLoader(hps.data.validation_files, hps)
+        eval_dataset = TextAudioSpeakerLoader(hps, is_validation=True)
         eval_loader = DataLoader(
             eval_dataset,
-            num_workers=1,
+            num_workers=0,
             shuffle=False,
             batch_size=1,
             pin_memory=False,
@@ -217,22 +215,8 @@ def _train_and_evaluate(
     net_g.train()
     net_d.train()
     for batch_idx, items in enumerate(train_loader):
-        c, f0, spec, y, spk, lengths, uv = items
-        g = spk.cuda(rank, non_blocking=True)
-        spec, y = spec.cuda(rank, non_blocking=True), y.cuda(rank, non_blocking=True)
-        c = c.cuda(rank, non_blocking=True)
-        f0 = f0.cuda(rank, non_blocking=True)
-        uv = uv.cuda(rank, non_blocking=True)
-        lengths = lengths.cuda(rank, non_blocking=True)
-        mel = spec_to_mel_torch(
-            spec,
-            hps.data.filter_length,
-            hps.data.n_mel_channels,
-            hps.data.sampling_rate,
-            hps.data.mel_fmin,
-            hps.data.mel_fmax,
-        )
-
+        items = [x.cuda(rank, non_blocking=True) for x in items]
+        c, f0, spec, mel, y, g, lengths, uv = items
         with autocast(enabled=hps.train.fp16_run):
             (
                 y_hat,
@@ -248,16 +232,7 @@ def _train_and_evaluate(
             y_mel = commons.slice_segments(
                 mel, ids_slice, hps.train.segment_size // hps.data.hop_length
             )
-            y_hat_mel = mel_spectrogram_torch(
-                y_hat.squeeze(1),
-                hps.data.filter_length,
-                hps.data.n_mel_channels,
-                hps.data.sampling_rate,
-                hps.data.hop_length,
-                hps.data.win_length,
-                hps.data.mel_fmin,
-                hps.data.mel_fmax,
-            )
+            y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), hps)
             y = commons.slice_segments(
                 y, ids_slice * hps.data.hop_length, hps.train.segment_size
             )  # slice
@@ -417,33 +392,10 @@ def _evaluate(
     audio_dict = {}
     with torch.no_grad():
         for batch_idx, items in enumerate(eval_loader):
-            c, f0, spec, y, spk, _, uv = items
-            g = spk[:1].cuda(0)
-            spec, y = spec[:1].cuda(0), y[:1].cuda(0)
-            c = c[:1].cuda(0)
-            f0 = f0[:1].cuda(0)
-            uv = uv[:1].cuda(0)
-            mel = spec_to_mel_torch(
-                spec,
-                hps.data.filter_length,
-                hps.data.n_mel_channels,
-                hps.data.sampling_rate,
-                hps.data.mel_fmin,
-                hps.data.mel_fmax,
-            )
+            items = [item[:1].cuda(0) for item in items]
+            c, f0, _, mel, y, g, _, uv = items
             y_hat = generator.module.infer(c, f0, uv, g=g)
-
-            y_hat_mel = mel_spectrogram_torch(
-                y_hat.squeeze(1).float(),
-                hps.data.filter_length,
-                hps.data.n_mel_channels,
-                hps.data.sampling_rate,
-                hps.data.hop_length,
-                hps.data.win_length,
-                hps.data.mel_fmin,
-                hps.data.mel_fmax,
-            )
-
+            y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), hps)
             audio_dict.update(
                 {f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]}
             )

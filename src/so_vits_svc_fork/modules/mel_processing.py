@@ -1,3 +1,49 @@
+"""from logging import getLogger
+
+import torch
+import torch.utils.data
+import torchaudio
+
+LOG = getLogger(__name__)
+
+
+from ..hparams import HParams
+
+
+def spectrogram_torch(audio: torch.Tensor, hps: HParams) -> torch.Tensor:
+    return torchaudio.transforms.Spectrogram(
+        n_fft=hps.data.filter_length,
+        win_length=hps.data.win_length,
+        hop_length=hps.data.hop_length,
+        power=1.0,
+        window_fn=torch.hann_window,
+        normalized=False,
+    ).to(audio.device)(audio)
+
+
+def spec_to_mel_torch(spec: torch.Tensor, hps: HParams) -> torch.Tensor:
+    return torchaudio.transforms.MelScale(
+        n_mels=hps.data.n_mel_channels,
+        sample_rate=hps.data.sampling_rate,
+        f_min=hps.data.mel_fmin,
+        f_max=hps.data.mel_fmax,
+    ).to(spec.device)(spec)
+
+
+def mel_spectrogram_torch(audio: torch.Tensor, hps: HParams) -> torch.Tensor:
+    return torchaudio.transforms.MelSpectrogram(
+        sample_rate=hps.data.sampling_rate,
+        n_fft=hps.data.filter_length,
+        n_mels=hps.data.n_mel_channels,
+        win_length=hps.data.win_length,
+        hop_length=hps.data.hop_length,
+        f_min=hps.data.mel_fmin,
+        f_max=hps.data.mel_fmax,
+        power=1.0,
+        window_fn=torch.hann_window,
+        normalized=False,
+    ).to(audio.device)(audio)"""
+
 from logging import getLogger
 
 import torch
@@ -41,12 +87,14 @@ mel_basis = {}
 hann_window = {}
 
 
-def spectrogram_torch(y, n_fft, sampling_rate, hop_size, win_size, center=False):
+def spectrogram_torch(y, hps, center=False):
     if torch.min(y) < -1.0:
         LOG.info("min value is ", torch.min(y))
     if torch.max(y) > 1.0:
         LOG.info("max value is ", torch.max(y))
-
+    n_fft = hps.data.filter_length
+    hop_size = hps.data.hop_length
+    win_size = hps.data.win_length
     global hann_window
     dtype_device = str(y.dtype) + "_" + str(y.device)
     wnsize_dtype_device = str(win_size) + "_" + dtype_device
@@ -79,7 +127,12 @@ def spectrogram_torch(y, n_fft, sampling_rate, hop_size, win_size, center=False)
     return spec
 
 
-def spec_to_mel_torch(spec, n_fft, num_mels, sampling_rate, fmin, fmax):
+def spec_to_mel_torch(spec, hps):
+    sampling_rate = hps.data.sampling_rate
+    n_fft = hps.data.filter_length
+    num_mels = hps.data.n_mel_channels
+    fmin = hps.data.mel_fmin
+    fmax = hps.data.mel_fmax
     global mel_basis
     dtype_device = str(spec.dtype) + "_" + str(spec.device)
     fmax_dtype_device = str(fmax) + "_" + dtype_device
@@ -95,9 +148,14 @@ def spec_to_mel_torch(spec, n_fft, num_mels, sampling_rate, fmin, fmax):
     return spec
 
 
-def mel_spectrogram_torch(
-    y, n_fft, num_mels, sampling_rate, hop_size, win_size, fmin, fmax, center=False
-):
+def mel_spectrogram_torch(y, hps, center=False):
+    sampling_rate = hps.data.sampling_rate
+    n_fft = hps.data.filter_length
+    num_mels = hps.data.n_mel_channels
+    fmin = hps.data.mel_fmin
+    fmax = hps.data.mel_fmax
+    hop_size = hps.data.hop_length
+    win_size = hps.data.win_length
     if torch.min(y) < -1.0:
         LOG.info(f"min value is {torch.min(y)}")
     if torch.max(y) > 1.0:
