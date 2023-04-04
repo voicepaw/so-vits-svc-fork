@@ -49,16 +49,14 @@ def download_file(
     temppath.unlink(missing_ok=True)
     resp = requests.get(url, stream=True)
     total = int(resp.headers.get("content-length", 0))
-    kwargs = (
-        dict(
-            total=total,
-            unit="iB",
-            unit_scale=True,
-            unit_divisor=1024,
-            desc=f"Downloading {filepath.name}",
-        )
-        | tqdm_kwargs
+    kwargs = dict(
+        total=total,
+        unit="iB",
+        unit_scale=True,
+        unit_divisor=1024,
+        desc=f"Downloading {filepath.name}",
     )
+    kwargs.update(tqdm_kwargs)
     with temppath.open("wb") as f, tqdm_cls(**kwargs) as pbar:
         for data in resp.iter_content(chunk_size=chunk_size):
             size = f.write(data)
