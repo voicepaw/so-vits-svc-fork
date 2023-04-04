@@ -19,12 +19,13 @@ if %errorlevel%==0 (
 echo Checking GPU...
 nvidia-smi >nul 2>&1
 if %errorlevel%==0 (
-    set GPU=1
+    echo found a GPU
 ) else (
-    set GPU=0
+    echo no GPU found
 )
 
-if %GPU%==1 (
+nvidia-smi >nul 2>&1
+if %errorlevel%==0 (
     echo Checking CUDA...
     nvcc --version
     if %errorlevel%==0 (
@@ -47,9 +48,10 @@ py -3.10 -m venv venv
 echo Updating pip and wheel...
 venv\Scripts\python.exe -m pip install --upgrade pip wheel
 
-if %GPU%==1 (
-    echo Installing PyTorch with GPU support...
-    venv\Scripts\pip.exe install torch torchaudio --index-url https://download.pytorch.org/whl/cu117
+nvidia-smi >nul 2>&1
+if %errorlevel%==0 (
+echo Installing PyTorch with GPU support...
+venv\Scripts\pip.exe install torch torchaudio --index-url https://download.pytorch.org/whl/cu118
 ) else (
     echo Installing PyTorch without GPU support...
     venv\Scripts\pip.exe install torch torchaudio
