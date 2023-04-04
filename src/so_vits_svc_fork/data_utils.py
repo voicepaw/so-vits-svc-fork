@@ -63,17 +63,12 @@ def _pad_stack(array: Sequence[torch.Tensor]) -> torch.Tensor:
 
 
 class TextAudioCollate:
-    """This code uses torch.stack() to create tensors from a list of tensors,
-    torch.scatter_() to copy values from a source tensor to a destination tensor based on indices,
-    and unsqueeze() to reshape tensors to match the dimensions of the destination tensor.
-    """
-
     def __call__(
         self, batch: Sequence[dict[str, torch.Tensor]]
     ) -> tuple[torch.Tensor, ...]:
         batch = [b for b in batch if b is not None]
-        lengths = torch.tensor([b["mel_spec"].shape[1] for b in batch]).long()
         batch = list(sorted(batch, key=lambda x: x["mel_spec"].shape[1], reverse=True))
+        lengths = torch.tensor([b["mel_spec"].shape[1] for b in batch]).long()
         results = {}
         for key in batch[0].keys():
             if key not in ["spk"]:
