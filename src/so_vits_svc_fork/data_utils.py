@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pathlib import Path
 from random import Random
 from typing import Sequence
