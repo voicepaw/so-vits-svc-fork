@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.2 (2023-04-04)
+### Performance
+* Move methods from dataloader to pre-hubert ([#218](https://github.com/34j/so-vits-svc-fork/issues/218)) ([`d5a4456`](https://github.com/34j/so-vits-svc-fork/commit/d5a4456ebd5b6659ca037ee2f43480a00d7915f6))
+
 ## v3.0.1 (2023-04-03)
 ### Fix
 * Remove possible leak in unused code ([#203](https://github.com/34j/so-vits-svc-fork/issues/203)) ([`e921c3d`](https://github.com/34j/so-vits-svc-fork/commit/e921c3dc018ea783b4c26375a04f499a45ad9df0))
