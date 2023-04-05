@@ -124,6 +124,7 @@ def preprocess_hubert_f0(
     utils.ensure_pretrained_model(".", "contentvec")
     hps = utils.get_hparams(config_path)
     if n_jobs is None:
+        # add cpu_count() to avoid SIGKILL
         memory = get_total_gpu_memory("total")
         n_jobs = min(
             max(
