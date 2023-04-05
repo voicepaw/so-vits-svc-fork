@@ -163,6 +163,32 @@ def get_content(
     return c
 
 
+def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> None:
+    for k, v in from_.items():
+        if k not in to_:
+            warnings.warn(f"Key {k} not found in model state dict")
+        elif hasattr(v, "shape"):
+            if not hasattr(to_[k], "shape"):
+                raise ValueError(f"Key {k} is not a tensor")
+            if to_[k].shape == v.shape:
+                to_[k] = v
+            else:
+                warnings.warn(
+                    f"Shape mismatch for key {k}, {to_[k].shape} != {v.shape}"
+                )
+        elif isinstance(v, dict):
+            assert isinstance(to_[k], dict)
+            _substitute_if_same_shape(to_[k], v)
+        else:
+            to_[k] = v
+
+
+def safe_load(model: torch.nn.Module, state_dict: dict[str, Any]) -> None:
+    model_state_dict = model.state_dict()
+    _substitute_if_same_shape(model_state_dict, state_dict)
+    model.load_state_dict(model_state_dict)
+
+
 def load_checkpoint(
     checkpoint_path: Path | str,
     model: torch.nn.Module,
@@ -174,37 +200,22 @@ def load_checkpoint(
     checkpoint_dict = torch.load(checkpoint_path, map_location="cpu")
     iteration = checkpoint_dict["iteration"]
     learning_rate = checkpoint_dict["learning_rate"]
+
+    # safe load module
+    if hasattr(model, "module"):
+        safe_load(model.module, checkpoint_dict["model"])
+    else:
+        safe_load(model, checkpoint_dict["model"])
+    # safe load optim
     if (
         optimizer is not None
         and not skip_optimizer
         and checkpoint_dict["optimizer"] is not None
     ):
-        try:
-            optimizer.load_state_dict(checkpoint_dict["optimizer"])
-        except Exception as e:
-            LOG.exception(e)
-            LOG.warning("Failed to load optimizer state")
-    saved_state_dict = checkpoint_dict["model"]
-    if hasattr(model, "module"):
-        state_dict = model.module.state_dict()
-    else:
-        state_dict = model.state_dict()
-    new_state_dict = {}
-    for k, v in state_dict.items():
-        try:
-            new_state_dict[k] = saved_state_dict[k]
-            assert saved_state_dict[k].shape == v.shape, (
-                saved_state_dict[k].shape,
-                v.shape,
-            )
-        except Exception as e:
-            LOG.exception(e)
-            LOG.error("%s is not in the checkpoint" % k)
-            new_state_dict[k] = v
-    if hasattr(model, "module"):
-        model.module.load_state_dict(new_state_dict)
-    else:
-        model.load_state_dict(new_state_dict)
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            safe_load(optimizer, checkpoint_dict["optimizer"])
+
     LOG.info(f"Loaded checkpoint '{checkpoint_path}' (iteration {iteration})")
     return model, optimizer, learning_rate, iteration
 

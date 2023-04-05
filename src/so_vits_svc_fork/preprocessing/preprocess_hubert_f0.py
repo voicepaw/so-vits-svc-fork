@@ -10,7 +10,7 @@ import numpy as np
 import torch
 import torchaudio
 from fairseq.models.hubert import HubertModel
-from joblib import Parallel, delayed
+from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
 
 import so_vits_svc_fork.f0
@@ -22,8 +22,8 @@ from ..utils import get_total_gpu_memory
 from .preprocess_utils import check_hubert_min_duration
 
 LOG = getLogger(__name__)
-HUBERT_MEMORY = 1600
-HUBERT_MEMORY_CREPE = 2600
+HUBERT_MEMORY = 2900
+HUBERT_MEMORY_CREPE = 3900
 
 
 def _process_one(
@@ -124,11 +124,17 @@ def preprocess_hubert_f0(
     utils.ensure_pretrained_model(".", "contentvec")
     hps = utils.get_hparams(config_path)
     if n_jobs is None:
-        memory = get_total_gpu_memory("free")
-        n_jobs = (
-            memory // (HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY)
-            if memory is not None
-            else 1
+        # add cpu_count() to avoid SIGKILL
+        memory = get_total_gpu_memory("total")
+        n_jobs = min(
+            max(
+                memory
+                // (HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY)
+                if memory is not None
+                else 1,
+                1,
+            ),
+            cpu_count(),
         )
         LOG.info(f"n_jobs automatically set to {n_jobs}, memory: {memory} MiB")
 
