@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.3 (2023-04-05)
+### Fix
+* Fix issues when loading legacy checkpoint and fix pre-hubert n_jobs ([#236](https://github.com/34j/so-vits-svc-fork/issues/236)) ([`15f1e7f`](https://github.com/34j/so-vits-svc-fork/commit/15f1e7ffca80cb551316affae546ea72e8cccb34))
+
 ## v3.0.2 (2023-04-04)
 ### Performance
 * Move methods from dataloader to pre-hubert ([#218](https://github.com/34j/so-vits-svc-fork/issues/218)) ([`d5a4456`](https://github.com/34j/so-vits-svc-fork/commit/d5a4456ebd5b6659ca037ee2f43480a00d7915f6))
