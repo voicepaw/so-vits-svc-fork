@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.4 (2023-04-06)
+### Fix
+* **__main__:** Fix default config type to revert breaking changes ([#243](https://github.com/34j/so-vits-svc-fork/issues/243)) ([`e05c0b5`](https://github.com/34j/so-vits-svc-fork/commit/e05c0b52b6affac5e4483c0938e04584e1bd8d98))
+
 ## v3.0.3 (2023-04-05)
 ### Fix
 * Fix issues when loading legacy checkpoint and fix pre-hubert n_jobs ([#236](https://github.com/34j/so-vits-svc-fork/issues/236)) ([`15f1e7f`](https://github.com/34j/so-vits-svc-fork/commit/15f1e7ffca80cb551316affae546ea72e8cccb34))
