@@ -164,6 +164,13 @@ def get_content(
 
 
 def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> None:
+    not_in_to = list(filter(lambda x: x not in to_, from_.keys()))
+    not_in_from = list(filter(lambda x: x not in from_, to_.keys()))
+    if not_in_to:
+        warnings.warn(f"Keys not found in model state dict:" f"{not_in_to}")
+    if not_in_from:
+        warnings.warn(f"Keys not found in checkpoint state dict:" f"{not_in_from}")
+    shape_missmatch = []
     for k, v in from_.items():
         if k not in to_:
             warnings.warn(f"Key {k} not found in model state dict")
@@ -173,14 +180,16 @@ def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> Non
             if to_[k].shape == v.shape:
                 to_[k] = v
             else:
-                warnings.warn(
-                    f"Shape mismatch for key {k}, {to_[k].shape} != {v.shape}"
-                )
+                shape_missmatch.append((k, to_[k].shape, v.shape))
         elif isinstance(v, dict):
             assert isinstance(to_[k], dict)
             _substitute_if_same_shape(to_[k], v)
         else:
             to_[k] = v
+    if shape_missmatch:
+        warnings.warn(
+            f"Shape mismatch: {[f'{k}: {v1} -> {v2}' for k, v1, v2 in shape_missmatch]}"
+        )
 
 
 def safe_load(model: torch.nn.Module, state_dict: dict[str, Any]) -> None:
