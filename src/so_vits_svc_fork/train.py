@@ -60,9 +60,48 @@ def train(
     trainer.fit(model, train_loader, eval_loader)
 
 
+from lightning.pytorch.accelerators import TPUAccelerator
+
+
 class VitsLightning(pl.LightningModule):
     def on_train_start(self) -> None:
         self.load(False)
+
+        # check if using tpu
+        if isinstance(self.trainer.accelerator, TPUAccelerator):
+            # patch torch.stft to use cpu
+            LOG.warning("Using TPU. Patching torch.stft to use cpu.")
+
+            def stft(
+                input: torch.Tensor,
+                n_fft: int,
+                hop_length: int | None = None,
+                win_length: int | None = None,
+                window: torch.Tensor | None = None,
+                center: bool = True,
+                pad_mode: str = "reflect",
+                normalized: bool = False,
+                onesided: bool | None = None,
+                return_complex: bool | None = None,
+            ) -> torch.Tensor:
+                device = input.device
+                input = input.cpu()
+                if window is not None:
+                    window = window.cpu()
+                return torch.stft(
+                    input,
+                    n_fft,
+                    hop_length,
+                    win_length,
+                    window,
+                    center,
+                    pad_mode,
+                    normalized,
+                    onesided,
+                    return_complex,
+                ).to(device)
+
+            torch.stft = stft
 
     def set_current_epoch(self, epoch: int):
         self.trainer.fit_loop.epoch_progress.current.completed = epoch
