@@ -152,10 +152,7 @@ class VitsLightning(pl.LightningModule):
                     reset_optimizer,
                 )
                 self.set_current_epoch(epoch)
-                global_step = epoch * (
-                    len(self.trainer.train_dataloader) // self.hparams.train.batch_size
-                    + 1
-                )
+                global_step = epoch * len(self.trainer.train_dataloader)
                 self.set_global_step(global_step)
                 assert self.current_epoch == epoch, f"{self.current_epoch} != {epoch}"
                 self.scheduler_g.last_epoch = self.current_epoch - 1
