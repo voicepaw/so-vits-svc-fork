@@ -41,6 +41,7 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 - Fixed misuse of `ContentVec` in the original repository.[^c]
 - More accurate pitch estimation using [`CREPE`](https://github.com/marl/crepe/).
 - GUI and unified CLI available
+- ~2x faster training
 - Ready to use just by installing with `pip`.
 - Automatically download pretrained models.
 - Code completely formatted with black, isort, autoflake etc.
