@@ -18,7 +18,7 @@ from so_vits_svc_fork import utils
 
 from ..hparams import HParams
 from ..modules.mel_processing import spec_to_mel_torch, spectrogram_torch
-from ..utils import get_total_gpu_memory
+from ..utils import get_optimal_device, get_total_gpu_memory
 from .preprocess_utils import check_hubert_min_duration
 
 LOG = getLogger(__name__)
@@ -30,7 +30,7 @@ def _process_one(
     *,
     filepath: Path,
     content_model: HubertModel,
-    device: Literal["cuda", "cpu"] = "cuda",
+    device: torch.device | str = get_optimal_device(),
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
     force_rebuild: bool = False,
     hps: HParams,
@@ -54,7 +54,7 @@ def _process_one(
     uv = torch.from_numpy(uv).float()
 
     # Compute HuBERT content
-    audio = torch.from_numpy(audio).float().cuda()
+    audio = torch.from_numpy(audio).float().to(device)
     c = utils.get_content(
         content_model,
         audio,
@@ -102,7 +102,7 @@ def _process_one(
 
 
 def _process_batch(filepaths: Iterable[Path], pbar_position: int, **kwargs):
-    content_model = utils.get_hubert_model("cuda")
+    content_model = utils.get_hubert_model(get_optimal_device())
 
     for filepath in tqdm(filepaths, position=pbar_position):
         _process_one(

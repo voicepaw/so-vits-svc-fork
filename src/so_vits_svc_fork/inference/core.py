@@ -16,6 +16,7 @@ import so_vits_svc_fork.f0
 from so_vits_svc_fork import cluster, utils
 
 from ..modules.synthesizers import SynthesizerTrn
+from ..utils import get_optimal_device
 
 LOG = getLogger(__name__)
 
@@ -98,7 +99,7 @@ class Svc:
     ):
         self.net_g_path = net_g_path
         if device is None:
-            self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            self.device = (get_optimal_device(),)
         else:
             self.device = torch.device(device)
         self.hps = utils.get_hparams(config_path)

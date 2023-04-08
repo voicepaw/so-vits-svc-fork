@@ -25,6 +25,19 @@ LOG = getLogger(__name__)
 HUBERT_SAMPLING_RATE = 16000
 
 
+def get_optimal_device(index: int = 0) -> torch.device:
+    if torch.cuda.is_available():
+        return torch.device(f"cuda:{index % torch.cuda.device_count()}")
+    else:
+        try:
+            import torch_xla.core.xla_model as xm
+
+            return xm.xla_device()
+        except ImportError:
+            pass
+    return torch.device("cpu")
+
+
 def download_file(
     url: str,
     filepath: Path | str,
@@ -115,7 +128,7 @@ def ensure_pretrained_model(
     return
 
 
-def get_hubert_model(device: torch.device) -> HubertModel:
+def get_hubert_model(device: str | torch.device) -> HubertModel:
     (path,) = ensure_pretrained_model(Path("."), "contentvec")
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
