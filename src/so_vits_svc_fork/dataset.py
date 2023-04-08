@@ -5,13 +5,14 @@ from random import Random
 from typing import Sequence
 
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
-import torch.utils.data
+from torch.utils.data import Dataset
 
 from .hparams import HParams
 
 
-class TextAudioSpeakerLoader(torch.utils.data.Dataset):
+class TextAudioDataset(Dataset):
     def __init__(self, hps: HParams, is_validation: bool = False):
         self.datapaths = [
             Path(x).parent / (Path(x).name + ".data.pt")
@@ -59,8 +60,8 @@ def _pad_stack(array: Sequence[torch.Tensor]) -> torch.Tensor:
     return torch.stack(x_padded)
 
 
-class TextAudioCollate:
-    def __call__(
+class TextAudioCollate(nn.Module):
+    def forward(
         self, batch: Sequence[dict[str, torch.Tensor]]
     ) -> tuple[torch.Tensor, ...]:
         batch = [b for b in batch if b is not None]

@@ -298,30 +298,6 @@ def clean_checkpoints(
             to_delete.unlink()
 
 
-from torch.utils.tensorboard.writer import SummaryWriter
-
-
-def summarize(
-    writer: SummaryWriter,
-    global_step: int,
-    scalars: dict[str, float] = {},
-    histograms: dict[str, ndarray] = {},
-    images: dict[str, ndarray] = {},
-    audios: dict[str, ndarray] = {},
-    audio_sampling_rate: int | None = None,
-) -> None:
-    for k, v in scalars.items():
-        writer.add_scalar(k, v, global_step)
-    for k, v in histograms.items():
-        writer.add_histogram(k, v, global_step)
-    for k, v in images.items():
-        writer.add_image(k, v, global_step, dataformats="HWC")
-    for k, v in audios.items():
-        if audio_sampling_rate is None:
-            raise ValueError("audio_sampling_rate must be provided")
-        writer.add_audio(k, v, global_step, audio_sampling_rate)
-
-
 def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path | None:
     dir_path = Path(dir_path)
     name_key = lambda p: int(re.match(r"._(\d+)\.pth", p.name).group(1))

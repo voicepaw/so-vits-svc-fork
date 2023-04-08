@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from logging import getLogger
 from pathlib import Path
 from typing import Any
@@ -16,13 +17,14 @@ import so_vits_svc_fork.modules.commons as commons
 import so_vits_svc_fork.utils
 
 from . import utils
-from .data_utils import TextAudioCollate, TextAudioSpeakerLoader
+from .dataset import TextAudioCollate, TextAudioDataset
 from .modules.descriminators import MultiPeriodDiscriminator
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch
 from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
+getLogger("lightning").propagate = False
 torch.backends.cudnn.benchmark = True
 
 
@@ -36,27 +38,46 @@ def train(
     utils.ensure_pretrained_model(model_path, hparams.model.get("type_", "hifi-gan"))
 
     collate_fn = TextAudioCollate()
-    train_dataset = TextAudioSpeakerLoader(hparams)
+    train_dataset = TextAudioDataset(hparams)
     train_loader = DataLoader(
         train_dataset,
-        shuffle=False,
-        pin_memory=True,
         batch_size=hparams.train.batch_size,
         collate_fn=collate_fn,
     )
-    eval_dataset = TextAudioSpeakerLoader(hparams, is_validation=True)
+    eval_dataset = TextAudioDataset(hparams, is_validation=True)
     eval_loader = DataLoader(
         eval_dataset,
-        shuffle=False,
         batch_size=1,
         collate_fn=collate_fn,
     )
-    trainer = pl.Trainer(logger=TensorBoardLogger(model_path))
+    trainer = pl.Trainer(
+        logger=TensorBoardLogger(model_path),
+        profiler="simple",
+        max_epochs=1,
+        # max_epochs=hparams.train.epochs,
+        check_val_every_n_epoch=hparams.train.eval_interval // len(train_dataset),
+    )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
     trainer.fit(model, train_loader, eval_loader)
 
 
 class VitsLightning(pl.LightningModule):
+    def on_train_start(self) -> None:
+        self.load(False)
+
+    def set_current_epoch(self, epoch: int):
+        self.trainer.fit_loop.epoch_progress.current.completed = epoch
+        assert self.current_epoch == epoch, f"{self.current_epoch} != {epoch}"
+
+    def set_global_step(self, global_step: int):
+        self.trainer.fit_loop.epoch_loop.manual_optimization.optim_step_progress.total.completed = (
+            global_step
+        )
+        self.trainer.fit_loop.epoch_loop.automatic_optimization.optim_progress.optimizer.step.total.completed = (
+            global_step
+        )
+        assert self.global_step == global_step, f"{self.global_step} != {global_step}"
+
     def load(self, reset_optimizer: bool = False):
         latest_g_path = utils.latest_checkpoint_path(self.hparams.model_dir, "G_*.pth")
         latest_d_path = utils.latest_checkpoint_path(self.hparams.model_dir, "D_*.pth")
@@ -74,17 +95,15 @@ class VitsLightning(pl.LightningModule):
                     self.optim_d,
                     reset_optimizer,
                 )
-                self.trainer.fit_loop.epoch_progress.current.completed = epoch
+                self.set_current_epoch(epoch)
+                global_step = epoch * (
+                    len(self.trainer.train_dataloader) // self.hparams.train.batch_size
+                    + 1
+                )
+                self.set_global_step(global_step)
                 assert self.current_epoch == epoch, f"{self.current_epoch} != {epoch}"
-                self.trainer.fit_loop.epoch_loop.manual_optimization.optim_step_progress.total.completed = (
-                    epoch * self.hparams.train.batch_size
-                )
-                self.trainer.fit_loop.epoch_loop.automatic_optimization.optim_progress.optimizer.step.total.completed = (
-                    epoch * self.hparams.train.batch_size
-                )
-                assert (
-                    self.global_step == epoch * self.hparams.train.batch_size
-                ), f"{self.global_step} != {epoch * self.hparams.train.batch_size}"
+                self.scheduler_g.last_epoch = self.current_epoch - 1
+                self.scheduler_d.last_epoch = self.current_epoch - 1
             except Exception as e:
                 raise RuntimeError("Failed to load checkpoint") from e
         else:
@@ -102,8 +121,6 @@ class VitsLightning(pl.LightningModule):
         )
         self.net_d = MultiPeriodDiscriminator(self.hparams.model.use_spectral_norm)
         self.automatic_optimization = False
-
-    def configure_optimizers(self):
         self.optim_g = torch.optim.AdamW(
             self.net_g.parameters(),
             self.hparams.train.learning_rate,
@@ -116,44 +133,47 @@ class VitsLightning(pl.LightningModule):
             betas=self.hparams.train.betas,
             eps=self.hparams.train.eps,
         )
-        self.load(reset_optimizer=self.hparams.reset_optimizer)
         self.scheduler_g = torch.optim.lr_scheduler.ExponentialLR(
             self.optim_g, gamma=self.hparams.train.lr_decay
         )
-        self.scheduler_g.last_epoch = self.current_epoch - 1
         self.scheduler_d = torch.optim.lr_scheduler.ExponentialLR(
             self.optim_d, gamma=self.hparams.train.lr_decay
         )
-        self.scheduler_d.last_epoch = self.current_epoch - 1
+
+    def configure_optimizers(self):
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
 
     def log_image_dict(self, image_dict: dict[str, Any]) -> None:
-        """if not isinstance(self.logger, TensorBoardLogger):
+        if not isinstance(self.logger, TensorBoardLogger):
             warnings.warn("Image logging is only supported with TensorBoardLogger.")
             return
+        writer = self.logger.experiment
         for k, v in image_dict.items():
-            v = torch.as_tensor(v).to(self.device)
-            v = torchvision.utils.make_grid(v, nrow=1, normalize=True)
-            self.logger.experiment.add_image(k, v, self.global_step)"""
-        # self.experiment.log_image_dict(image_dict)
+            try:
+                writer.add_image(k, v, self.global_step)
+            except Exception as e:
+                warnings.warn(f"Failed to log image {k}: {e}")
 
     def log_audio_dict(self, audio_dict: dict[str, Any]) -> None:
-        """if not isinstance(self.logger, TensorBoardLogger):
+        if not isinstance(self.logger, TensorBoardLogger):
             warnings.warn("Audio logging is only supported with TensorBoardLogger.")
             return
+        writer = self.logger.experiment
         for k, v in audio_dict.items():
-            v = torch.as_tensor(v).to(self.device)
-            self.logger.experiment.add_audio(
+            writer.add_audio(
                 k, v, self.global_step, sample_rate=self.hparams.data.sampling_rate
-            )"""
+            )
 
     def training_step(self, batch: dict[str, torch.Tensor], batch_idx: int) -> None:
         self.net_g.train()
         self.net_d.train()
 
+        # get optims
+        optim_g, optim_d = self.optimizers()
+
         # Generator
         # train
-        self.toggle_optimizer(self.optim_g)
+        self.toggle_optimizer(optim_g)
         c, f0, spec, mel, y, g, lengths, uv = batch
         (
             y_hat,
@@ -165,22 +185,23 @@ class VitsLightning(pl.LightningModule):
             norm_lf0,
             lf0,
         ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
-        y_mel_ = commons.slice_segments(
+        y_mel = commons.slice_segments(
             mel,
             ids_slice,
             self.hparams.train.segment_size // self.hparams.data.hop_length,
         )
         y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
-        y_ = commons.slice_segments(
+        y = commons.slice_segments(
             y,
             ids_slice * self.hparams.data.hop_length,
             self.hparams.train.segment_size,
         )
 
         # generator loss
-        y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y_, y_hat)
+        LOG.debug("Calculating generator loss")
+        y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
         with autocast(enabled=False):
-            loss_mel = F.l1_loss(y_mel_, y_hat_mel) * self.hparams.train.c_mel
+            loss_mel = F.l1_loss(y_mel, y_hat_mel) * self.hparams.train.c_mel
             loss_kl = (
                 kl_loss(z_p, logs_q, m_p, logs_p, z_mask) * self.hparams.train.c_kl
             )
@@ -216,7 +237,7 @@ class VitsLightning(pl.LightningModule):
             self.log_image_dict(
                 {
                     "slice/mel_org": utils.plot_spectrogram_to_numpy(
-                        y_mel_[0].data.cpu().numpy()
+                        y_mel[0].data.cpu().numpy()
                     ),
                     "slice/mel_gen": utils.plot_spectrogram_to_numpy(
                         y_hat_mel[0].data.cpu().numpy()
@@ -237,13 +258,13 @@ class VitsLightning(pl.LightningModule):
 
         # optimizer
         self.manual_backward(loss_gen_all)
-        self.optim_g.step()
-        self.optim_g.zero_grad()
-        self.untoggle_optimizer(self.optim_g)
+        optim_g.step()
+        optim_g.zero_grad()
+        self.untoggle_optimizer(optim_g)
 
         # Discriminator
         # train
-        self.toggle_optimizer(self.optim_d)
+        self.toggle_optimizer(optim_d)
         y_d_hat_r, y_d_hat_g, _, _ = self.net_d(y, y_hat.detach())
 
         # discriminator loss
@@ -259,44 +280,43 @@ class VitsLightning(pl.LightningModule):
 
         # optimizer
         self.manual_backward(loss_disc_all)
-        self.optim_d.zero_grad()
-        self.optim_d.step()
-        self.untoggle_optimizer(self.optim_d)
+        optim_d.zero_grad()
+        optim_d.step()
+        self.untoggle_optimizer(optim_d)
 
-    def validation_step(self, batch, batch_idx):
-        self.net_g.eval()
-        c, f0, _, mel, y, g, _, uv = batch
-        y_hat = self.net_g.infer(c, f0, uv, g=g)
-        y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
-        self.log_audio_dict(
-            {f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]}
-        )
-        self.log_image_dict(
-            {
-                "gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().numpy()),
-                "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
-            }
-        )
 
-        if self.global_step % self.hparams.train.eval_interval == 0:
-            utils.save_checkpoint(
-                self.net_g,
-                self.optim_g,
-                self.hparams.train.learning_rate,
-                self.current_epoch,
-                Path(self.hparams.model_dir) / f"G_{self.global_step}.pth",
-            )
-            utils.save_checkpoint(
-                self.net_d,
-                self.optim_d,
-                self.hparams.train.learning_rate,
-                self.current_epoch,
-                Path(self.hparams.model_dir) / f"D_{self.global_step}.pth",
-            )
-            keep_ckpts = self.hparams.train.get("keep_ckpts", 0)
-            if keep_ckpts > 0:
-                utils.clean_checkpoints(
-                    path_to_models=self.hparams.model_dir,
-                    n_ckpts_to_keep=keep_ckpts,
-                    sort_by_time=True,
-                )
+def validation_step(self, batch, batch_idx):
+    self.net_g.eval()
+    c, f0, _, mel, y, g, _, uv = batch
+    y_hat = self.net_g.infer(c, f0, uv, g=g)
+    y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
+    self.log_audio_dict(
+        {f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]}
+    )
+    self.log_image_dict(
+        {
+            "gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().numpy()),
+            "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
+        }
+    )
+    utils.save_checkpoint(
+        self.net_g,
+        self.optim_g,
+        self.hparams.train.learning_rate,
+        self.current_epoch,
+        Path(self.hparams.model_dir) / f"G_{self.global_step}.pth",
+    )
+    utils.save_checkpoint(
+        self.net_d,
+        self.optim_d,
+        self.hparams.train.learning_rate,
+        self.current_epoch,
+        Path(self.hparams.model_dir) / f"D_{self.global_step}.pth",
+    )
+    keep_ckpts = self.hparams.train.get("keep_ckpts", 0)
+    if keep_ckpts > 0:
+        utils.clean_checkpoints(
+            path_to_models=self.hparams.model_dir,
+            n_ckpts_to_keep=keep_ckpts,
+            sort_by_time=True,
+        )
