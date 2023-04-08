@@ -214,7 +214,7 @@ class SourceModuleHnNSF(torch.nn.Module):
         return sine_merge, noise, uv
 
 
-class Generator(torch.nn.Module):
+class NSFHifiGANGenerator(torch.nn.Module):
     def __init__(self, h):
         super().__init__()
         self.h = h
