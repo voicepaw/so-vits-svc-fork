@@ -88,7 +88,7 @@ class VitsLightning(pl.LightningModule):
                 input = input.cpu()
                 if window is not None:
                     window = window.cpu()
-                return torch.stft(
+                return torch.functional.stft(
                     input,
                     n_fft,
                     hop_length,
