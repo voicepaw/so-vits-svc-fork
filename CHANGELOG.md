@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.0.5 (2023-04-08)
+### Fix
+* **cluster:** Fix train_cluster ([#250](https://github.com/34j/so-vits-svc-fork/issues/250)) ([`b0c93e4`](https://github.com/34j/so-vits-svc-fork/commit/b0c93e49f9cdfdcd714575fc27011bf56ce4493d))
+
 ## v3.0.4 (2023-04-06)
 ### Fix
 * **__main__:** Fix default config type to revert breaking changes ([#243](https://github.com/34j/so-vits-svc-fork/issues/243)) ([`e05c0b5`](https://github.com/34j/so-vits-svc-fork/commit/e05c0b52b6affac5e4483c0938e04584e1bd8d98))
