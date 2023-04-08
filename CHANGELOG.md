@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.1 (2023-04-08)
+### Fix
+* **deps:** Update dependency fastapi to <0.96 ([#255](https://github.com/34j/so-vits-svc-fork/issues/255)) ([`29c8cc0`](https://github.com/34j/so-vits-svc-fork/commit/29c8cc05b7e5180058e03f2dc1f681e58cc67f09))
+
 ## v3.1.0 (2023-04-08)
 ### Feature
 * Migrate to lightning ([#246](https://github.com/34j/so-vits-svc-fork/issues/246)) ([`824ecbd`](https://github.com/34j/so-vits-svc-fork/commit/824ecbd7222b9b9ada77c4fbbd7ae7f491049f21))
