@@ -53,8 +53,7 @@ def train(
     trainer = pl.Trainer(
         logger=TensorBoardLogger(model_path),
         profiler="simple",
-        max_epochs=1,
-        # max_epochs=hparams.train.epochs,
+        max_epochs=hparams.train.epochs,
         check_val_every_n_epoch=hparams.train.eval_interval // len(train_dataset),
     )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
