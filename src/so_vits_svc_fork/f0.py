@@ -10,6 +10,8 @@ from cm_time import timer
 from numpy import dtype, float32, ndarray
 from torch import FloatTensor, Tensor
 
+from so_vits_svc_fork.utils import get_optimal_device
+
 LOG = getLogger(__name__)
 
 
@@ -154,7 +156,7 @@ def compute_f0_crepe(
     p_len: None | int = None,
     sampling_rate: int = 44100,
     hop_length: int = 512,
-    device: str = "cuda" if torch.cuda.is_available() else "cpu",
+    device: str | torch.device = get_optimal_device(),
     model: Literal["full", "tiny"] = "full",
 ):
     audio = torch.from_numpy(wav_numpy).to(device, copy=True)

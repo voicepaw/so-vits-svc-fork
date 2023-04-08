@@ -11,6 +11,7 @@ import torch
 from cm_time import timer
 
 from so_vits_svc_fork.inference.core import RealtimeVC, RealtimeVC2, Svc
+from so_vits_svc_fork.utils import get_optimal_device
 
 LOG = getLogger(__name__)
 
@@ -35,7 +36,7 @@ def infer(
     pad_seconds: float = 0.5,
     chunk_seconds: float = 0.5,
     absolute_thresh: bool = False,
-    device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
+    device: str | torch.device = get_optimal_device(),
 ):
     model_path = Path(model_path)
     output_path = Path(output_path)
@@ -94,7 +95,7 @@ def realtime(
     version: int = 2,
     input_device: int | str | None = None,
     output_device: int | str | None = None,
-    device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
+    device: str | torch.device = get_optimal_device(),
     passthrough_original: bool = False,
 ):
     import sounddevice as sd

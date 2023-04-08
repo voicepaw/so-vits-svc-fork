@@ -25,6 +25,18 @@ LOG = getLogger(__name__)
 HUBERT_SAMPLING_RATE = 16000
 
 
+def get_optimal_device(index: int = 0) -> torch.device:
+    if torch.cuda.is_available():
+        return torch.device(f"cuda:{index % torch.cuda.device_count()}")
+    else:
+        try:
+            return torch.device("xla")
+            # return xm.xla_device()
+        except ImportError:
+            pass
+    return torch.device("cpu")
+
+
 def download_file(
     url: str,
     filepath: Path | str,
@@ -115,7 +127,7 @@ def ensure_pretrained_model(
     return
 
 
-def get_hubert_model(device: torch.device) -> HubertModel:
+def get_hubert_model(device: str | torch.device) -> HubertModel:
     (path,) = ensure_pretrained_model(Path("."), "contentvec")
 
     models, saved_cfg, task = checkpoint_utils.load_model_ensemble_and_task(
@@ -164,6 +176,13 @@ def get_content(
 
 
 def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> None:
+    not_in_to = list(filter(lambda x: x not in to_, from_.keys()))
+    not_in_from = list(filter(lambda x: x not in from_, to_.keys()))
+    if not_in_to:
+        warnings.warn(f"Keys not found in model state dict:" f"{not_in_to}")
+    if not_in_from:
+        warnings.warn(f"Keys not found in checkpoint state dict:" f"{not_in_from}")
+    shape_missmatch = []
     for k, v in from_.items():
         if k not in to_:
             warnings.warn(f"Key {k} not found in model state dict")
@@ -173,14 +192,16 @@ def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> Non
             if to_[k].shape == v.shape:
                 to_[k] = v
             else:
-                warnings.warn(
-                    f"Shape mismatch for key {k}, {to_[k].shape} != {v.shape}"
-                )
+                shape_missmatch.append((k, to_[k].shape, v.shape))
         elif isinstance(v, dict):
             assert isinstance(to_[k], dict)
             _substitute_if_same_shape(to_[k], v)
         else:
             to_[k] = v
+    if shape_missmatch:
+        warnings.warn(
+            f"Shape mismatch: {[f'{k}: {v1} -> {v2}' for k, v1, v2 in shape_missmatch]}"
+        )
 
 
 def safe_load(model: torch.nn.Module, state_dict: dict[str, Any]) -> None:
@@ -287,30 +308,6 @@ def clean_checkpoints(
         for to_delete in to_delete_list:
             LOG.info(f"Removing {to_delete}")
             to_delete.unlink()
-
-
-from torch.utils.tensorboard.writer import SummaryWriter
-
-
-def summarize(
-    writer: SummaryWriter,
-    global_step: int,
-    scalars: dict[str, float] = {},
-    histograms: dict[str, ndarray] = {},
-    images: dict[str, ndarray] = {},
-    audios: dict[str, ndarray] = {},
-    audio_sampling_rate: int | None = None,
-) -> None:
-    for k, v in scalars.items():
-        writer.add_scalar(k, v, global_step)
-    for k, v in histograms.items():
-        writer.add_histogram(k, v, global_step)
-    for k, v in images.items():
-        writer.add_image(k, v, global_step, dataformats="HWC")
-    for k, v in audios.items():
-        if audio_sampling_rate is None:
-            raise ValueError("audio_sampling_rate must be provided")
-        writer.add_audio(k, v, global_step, audio_sampling_rate)
 
 
 def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path | None:

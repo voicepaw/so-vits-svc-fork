@@ -10,6 +10,7 @@ import pyinputplus as pyip
 import torch
 
 from so_vits_svc_fork import __version__
+from so_vits_svc_fork.utils import get_optimal_device
 
 LOG = getLogger(__name__)
 
@@ -190,7 +191,7 @@ def train(
     "-d",
     "--device",
     type=str,
-    default="cuda" if torch.cuda.is_available() else "cpu",
+    default=get_optimal_device(),
     help="device",
 )
 @click.option("-ch", "--chunk-seconds", type=float, default=0.5, help="chunk seconds")
@@ -220,7 +221,7 @@ def infer(
     pad_seconds: float = 0.5,
     chunk_seconds: float = 0.5,
     absolute_thresh: bool = False,
-    device: Literal["cpu", "cuda"] = "cuda" if torch.cuda.is_available() else "cpu",
+    device: str | torch.device = get_optimal_device(),
 ):
     """Inference"""
     from so_vits_svc_fork.inference.main import infer
@@ -339,7 +340,7 @@ def infer(
     "-d",
     "--device",
     type=str,
-    default="cuda" if torch.cuda.is_available() else "cpu",
+    default=get_optimal_device(),
     help="device",
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
@@ -378,7 +379,7 @@ def vc(
     version: int,
     input_device: int | str | None,
     output_device: int | str | None,
-    device: Literal["cpu", "cuda"],
+    device: torch.device,
     passthrough_original: bool = False,
 ) -> None:
     """Realtime inference from microphone"""
@@ -759,7 +760,9 @@ def clean():
     default="cpu",
     help="device to use",
 )
-def onnx(input_path: Path, output_path: Path, config_path: Path, device: str) -> None:
+def onnx(
+    input_path: Path, output_path: Path, config_path: Path, device: torch.device | str
+) -> None:
     raise NotImplementedError("ONNX export is not yet supported")
     """Export model to onnx"""
     input_path = Path(input_path)

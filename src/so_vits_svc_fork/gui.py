@@ -11,7 +11,7 @@ import torch
 from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
-from .utils import ensure_pretrained_model
+from .utils import ensure_pretrained_model, get_optimal_device
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
@@ -411,21 +411,14 @@ def main():
             [
                 sg.Checkbox(
                     key="use_gpu",
-                    default=(
-                        torch.cuda.is_available() or torch.backends.mps.is_available()
-                    ),
+                    default=get_optimal_device() != torch.device("cpu"),
                     text="Use GPU"
                     + (
                         " (not available; if your device has GPU, make sure you installed PyTorch with CUDA support)"
-                        if not (
-                            torch.cuda.is_available()
-                            or torch.backends.mps.is_available()
-                        )
+                        if get_optimal_device() == torch.device("cpu")
                         else ""
                     ),
-                    disabled=not (
-                        torch.cuda.is_available() or torch.backends.mps.is_available()
-                    ),
+                    disabled=get_optimal_device() == torch.device("cpu"),
                 )
             ],
             [
@@ -579,15 +572,7 @@ def main():
                         pad_seconds=values["pad_seconds"],
                         chunk_seconds=values["chunk_seconds"],
                         absolute_thresh=values["absolute_thresh"],
-                        device="cpu"
-                        if not values["use_gpu"]
-                        else (
-                            "cuda"
-                            if torch.cuda.is_available()
-                            else "mps"
-                            if torch.backends.mps.is_available()
-                            else "cpu"
-                        ),
+                        device="cpu" if not values["use_gpu"] else get_optimal_device(),
                     )
                     if values["auto_play"]:
                         pool.schedule(play_audio, args=[output_path])
@@ -641,7 +626,7 @@ def main():
                         output_device=output_device_indices[
                             window["output_device"].widget.current()
                         ],
-                        device="cuda" if values["use_gpu"] else "cpu",
+                        device=get_optimal_device() if values["use_gpu"] else "cpu",
                         passthrough_original=values["passthrough_original"],
                     ),
                 )

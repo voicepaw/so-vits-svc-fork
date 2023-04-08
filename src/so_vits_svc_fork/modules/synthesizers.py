@@ -9,7 +9,7 @@ import so_vits_svc_fork.f0
 from so_vits_svc_fork.f0 import f0_to_coarse
 from so_vits_svc_fork.modules import commons as commons
 from so_vits_svc_fork.modules.decoders.f0 import F0Decoder
-from so_vits_svc_fork.modules.decoders.hifigan import Generator
+from so_vits_svc_fork.modules.decoders.hifigan import NSFHifiGANGenerator
 from so_vits_svc_fork.modules.decoders.mb_istft import (
     Multiband_iSTFT_Generator,
     Multistream_iSTFT_Generator,
@@ -110,7 +110,7 @@ class SynthesizerTrn(nn.Module):
                 "upsample_kernel_sizes": upsample_kernel_sizes,
                 "gin_channels": gin_channels,
             }
-            self.dec = Generator(h=hps)
+            self.dec = NSFHifiGANGenerator(h=hps)
             self.mb = False
         else:
             hps = {

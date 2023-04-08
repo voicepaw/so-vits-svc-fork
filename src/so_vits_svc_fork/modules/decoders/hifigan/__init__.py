@@ -1,3 +1,3 @@
-from ._models import Generator
+from ._models import NSFHifiGANGenerator
 
-__all__ = ["Generator"]
+__all__ = ["NSFHifiGANGenerator"]

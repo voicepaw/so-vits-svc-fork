@@ -360,7 +360,7 @@ class Multistream_iSTFT_Generator(torch.nn.Module):
 
         y_mb_hat = F.conv_transpose1d(
             y_mb_hat,
-            self.updown_filter.cuda(x.device) * self.subbands,
+            self.updown_filter.to(x.device) * self.subbands,
             stride=self.subbands,
         )
 
