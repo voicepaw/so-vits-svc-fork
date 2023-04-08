@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 import warnings
 from logging import getLogger
 from pathlib import Path
@@ -7,6 +8,7 @@ from typing import Any
 
 import lightning.pytorch as pl
 import torch
+from lightning.pytorch.accelerators import TPUAccelerator
 from lightning.pytorch.loggers import TensorBoardLogger
 from torch.cuda.amp import autocast
 from torch.nn import functional as F
@@ -24,8 +26,33 @@ from .modules.mel_processing import mel_spectrogram_torch
 from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
-getLogger("lightning").propagate = False
 torch.backends.cudnn.benchmark = True
+
+
+class VCDataModule(pl.LightningDataModule):
+    def __init__(self, hparams: Any):
+        super().__init__()
+        self.__hparams = hparams
+        self.collate_fn = TextAudioCollate()
+
+        # these should be called in setup(), but we need to calculate check_val_every_n_epoch
+        self.train_dataset = TextAudioDataset(self.__hparams, is_validation=False)
+        self.val_dataset = TextAudioDataset(self.__hparams, is_validation=True)
+
+    def train_dataloader(self):
+        # since dataset just reads data from a file, set num_workers to 0
+        return DataLoader(
+            self.train_dataset,
+            batch_size=self.__hparams.train.batch_size,
+            collate_fn=self.collate_fn,
+        )
+
+    def val_dataloader(self):
+        return DataLoader(
+            self.val_dataset,
+            batch_size=1,
+            collate_fn=self.collate_fn,
+        )
 
 
 def train(
@@ -37,30 +64,19 @@ def train(
     hparams = utils.get_backup_hparams(config_path, model_path)
     utils.ensure_pretrained_model(model_path, hparams.model.get("type_", "hifi-gan"))
 
-    collate_fn = TextAudioCollate()
-    train_dataset = TextAudioDataset(hparams)
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=hparams.train.batch_size,
-        collate_fn=collate_fn,
-    )
-    eval_dataset = TextAudioDataset(hparams, is_validation=True)
-    eval_loader = DataLoader(
-        eval_dataset,
-        batch_size=1,
-        collate_fn=collate_fn,
-    )
+    datamodule = VCDataModule(hparams)
     trainer = pl.Trainer(
         logger=TensorBoardLogger(model_path),
-        profiler="simple",
+        # profiler="simple",
         max_epochs=hparams.train.epochs,
-        check_val_every_n_epoch=hparams.train.eval_interval // len(train_dataset),
+        check_val_every_n_epoch=math.ceil(
+            hparams.train.eval_interval
+            / len(datamodule.train_dataset)
+            * hparams.train.batch_size
+        ),
     )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
-    trainer.fit(model, train_loader, eval_loader)
-
-
-from lightning.pytorch.accelerators import TPUAccelerator
+    trainer.fit(model, datamodule=datamodule)
 
 
 class VitsLightning(pl.LightningModule):
@@ -104,10 +120,12 @@ class VitsLightning(pl.LightningModule):
             torch.stft = stft
 
     def set_current_epoch(self, epoch: int):
+        LOG.info(f"Setting current epoch to {epoch}")
         self.trainer.fit_loop.epoch_progress.current.completed = epoch
         assert self.current_epoch == epoch, f"{self.current_epoch} != {epoch}"
 
     def set_global_step(self, global_step: int):
+        LOG.info(f"Setting global step to {global_step}")
         self.trainer.fit_loop.epoch_loop.manual_optimization.optim_step_progress.total.completed = (
             global_step
         )
@@ -237,7 +255,8 @@ class VitsLightning(pl.LightningModule):
 
         # generator loss
         LOG.debug("Calculating generator loss")
-        y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
+        with torch.no_grad():
+            y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
         with autocast(enabled=False):
             loss_mel = F.l1_loss(y_mel, y_hat_mel) * self.hparams.train.c_mel
             loss_kl = (
@@ -267,7 +286,8 @@ class VitsLightning(pl.LightningModule):
                 "loss/g/mel": loss_mel,
                 "loss/g/kl": loss_kl,
                 "loss/g/lf0": loss_lf0,
-            }
+            },
+            prog_bar=True,
         )
         if self.hparams.model.get("type_") == "mb-istft":
             self.log("loss/g/subband", loss_subband)
@@ -313,7 +333,7 @@ class VitsLightning(pl.LightningModule):
             loss_disc_all = loss_disc
 
         # log loss
-        self.log("loss/d/total", loss_disc_all)
+        self.log("loss/d/total", loss_disc_all, prog_bar=True)
         self.log("grad_norm_d", commons.clip_grad_value_(self.net_d.parameters(), None))
 
         # optimizer
@@ -322,39 +342,41 @@ class VitsLightning(pl.LightningModule):
         optim_d.step()
         self.untoggle_optimizer(optim_d)
 
-
-def validation_step(self, batch, batch_idx):
-    self.net_g.eval()
-    c, f0, _, mel, y, g, _, uv = batch
-    y_hat = self.net_g.infer(c, f0, uv, g=g)
-    y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
-    self.log_audio_dict(
-        {f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]}
-    )
-    self.log_image_dict(
-        {
-            "gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().numpy()),
-            "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
-        }
-    )
-    utils.save_checkpoint(
-        self.net_g,
-        self.optim_g,
-        self.hparams.train.learning_rate,
-        self.current_epoch,
-        Path(self.hparams.model_dir) / f"G_{self.global_step}.pth",
-    )
-    utils.save_checkpoint(
-        self.net_d,
-        self.optim_d,
-        self.hparams.train.learning_rate,
-        self.current_epoch,
-        Path(self.hparams.model_dir) / f"D_{self.global_step}.pth",
-    )
-    keep_ckpts = self.hparams.train.get("keep_ckpts", 0)
-    if keep_ckpts > 0:
-        utils.clean_checkpoints(
-            path_to_models=self.hparams.model_dir,
-            n_ckpts_to_keep=keep_ckpts,
-            sort_by_time=True,
-        )
+    def validation_step(self, batch, batch_idx):
+        with torch.no_grad():
+            self.net_g.eval()
+            c, f0, _, mel, y, g, _, uv = batch
+            y_hat = self.net_g.infer(c, f0, uv, g=g)
+            y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
+            self.log_audio_dict(
+                {f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]}
+            )
+            self.log_image_dict(
+                {
+                    "gen/mel": utils.plot_spectrogram_to_numpy(
+                        y_hat_mel[0].cpu().numpy()
+                    ),
+                    "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
+                }
+            )
+            utils.save_checkpoint(
+                self.net_g,
+                self.optim_g,
+                self.hparams.train.learning_rate,
+                self.current_epoch,
+                Path(self.hparams.model_dir) / f"G_{self.global_step}.pth",
+            )
+            utils.save_checkpoint(
+                self.net_d,
+                self.optim_d,
+                self.hparams.train.learning_rate,
+                self.current_epoch,
+                Path(self.hparams.model_dir) / f"D_{self.global_step}.pth",
+            )
+            keep_ckpts = self.hparams.train.get("keep_ckpts", 0)
+            if keep_ckpts > 0:
+                utils.clean_checkpoints(
+                    path_to_models=self.hparams.model_dir,
+                    n_ckpts_to_keep=keep_ckpts,
+                    sort_by_time=True,
+                )
