@@ -151,6 +151,8 @@ tests/**/*.download
 tests/**/*.lab
 tests/**/*.pdf
 tests/**/*.csv
+tests/**/*.ckpt
+tests/**/*.yaml
 *.tfevents.*
 *.pt
 user_gui_presets.json
