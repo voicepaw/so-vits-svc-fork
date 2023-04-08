@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.0 (2023-04-08)
+### Feature
+* Migrate to lightning ([#246](https://github.com/34j/so-vits-svc-fork/issues/246)) ([`824ecbd`](https://github.com/34j/so-vits-svc-fork/commit/824ecbd7222b9b9ada77c4fbbd7ae7f491049f21))
+
 ## v3.0.5 (2023-04-08)
 ### Fix
 * **cluster:** Fix train_cluster ([#250](https://github.com/34j/so-vits-svc-fork/issues/250)) ([`b0c93e4`](https://github.com/34j/so-vits-svc-fork/commit/b0c93e49f9cdfdcd714575fc27011bf56ce4493d))
