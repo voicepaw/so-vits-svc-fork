@@ -249,7 +249,9 @@ class VitsLightning(pl.LightningModule):
             lf0,
         ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
 
-        y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
+        y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).cpu(), self.hparams).to(
+            self.device
+        )
         if self.is_ipu:
             y_mel = mel[
                 ...,
