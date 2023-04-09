@@ -196,6 +196,7 @@ class VitsLightning(pl.LightningModule):
                 raise RuntimeError("Failed to load checkpoint") from e
         else:
             LOG.warning("No checkpoint found. Start from scratch.")
+        self.loaded = True
 
     def __init__(self, reset_optimizer: bool = False, **hparams: Any):
         super().__init__()
@@ -227,6 +228,7 @@ class VitsLightning(pl.LightningModule):
         self.scheduler_d = torch.optim.lr_scheduler.ExponentialLR(
             self.optim_d, gamma=self.hparams.train.lr_decay
         )
+        self.loaded = False
 
     def configure_optimizers(self):
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
@@ -377,6 +379,8 @@ class VitsLightning(pl.LightningModule):
         self.untoggle_optimizer(optim_d)
 
     def validation_step(self, batch, batch_idx):
+        if not self.loaded:
+            return
         with torch.no_grad():
             self.net_g.eval()
             c, f0, _, mel, y, g, _, uv = batch
