@@ -79,6 +79,10 @@ myst-parser = ">=0.16"
 sphinx = ">=4.0"
 sphinx-rtd-theme = ">=1.0"
 
+
+[tool.poetry.group.tpu.dependencies]
+tensorflow = "*"
+
 [tool.semantic_release]
 branch = "main"
 version_toml = "pyproject.toml:tool.poetry.version"

@@ -87,38 +87,67 @@ class VitsLightning(pl.LightningModule):
         # check if using tpu
         if isinstance(self.trainer.accelerator, TPUAccelerator):
             # patch torch.stft to use cpu
-            LOG.warning("Using TPU. Patching torch.stft to use cpu.")
+            try:
+                import tensorflow as tf
 
-            def stft(
-                input: torch.Tensor,
-                n_fft: int,
-                hop_length: int | None = None,
-                win_length: int | None = None,
-                window: torch.Tensor | None = None,
-                center: bool = True,
-                pad_mode: str = "reflect",
-                normalized: bool = False,
-                onesided: bool | None = None,
-                return_complex: bool | None = None,
-            ) -> torch.Tensor:
-                device = input.device
-                input = input.cpu()
-                if window is not None:
-                    window = window.cpu()
-                return torch.functional.stft(
-                    input,
-                    n_fft,
-                    hop_length,
-                    win_length,
-                    window,
-                    center,
-                    pad_mode,
-                    normalized,
-                    onesided,
-                    return_complex,
-                ).to(device)
+                LOG.warning("Using TPU. Patching torch.stft to use tensorflow.")
 
-            torch.stft = stft
+                def stft(
+                    input: torch.Tensor,
+                    n_fft: int,
+                    hop_length: int | None = None,
+                    win_length: int | None = None,
+                    window: torch.Tensor | None = None,
+                    center: bool = True,
+                    pad_mode: str = "reflect",
+                    normalized: bool = False,
+                    onesided: bool | None = None,
+                    return_complex: bool | None = None,
+                ) -> torch.Tensor:
+                    input = tf.convert_to_tensor(input)
+                    output = tf.signal.stft(
+                        input,
+                        fft_length=n_fft,
+                        frame_length=win_length,
+                        frame_step=hop_length,
+                        pad_end=False,
+                    )
+                    return torch.from_numpy(output.numpy())
+
+                torch.stft = stft
+            except ImportError:
+                LOG.warning("Failed to import tensorflow. Using slow stft.")
+
+                def stft(
+                    input: torch.Tensor,
+                    n_fft: int,
+                    hop_length: int | None = None,
+                    win_length: int | None = None,
+                    window: torch.Tensor | None = None,
+                    center: bool = True,
+                    pad_mode: str = "reflect",
+                    normalized: bool = False,
+                    onesided: bool | None = None,
+                    return_complex: bool | None = None,
+                ) -> torch.Tensor:
+                    device = input.device
+                    input = input.cpu()
+                    if window is not None:
+                        window = window.cpu()
+                    return torch.functional.stft(
+                        input,
+                        n_fft,
+                        hop_length,
+                        win_length,
+                        window,
+                        center,
+                        pad_mode,
+                        normalized,
+                        onesided,
+                        return_complex,
+                    ).to(device)
+
+                torch.stft = stft
 
     def set_current_epoch(self, epoch: int):
         LOG.info(f"Setting current epoch to {epoch}")
