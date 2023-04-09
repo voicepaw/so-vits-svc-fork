@@ -354,9 +354,9 @@ class VitsLightning(pl.LightningModule):
             )
 
         # optimizer
+        optim_g.zero_grad()
         self.manual_backward(loss_gen_all)
         optim_g.step()
-        optim_g.zero_grad()
         self.untoggle_optimizer(optim_g)
 
         # Discriminator
@@ -378,9 +378,9 @@ class VitsLightning(pl.LightningModule):
         )
 
         # optimizer
+        optim_d.zero_grad()
         self.manual_backward(loss_disc_all)
         optim_d.step()
-        optim_d.zero_grad()
         self.untoggle_optimizer(optim_d)
 
     def validation_step(self, batch, batch_idx):
