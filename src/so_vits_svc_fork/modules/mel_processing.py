@@ -1,4 +1,4 @@
-"""from logging import getLogger
+from logging import getLogger
 
 import torch
 import torch.utils.data
@@ -42,7 +42,8 @@ def mel_spectrogram_torch(audio: torch.Tensor, hps: HParams) -> torch.Tensor:
         power=1.0,
         window_fn=torch.hann_window,
         normalized=False,
-    ).to(audio.device)(audio)"""
+    ).to(audio.device)(audio)
+
 
 from logging import getLogger
 
@@ -87,7 +88,7 @@ mel_basis = {}
 hann_window = {}
 
 
-def spectrogram_torch(y, hps, center=False):
+def spectrogram_torch_old(y, hps, center=False):
     if torch.min(y) < -1.0:
         LOG.info("min value is ", torch.min(y))
     if torch.max(y) > 1.0:
@@ -127,7 +128,7 @@ def spectrogram_torch(y, hps, center=False):
     return spec
 
 
-def spec_to_mel_torch(spec, hps):
+def spec_to_mel_torch_old(spec, hps):
     sampling_rate = hps.data.sampling_rate
     n_fft = hps.data.filter_length
     num_mels = hps.data.n_mel_channels
@@ -148,7 +149,7 @@ def spec_to_mel_torch(spec, hps):
     return spec
 
 
-def mel_spectrogram_torch(y, hps, center=False):
+def mel_spectrogram_torch_old(y, hps, center=False):
     sampling_rate = hps.data.sampling_rate
     n_fft = hps.data.filter_length
     num_mels = hps.data.n_mel_channels
