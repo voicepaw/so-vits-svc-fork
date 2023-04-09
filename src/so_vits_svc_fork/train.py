@@ -8,7 +8,7 @@ from typing import Any
 
 import lightning.pytorch as pl
 import torch
-from lightning.pytorch.accelerators import TPUAccelerator
+from lightning.pytorch.accelerators import IPUAccelerator, TPUAccelerator
 from lightning.pytorch.loggers import TensorBoardLogger
 from torch.cuda.amp import autocast
 from torch.nn import functional as F
@@ -195,6 +195,8 @@ class VitsLightning(pl.LightningModule):
         )
 
     def configure_optimizers(self):
+        if isinstance(self.trainer.accelerator, IPUAccelerator):
+            return self.optim_g, self.optim_d
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
 
     def log_image_dict(
@@ -225,7 +227,10 @@ class VitsLightning(pl.LightningModule):
         self.net_d.train()
 
         # get optims
-        optim_g, optim_d = self.optimizers()
+        if isinstance(self.trainer.accelerator, IPUAccelerator):
+            optim_g = self.optimizers()
+        else:
+            optim_g, optim_d = self.optimizers()
 
         # Generator
         # train
@@ -320,6 +325,8 @@ class VitsLightning(pl.LightningModule):
         optim_g.zero_grad()
         self.untoggle_optimizer(optim_g)
 
+        if isinstance(self.trainer.accelerator, IPUAccelerator):
+            return
         # Discriminator
         # train
         self.toggle_optimizer(optim_d)
