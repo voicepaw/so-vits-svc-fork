@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.2 (2023-04-09)
+### Fix
+* Remove wrong test and trigger release ([#266](https://github.com/34j/so-vits-svc-fork/issues/266)) ([`9ea77e4`](https://github.com/34j/so-vits-svc-fork/commit/9ea77e4c5c6575844685998e237994d54be84bb9))
+* **deps:** Remove pydantic constraints ([#263](https://github.com/34j/so-vits-svc-fork/issues/263)) ([`f446e3b`](https://github.com/34j/so-vits-svc-fork/commit/f446e3bbd62205b9c847e9ecdc46f519417b572a))
+* Fix fastapi version to 0.88 ([#261](https://github.com/34j/so-vits-svc-fork/issues/261)) ([`a26f387`](https://github.com/34j/so-vits-svc-fork/commit/a26f387abea585c300cd1ed0c36c6b9afc731764))
+* **utils:** Fix get_optimal_device ([#262](https://github.com/34j/so-vits-svc-fork/issues/262)) ([`79e4b5a`](https://github.com/34j/so-vits-svc-fork/commit/79e4b5a0abe20789335eaaf4a359880c099aaa35))
+
 ## v3.1.1 (2023-04-08)
 ### Fix
 * **deps:** Update dependency fastapi to <0.96 ([#255](https://github.com/34j/so-vits-svc-fork/issues/255)) ([`29c8cc0`](https://github.com/34j/so-vits-svc-fork/commit/29c8cc05b7e5180058e03f2dc1f681e58cc67f09))
