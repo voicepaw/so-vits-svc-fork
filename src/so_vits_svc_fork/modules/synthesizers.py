@@ -163,7 +163,26 @@ class SynthesizerTrn(nn.Module):
         )
         self.emb_uv = nn.Embedding(2, hidden_channels)
 
-    def forward(self, c, f0, uv, spec, g=None, c_lengths=None, spec_lengths=None):
+    def forward(
+        self,
+        c: torch.Tensor,
+        f0: torch.Tensor,
+        uv: torch.Tensor,
+        spec: torch.Tensor,
+        g: torch.Tensor,
+        c_lengths: torch.Tensor,
+        spec_lengths: torch.Tensor,
+    ) -> torch.Tensor:
+        """
+        B: batch size
+        c: content, (B, ssl_dim, T)
+        f0: f0, (B, T)
+        uv: uv, (B, T)
+        spec: spectrogram, (B, F, T)
+        g: speaker id, (B,)
+        c_lengths: content length, (B,)
+        spec_lengths: spectrogram length, (B,)
+        """
         g = self.emb_g(g).transpose(1, 2)
         # ssl prenet
         x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(
@@ -179,24 +198,29 @@ class SynthesizerTrn(nn.Module):
         # encoder
         z_ptemp, m_p, logs_p, _ = self.enc_p(x, x_mask, f0=f0_to_coarse(f0))
         z, m_q, logs_q, spec_mask = self.enc_q(spec, spec_lengths, g=g)
+        # z: [batch, dim, time]
 
         # flow
         z_p = self.flow(z, spec_mask, g=g)
-        z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(
-            z, f0, spec_lengths, self.segment_size
-        )
+
+        # randomly slice to time = self.segment_size
+        slice_starts = (
+            torch.rand(z.size(0)) * (spec_lengths - self.segment_size)
+        ).long()
+        z_slice = commons.slice_2d_segments(z_p, slice_starts, self.segment_size)
+        f0_slice = commons.slice_1d_segments(f0, slice_starts, self.segment_size)
 
         # MB-iSTFT-VITS
         if self.mb:
             o, o_mb = self.dec(z_slice, g=g)
         # HiFi-GAN
         else:
-            o = self.dec(z_slice, g=g, f0=pitch_slice)
+            o = self.dec(z_slice, g=g, f0=f0_slice)
             o_mb = None
         return (
             o,
             o_mb,
-            ids_slice,
+            slice_starts,
             spec_mask,
             (z, z_p, m_p, logs_p, m_q, logs_q),
             pred_lf0,
@@ -204,7 +228,15 @@ class SynthesizerTrn(nn.Module):
             lf0,
         )
 
-    def infer(self, c, f0, uv, g=None, noice_scale=0.35, predict_f0=False):
+    def infer(
+        self,
+        c: torch.Tensor,
+        f0: torch.Tensor,
+        uv: torch.Tensor,
+        g: torch.Tensor,
+        noice_scale: float = 0.35,
+        predict_f0: bool = False,
+    ) -> torch.Tensor:
         c_lengths = (torch.ones(c.size(0)) * c.size(-1)).to(c.device)
         g = self.emb_g(g).transpose(1, 2)
         x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(

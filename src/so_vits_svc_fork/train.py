@@ -246,13 +246,13 @@ class VitsLightning(pl.LightningModule):
             norm_lf0,
             lf0,
         ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
-        y_mel = commons.slice_segments(
+        y_mel = commons.slice_2d_segments(
             mel,
             ids_slice,
             self.hparams.train.segment_size // self.hparams.data.hop_length,
         )
         y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
-        y = commons.slice_segments(
+        y = commons.slice_2d_segments(
             y,
             ids_slice * self.hparams.data.hop_length,
             self.hparams.train.segment_size,
