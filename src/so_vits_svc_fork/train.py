@@ -8,7 +8,7 @@ from typing import Any
 
 import lightning.pytorch as pl
 import torch
-from lightning.pytorch.accelerators import TPUAccelerator
+from lightning.pytorch.accelerators import IPUAccelerator, TPUAccelerator
 from lightning.pytorch.loggers import TensorBoardLogger
 from torch.cuda.amp import autocast
 from torch.nn import functional as F
@@ -125,6 +125,92 @@ class VitsLightning(pl.LightningModule):
 
             torch.stft = stft
 
+        if isinstance(self.trainer.accelerator, IPUAccelerator):
+            # patch mel_scale_fbanks
+            LOG.warning(
+                "Using IPU. Patching torchaudio.functional.mel_scale_fbanks not to use max()"
+            )
+
+            import torchaudio.functional
+            from torchaudio.functional.functional import (
+                _create_triangular_filterbank,
+                _hz_to_mel,
+                _mel_to_hz,
+            )
+
+            def melscale_fbanks(
+                n_freqs: int,
+                f_min: float,
+                f_max: float,
+                n_mels: int,
+                sample_rate: int,
+                norm: str | None = None,
+                mel_scale: str = "htk",
+            ) -> torch.Tensor:
+                r"""Create a frequency bin conversion matrix.
+
+                .. devices:: CPU
+
+                .. properties:: TorchScript
+
+                Note:
+                    For the sake of the numerical compatibility with librosa, not all the coefficients
+                    in the resulting filter bank has magnitude of 1.
+
+                    .. image:: https://download.pytorch.org/torchaudio/doc-assets/mel_fbanks.png
+                    :alt: Visualization of generated filter bank
+
+                Args:
+                    n_freqs (int): Number of frequencies to highlight/apply
+                    f_min (float): Minimum frequency (Hz)
+                    f_max (float): Maximum frequency (Hz)
+                    n_mels (int): Number of mel filterbanks
+                    sample_rate (int): Sample rate of the audio waveform
+                    norm (str or None, optional): If "slaney", divide the triangular mel weights by the width of the mel band
+                        (area normalization). (Default: ``None``)
+                    mel_scale (str, optional): Scale to use: ``htk`` or ``slaney``. (Default: ``htk``)
+
+                Returns:
+                    Tensor: Triangular filter banks (fb matrix) of size (``n_freqs``, ``n_mels``)
+                    meaning number of frequencies to highlight/apply to x the number of filterbanks.
+                    Each column is a filterbank so that assuming there is a matrix A of
+                    size (..., ``n_freqs``), the applied result would be
+                    ``A * melscale_fbanks(A.size(-1), ...)``.
+
+                """
+
+                if norm is not None and norm != "slaney":
+                    raise ValueError('norm must be one of None or "slaney"')
+
+                # freq bins
+                all_freqs = torch.linspace(0, sample_rate // 2, n_freqs)
+
+                # calculate mel freq bins
+                m_min = _hz_to_mel(f_min, mel_scale=mel_scale)
+                m_max = _hz_to_mel(f_max, mel_scale=mel_scale)
+
+                m_pts = torch.linspace(m_min, m_max, n_mels + 2)
+                f_pts = _mel_to_hz(m_pts, mel_scale=mel_scale)
+
+                # create filterbank
+                fb = _create_triangular_filterbank(all_freqs, f_pts)
+
+                if norm is not None and norm == "slaney":
+                    # Slaney-style mel is scaled to be approx constant energy per channel
+                    enorm = 2.0 / (f_pts[2 : n_mels + 2] - f_pts[:n_mels])
+                    fb *= enorm.unsqueeze(0)
+
+                # if (fb.max(dim=0).values == 0.0).any():
+                #    warnings.warn(
+                #        "At least one mel filterbank has all zero values. "
+                #        f"The value for `n_mels` ({n_mels}) may be set too high. "
+                #        f"Or, the value for `n_freqs` ({n_freqs}) may be set too low."
+                #    )
+
+                return fb
+
+            torchaudio.functional.melscale_fbanks = melscale_fbanks
+
     def set_current_epoch(self, epoch: int):
         LOG.info(f"Setting current epoch to {epoch}")
         self.trainer.fit_loop.epoch_progress.current.completed = epoch
@@ -176,6 +262,7 @@ class VitsLightning(pl.LightningModule):
         self.net_g = SynthesizerTrn(
             self.hparams.data.filter_length // 2 + 1,
             self.hparams.train.segment_size // self.hparams.data.hop_length,
+            ipu=True,
             **self.hparams.model,
         )
         self.net_d = MultiPeriodDiscriminator(self.hparams.model.use_spectral_norm)
@@ -183,13 +270,13 @@ class VitsLightning(pl.LightningModule):
         self.optim_g = torch.optim.AdamW(
             self.net_g.parameters(),
             self.hparams.train.learning_rate,
-            betas=self.hparams.train.betas,
+            betas=tuple(self.hparams.train.betas),
             eps=self.hparams.train.eps,
         )
         self.optim_d = torch.optim.AdamW(
             self.net_d.parameters(),
             self.hparams.train.learning_rate,
-            betas=self.hparams.train.betas,
+            betas=tuple(self.hparams.train.betas),
             eps=self.hparams.train.eps,
         )
         self.scheduler_g = torch.optim.lr_scheduler.ExponentialLR(
@@ -200,6 +287,8 @@ class VitsLightning(pl.LightningModule):
         )
 
     def configure_optimizers(self):
+        if isinstance(self.trainer.accelerator, IPUAccelerator):
+            return [self.optim_g], [self.scheduler_g]
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
 
     def log_image_dict(
@@ -230,7 +319,11 @@ class VitsLightning(pl.LightningModule):
         self.net_d.train()
 
         # get optims
-        optim_g, optim_d = self.optimizers()
+        self.is_ipu = isinstance(self.trainer.accelerator, IPUAccelerator)
+        if self.is_ipu:
+            optim_g = self.optimizers()
+        else:
+            optim_g, optim_d = self.optimizers()
 
         # Generator
         # train
@@ -246,17 +339,32 @@ class VitsLightning(pl.LightningModule):
             norm_lf0,
             lf0,
         ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
-        y_mel = commons.slice_segments(
-            mel,
-            ids_slice,
-            self.hparams.train.segment_size // self.hparams.data.hop_length,
-        )
+
         y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
-        y = commons.slice_segments(
-            y,
-            ids_slice * self.hparams.data.hop_length,
-            self.hparams.train.segment_size,
-        )
+        if self.is_ipu:
+            y_mel = mel[
+                ...,
+                ids_slice : self.hparams.train.segment_size
+                // self.hparams.data.hop_length
+                + ids_slice,
+            ]
+            y = y[
+                ...,
+                ids_slice
+                * self.hparams.data.hop_length : self.hparams.train.segment_size
+                + ids_slice * self.hparams.data.hop_length,
+            ]
+        else:
+            y_mel = commons.slice_2d_segments(
+                mel,
+                ids_slice,
+                self.hparams.train.segment_size // self.hparams.data.hop_length,
+            )
+            y = commons.slice_2d_segments(
+                y,
+                ids_slice * self.hparams.data.hop_length,
+                self.hparams.train.segment_size,
+            )
 
         # generator loss
         LOG.debug("Calculating generator loss")
@@ -325,6 +433,8 @@ class VitsLightning(pl.LightningModule):
         optim_g.zero_grad()
         self.untoggle_optimizer(optim_g)
 
+        if self.is_ipu:
+            return
         # Discriminator
         # train
         self.toggle_optimizer(optim_d)
