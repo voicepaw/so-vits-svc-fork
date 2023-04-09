@@ -95,6 +95,7 @@ class VitsLightning(pl.LightningModule):
 
         # check if using tpu
         if isinstance(self.trainer.accelerator, TPUAccelerator):
+            LOG.setLevel("DEBUG")
             # patch torch.stft to use cpu
             try:
                 import tensorflow as tf
