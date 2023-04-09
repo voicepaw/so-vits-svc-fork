@@ -290,7 +290,9 @@ class VitsLightning(pl.LightningModule):
             self.hparams.train.segment_size // self.hparams.data.hop_length,
         )
         LOG.debug("Calculating mel spectrogram")
-        y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
+        y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).cpu(), self.hparams).to(
+            self.device
+        )
         LOG.debug("Slice segments")
         y = commons.slice_segments(
             y,
