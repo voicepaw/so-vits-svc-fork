@@ -9,8 +9,6 @@ IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
 
 class TestMain(TestCase):
     def test_import(self):
-        from pydantic import Schema  # noqa
-
         import so_vits_svc_fork.cluster.train_cluster  # noqa
         import so_vits_svc_fork.inference.main  # noqa
 
