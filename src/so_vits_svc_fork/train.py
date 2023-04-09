@@ -249,9 +249,9 @@ class VitsLightning(pl.LightningModule):
             lf0,
         ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
 
-        y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).cpu(), self.hparams).to(
-            self.device
-        )
+        y_hat_mel = mel_spectrogram_torch(
+            y_hat.squeeze(1).detach().cpu(), self.hparams
+        ).to(self.device)
         if self.is_ipu:
             y_mel = mel[
                 ...,
@@ -344,7 +344,7 @@ class VitsLightning(pl.LightningModule):
         optim_g.zero_grad()
         self.untoggle_optimizer(optim_g)
 
-        if isinstance(self.trainer.accelerator, IPUAccelerator):
+        if self.is_ipu:
             return
         # Discriminator
         # train
