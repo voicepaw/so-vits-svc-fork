@@ -364,6 +364,8 @@ class VitsLightning(pl.LightningModule):
                     "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
                 }
             )
+            if self.current_epoch == 0:
+                return
             utils.save_checkpoint(
                 self.net_g,
                 self.optim_g,
