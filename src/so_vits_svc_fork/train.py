@@ -149,12 +149,12 @@ class VitsLightning(pl.LightningModule):
             total_batch_idx
         )
         assert (
-            self.total_batch_idx == total_batch_idx
-        ), f"{self.total_batch_idx} != {total_batch_idx}"
+            self.total_batch_idx == total_batch_idx + 1
+        ), f"{self.total_batch_idx} != {total_batch_idx + 1}"
 
     @property
     def total_batch_idx(self) -> int:
-        return self.trainer.fit_loop.epoch_loop.total_batch_idx
+        return self.trainer.fit_loop.epoch_loop.total_batch_idx + 1
 
     def load(self, reset_optimizer: bool = False):
         latest_g_path = utils.latest_checkpoint_path(self.hparams.model_dir, "G_*.pth")
