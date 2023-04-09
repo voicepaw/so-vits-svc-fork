@@ -5,12 +5,12 @@ from torch.nn import functional as F
 
 
 def slice_pitch_segments(x, ids_str, segment_size=4):
-    ret = torch.zeros_like(x[:, :segment_size])
+    """ret = torch.zeros_like(x[:, :segment_size])
     for i in range(x.size(0)):
         idx_str = ids_str[i]
         idx_end = idx_str + segment_size
-        ret[i] = x[i, idx_str:idx_end]
-    return ret
+        ret[i] = x[i, idx_str:idx_end]"""
+    return x[:, ids_str : ids_str + segment_size]
 
 
 def rand_slice_segments_with_pitch(x, pitch, x_lengths=None, segment_size=4):
