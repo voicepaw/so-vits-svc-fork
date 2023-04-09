@@ -10,7 +10,10 @@ def slice_pitch_segments(x, ids_str, segment_size=4):
         idx_str = ids_str[i]
         idx_end = idx_str + segment_size
         ret[i] = x[i, idx_str:idx_end]"""
-    return x[:, ids_str : ids_str + segment_size]
+    idx_str = ids_str.unsqueeze(1)
+    idx_end = idx_str + segment_size
+    ret = x.gather(1, torch.arange(idx_str, idx_end).unsqueeze(2)).squeeze(2)
+    return ret
 
 
 def rand_slice_segments_with_pitch(x, pitch, x_lengths=None, segment_size=4):
@@ -19,7 +22,7 @@ def rand_slice_segments_with_pitch(x, pitch, x_lengths=None, segment_size=4):
         x_lengths = t
     ids_str_max = x_lengths - segment_size + 1
     ids_str = (torch.rand([b]).to(device=x.device) * ids_str_max).to(dtype=torch.long)
-    ret = slice_segments(x, ids_str, segment_size)
+    ret = slice_pitch_segments(x, ids_str, segment_size)
     ret_pitch = slice_pitch_segments(pitch, ids_str, segment_size)
     return ret, ret_pitch, ids_str
 
