@@ -183,6 +183,7 @@ class VitsLightning(pl.LightningModule):
 
     def __init__(self, reset_optimizer: bool = False, **hparams: Any):
         super().__init__()
+        self._temp_epoch = 0  # Add this line to initialize the _temp_epoch attribute
         self.save_hyperparameters("reset_optimizer")
         self.save_hyperparameters(*[k for k in hparams.keys()])
         torch.manual_seed(self.hparams.train.seed)
