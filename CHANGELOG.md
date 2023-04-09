@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.4 (2023-04-09)
+### Fix
+* **train:** Add bf16 and fp16 support ([#268](https://github.com/34j/so-vits-svc-fork/issues/268)) ([`4229fd8`](https://github.com/34j/so-vits-svc-fork/commit/4229fd8ead64cf03caad9acd3d8f7f0fec3a7fee))
+
 ## v3.1.3 (2023-04-09)
 ### Fix
 * **deps:** Update dependency starlette to v0.26.1 ([#256](https://github.com/34j/so-vits-svc-fork/issues/256)) ([`5eb574b`](https://github.com/34j/so-vits-svc-fork/commit/5eb574bec01430399df48e90e6112cef85e21945))
