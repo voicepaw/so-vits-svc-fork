@@ -51,6 +51,7 @@ class SynthesizerTrn(nn.Module):
         gen_istft_n_fft: int = 16,
         gen_istft_hop_size: int = 4,
         subbands: int = 4,
+        ipu: bool = False,
         **kwargs: Any,
     ):
         super().__init__()
@@ -162,6 +163,7 @@ class SynthesizerTrn(nn.Module):
             spk_channels=gin_channels,
         )
         self.emb_uv = nn.Embedding(2, hidden_channels)
+        self.ipu = ipu
 
     def forward(
         self,
@@ -204,11 +206,18 @@ class SynthesizerTrn(nn.Module):
         z_p = self.flow(z, spec_mask, g=g)
 
         # randomly slice to time = self.segment_size
-        slice_starts = (
-            torch.rand(z.size(0)) * (spec_lengths - self.segment_size)
-        ).long()
-        z_slice = commons.slice_2d_segments(z_p, slice_starts, self.segment_size)
-        f0_slice = commons.slice_1d_segments(f0, slice_starts, self.segment_size)
+        if not self.ipu:
+            slice_starts = (
+                torch.rand(z.size(0)) * (spec_lengths - self.segment_size)
+            ).long()
+            z_slice = commons.slice_2d_segments(z, slice_starts, self.segment_size)
+            f0_slice = commons.slice_1d_segments(f0, slice_starts, self.segment_size)
+        else:
+            slice_starts = torch.randint(
+                0, spec_lengths - self.segment_size, (1,)
+            ).item()
+            z_slice = z[..., slice_starts : slice_starts + self.segment_size]
+            f0_slice = f0[..., slice_starts : slice_starts + self.segment_size]
 
         # MB-iSTFT-VITS
         if self.mb:

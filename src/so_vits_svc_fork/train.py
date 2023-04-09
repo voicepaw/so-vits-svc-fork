@@ -171,6 +171,7 @@ class VitsLightning(pl.LightningModule):
         self.net_g = SynthesizerTrn(
             self.hparams.data.filter_length // 2 + 1,
             self.hparams.train.segment_size // self.hparams.data.hop_length,
+            ipu=True,
             **self.hparams.model,
         )
         self.net_d = MultiPeriodDiscriminator(self.hparams.model.use_spectral_norm)
@@ -227,7 +228,8 @@ class VitsLightning(pl.LightningModule):
         self.net_d.train()
 
         # get optims
-        if isinstance(self.trainer.accelerator, IPUAccelerator):
+        self.is_ipu = isinstance(self.trainer.accelerator, IPUAccelerator)
+        if self.is_ipu:
             optim_g = self.optimizers()
         else:
             optim_g, optim_d = self.optimizers()
@@ -246,17 +248,32 @@ class VitsLightning(pl.LightningModule):
             norm_lf0,
             lf0,
         ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
-        y_mel = commons.slice_2d_segments(
-            mel,
-            ids_slice,
-            self.hparams.train.segment_size // self.hparams.data.hop_length,
-        )
+
         y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
-        y = commons.slice_2d_segments(
-            y,
-            ids_slice * self.hparams.data.hop_length,
-            self.hparams.train.segment_size,
-        )
+        if self.is_ipu:
+            y_mel = mel[
+                ...,
+                ids_slice : self.hparams.train.segment_size
+                // self.hparams.data.hop_length
+                + ids_slice,
+            ]
+            y = y[
+                ...,
+                ids_slice
+                * self.hparams.data.hop_length : self.hparams.train.segment_size
+                + ids_slice * self.hparams.data.hop_length,
+            ]
+        else:
+            y_mel = commons.slice_2d_segments(
+                mel,
+                ids_slice,
+                self.hparams.train.segment_size // self.hparams.data.hop_length,
+            )
+            y = commons.slice_2d_segments(
+                y,
+                ids_slice * self.hparams.data.hop_length,
+                self.hparams.train.segment_size,
+            )
 
         # generator loss
         LOG.debug("Calculating generator loss")
