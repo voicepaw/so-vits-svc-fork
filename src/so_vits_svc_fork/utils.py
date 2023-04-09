@@ -30,7 +30,10 @@ def get_optimal_device(index: int = 0) -> torch.device:
         return torch.device(f"cuda:{index % torch.cuda.device_count()}")
     else:
         try:
-            return torch.device("xla")
+            import torch_xla.core.xla_model as xm  # noqa
+
+            if xm.xrt_world_size() > 0:
+                return torch.device("xla")
             # return xm.xla_device()
         except ImportError:
             pass
