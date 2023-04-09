@@ -18,13 +18,17 @@ from torch.utils.tensorboard.writer import SummaryWriter
 import so_vits_svc_fork.f0
 import so_vits_svc_fork.modules.commons as commons
 import so_vits_svc_fork.utils
-
-from . import utils
-from .dataset import TextAudioCollate, TextAudioDataset
-from .modules.descriminators import MultiPeriodDiscriminator
-from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
-from .modules.mel_processing import mel_spectrogram_torch
-from .modules.synthesizers import SynthesizerTrn
+from so_vits_svc_fork import utils
+from so_vits_svc_fork.dataset import TextAudioCollate, TextAudioDataset
+from so_vits_svc_fork.modules.descriminators import MultiPeriodDiscriminator
+from so_vits_svc_fork.modules.losses import (
+    discriminator_loss,
+    feature_loss,
+    generator_loss,
+    kl_loss,
+)
+from so_vits_svc_fork.modules.mel_processing import mel_spectrogram_torch
+from so_vits_svc_fork.modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
@@ -265,6 +269,7 @@ class VitsLightning(pl.LightningModule):
 
         # Generator
         # train
+        LOG.debug("Generator training")
         self.toggle_optimizer(optim_g)
         c, f0, spec, mel, y, g, lengths, uv = batch
         (
@@ -313,6 +318,7 @@ class VitsLightning(pl.LightningModule):
             loss_gen_all += loss_subband
 
         # log loss
+        LOG.debug("Logging loss")
         self.log("grad_norm_g", commons.clip_grad_value_(self.net_g.parameters(), None))
         self.log("lr", self.optim_g.param_groups[0]["lr"])
         self.log_dict(
@@ -358,10 +364,12 @@ class VitsLightning(pl.LightningModule):
 
         # Discriminator
         # train
+        LOG.debug("Discriminator training")
         self.toggle_optimizer(optim_d)
         y_d_hat_r, y_d_hat_g, _, _ = self.net_d(y, y_hat.detach())
 
         # discriminator loss
+        LOG.debug("Calculating discriminator loss")
         with autocast(enabled=False):
             loss_disc, losses_disc_r, losses_disc_g = discriminator_loss(
                 y_d_hat_r, y_d_hat_g
@@ -369,6 +377,7 @@ class VitsLightning(pl.LightningModule):
             loss_disc_all = loss_disc
 
         # log loss
+        LOG.debug("Logging loss")
         self.log("loss/d/total", loss_disc_all, prog_bar=True)
         self.log("grad_norm_d", commons.clip_grad_value_(self.net_d.parameters(), None))
 
