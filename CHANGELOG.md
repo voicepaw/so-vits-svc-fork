@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.3 (2023-04-09)
+### Fix
+* **deps:** Update dependency starlette to v0.26.1 ([#256](https://github.com/34j/so-vits-svc-fork/issues/256)) ([`5eb574b`](https://github.com/34j/so-vits-svc-fork/commit/5eb574bec01430399df48e90e6112cef85e21945))
+
 ## v3.1.2 (2023-04-09)
 ### Fix
 * Remove wrong test and trigger release ([#266](https://github.com/34j/so-vits-svc-fork/issues/266)) ([`9ea77e4`](https://github.com/34j/so-vits-svc-fork/commit/9ea77e4c5c6575844685998e237994d54be84bb9))
