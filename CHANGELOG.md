@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.7 (2023-04-09)
+### Fix
+* **train:** Improve quality of training ([#274](https://github.com/34j/so-vits-svc-fork/issues/274)) ([`7ed71d6`](https://github.com/34j/so-vits-svc-fork/commit/7ed71d6fd89ca8bf2c4aefbb280e705b1d7ae6b8))
+
 ## v3.1.6 (2023-04-09)
 ### Fix
 * **train:** Fix checkpoint not properly loaded ([#271](https://github.com/34j/so-vits-svc-fork/issues/271)) ([`0979147`](https://github.com/34j/so-vits-svc-fork/commit/0979147a234e08999a19dba4988a53886f61dade))
