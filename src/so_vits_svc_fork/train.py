@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import math
 import warnings
 from logging import getLogger
 from pathlib import Path
@@ -69,12 +68,9 @@ def train(
     trainer = pl.Trainer(
         logger=TensorBoardLogger(model_path),
         # profiler="simple",
+        val_check_interval=hparams.train.eval_interval,
         max_epochs=hparams.train.epochs,
-        check_val_every_n_epoch=math.ceil(
-            hparams.train.eval_interval
-            / len(datamodule.train_dataset)
-            * hparams.train.batch_size
-        ),
+        check_val_every_n_epoch=None,
         precision=16
         if hparams.train.fp16_run
         else "bf16"
