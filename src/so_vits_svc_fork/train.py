@@ -292,8 +292,8 @@ class VitsLightning(pl.LightningModule):
 
         # generator loss
         LOG.debug("Calculating generator loss")
-        with torch.no_grad():
-            y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
+        y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
+
         with autocast(enabled=False):
             loss_mel = F.l1_loss(y_mel, y_hat_mel) * self.hparams.train.c_mel
             loss_kl = (
