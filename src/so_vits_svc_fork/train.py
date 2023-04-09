@@ -82,6 +82,40 @@ def train(
 
 
 class VitsLightning(pl.LightningModule):
+    def __init__(self, reset_optimizer: bool = False, **hparams: Any):
+        super().__init__()
+        self._temp_epoch = 0  # Add this line to initialize the _temp_epoch attribute
+        self.save_hyperparameters("reset_optimizer")
+        self.save_hyperparameters(*[k for k in hparams.keys()])
+        torch.manual_seed(self.hparams.train.seed)
+        self.net_g = SynthesizerTrn(
+            self.hparams.data.filter_length // 2 + 1,
+            self.hparams.train.segment_size // self.hparams.data.hop_length,
+            **self.hparams.model,
+        )
+        self.net_d = MultiPeriodDiscriminator(self.hparams.model.use_spectral_norm)
+        self.automatic_optimization = False
+        self.optim_g = torch.optim.AdamW(
+            self.net_g.parameters(),
+            self.hparams.train.learning_rate,
+            betas=self.hparams.train.betas,
+            eps=self.hparams.train.eps,
+        )
+        self.optim_d = torch.optim.AdamW(
+            self.net_d.parameters(),
+            self.hparams.train.learning_rate,
+            betas=self.hparams.train.betas,
+            eps=self.hparams.train.eps,
+        )
+        self.scheduler_g = torch.optim.lr_scheduler.ExponentialLR(
+            self.optim_g, gamma=self.hparams.train.lr_decay
+        )
+        self.scheduler_d = torch.optim.lr_scheduler.ExponentialLR(
+            self.optim_d, gamma=self.hparams.train.lr_decay
+        )
+        self.optimizers_count = 2
+        self.load(reset_optimizer)
+
     def on_train_start(self) -> None:
         self.set_current_epoch(self._temp_epoch)
         total_batch_idx = self._temp_epoch * len(self.trainer.train_dataloader)
@@ -180,40 +214,6 @@ class VitsLightning(pl.LightningModule):
                 raise RuntimeError("Failed to load checkpoint") from e
         else:
             LOG.warning("No checkpoint found. Start from scratch.")
-
-    def __init__(self, reset_optimizer: bool = False, **hparams: Any):
-        super().__init__()
-        self._temp_epoch = 0  # Add this line to initialize the _temp_epoch attribute
-        self.save_hyperparameters("reset_optimizer")
-        self.save_hyperparameters(*[k for k in hparams.keys()])
-        torch.manual_seed(self.hparams.train.seed)
-        self.net_g = SynthesizerTrn(
-            self.hparams.data.filter_length // 2 + 1,
-            self.hparams.train.segment_size // self.hparams.data.hop_length,
-            **self.hparams.model,
-        )
-        self.net_d = MultiPeriodDiscriminator(self.hparams.model.use_spectral_norm)
-        self.automatic_optimization = False
-        self.optim_g = torch.optim.AdamW(
-            self.net_g.parameters(),
-            self.hparams.train.learning_rate,
-            betas=self.hparams.train.betas,
-            eps=self.hparams.train.eps,
-        )
-        self.optim_d = torch.optim.AdamW(
-            self.net_d.parameters(),
-            self.hparams.train.learning_rate,
-            betas=self.hparams.train.betas,
-            eps=self.hparams.train.eps,
-        )
-        self.scheduler_g = torch.optim.lr_scheduler.ExponentialLR(
-            self.optim_g, gamma=self.hparams.train.lr_decay
-        )
-        self.scheduler_d = torch.optim.lr_scheduler.ExponentialLR(
-            self.optim_d, gamma=self.hparams.train.lr_decay
-        )
-        self.optimizers_count = 2
-        self.load(reset_optimizer)
 
     def configure_optimizers(self):
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
