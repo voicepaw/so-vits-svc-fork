@@ -283,6 +283,7 @@ class VitsLightning(pl.LightningModule):
             norm_lf0,
             lf0,
         ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
+        LOG.debug("Slicing segments")
         y_mel = commons.slice_segments(
             mel,
             ids_slice,
