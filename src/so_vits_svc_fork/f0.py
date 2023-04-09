@@ -29,8 +29,6 @@ def normalize_f0(
         factor = torch.ones(f0.shape[0], 1).to(f0.device)
     # normalize f0 based on means and factor
     f0_norm = (f0 - means.unsqueeze(-1)) * factor.unsqueeze(-1)
-    if torch.isnan(f0_norm).any():
-        exit(0)
     return f0_norm * x_mask
 
 
