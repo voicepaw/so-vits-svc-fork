@@ -178,13 +178,13 @@ class VitsLightning(pl.LightningModule):
         self.optim_g = torch.optim.AdamW(
             self.net_g.parameters(),
             self.hparams.train.learning_rate,
-            betas=self.hparams.train.betas,
+            betas=tuple(self.hparams.train.betas),
             eps=self.hparams.train.eps,
         )
         self.optim_d = torch.optim.AdamW(
             self.net_d.parameters(),
             self.hparams.train.learning_rate,
-            betas=self.hparams.train.betas,
+            betas=tuple(self.hparams.train.betas),
             eps=self.hparams.train.eps,
         )
         self.scheduler_g = torch.optim.lr_scheduler.ExponentialLR(
