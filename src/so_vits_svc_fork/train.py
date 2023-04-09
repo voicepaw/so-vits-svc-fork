@@ -240,7 +240,7 @@ class VitsLightning(pl.LightningModule):
             writer.add_audio(
                 k,
                 v,
-                self.trainer.fit_loop.total_batch_idx,
+                self.total_batch_idx,
                 sample_rate=self.hparams.data.sampling_rate,
             )
 
