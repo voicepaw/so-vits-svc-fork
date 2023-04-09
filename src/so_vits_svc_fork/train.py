@@ -196,7 +196,7 @@ class VitsLightning(pl.LightningModule):
 
     def configure_optimizers(self):
         if isinstance(self.trainer.accelerator, IPUAccelerator):
-            return self.optim_g, self.optim_d
+            return [self.optim_g], [self.scheduler_g]
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
 
     def log_image_dict(
