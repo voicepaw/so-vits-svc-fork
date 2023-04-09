@@ -87,7 +87,9 @@ def train(
 
 class VitsLightning(pl.LightningModule):
     def on_train_start(self) -> None:
-        self.load(False)
+        self.set_current_epoch(self._temp_epoch)
+        global_step = self._temp_epoch * len(self.trainer.train_dataloader)
+        self.set_global_step(global_step)
 
         # check if using tpu
         if isinstance(self.trainer.accelerator, TPUAccelerator):
@@ -157,12 +159,9 @@ class VitsLightning(pl.LightningModule):
                     self.optim_d,
                     reset_optimizer,
                 )
-                self.set_current_epoch(epoch)
-                global_step = epoch * len(self.trainer.train_dataloader)
-                self.set_global_step(global_step)
-                assert self.current_epoch == epoch, f"{self.current_epoch} != {epoch}"
-                self.scheduler_g.last_epoch = self.current_epoch - 1
-                self.scheduler_d.last_epoch = self.current_epoch - 1
+                self._temp_epoch = epoch
+                self.scheduler_g.last_epoch = epoch - 1
+                self.scheduler_d.last_epoch = epoch - 1
             except Exception as e:
                 raise RuntimeError("Failed to load checkpoint") from e
         else:
@@ -198,6 +197,7 @@ class VitsLightning(pl.LightningModule):
         self.scheduler_d = torch.optim.lr_scheduler.ExponentialLR(
             self.optim_d, gamma=self.hparams.train.lr_decay
         )
+        self.load(reset_optimizer)
 
     def configure_optimizers(self):
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
