@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.6 (2023-04-09)
+### Fix
+* **train:** Fix checkpoint not properly loaded ([#271](https://github.com/34j/so-vits-svc-fork/issues/271)) ([`0979147`](https://github.com/34j/so-vits-svc-fork/commit/0979147a234e08999a19dba4988a53886f61dade))
+
 ## v3.1.5 (2023-04-09)
 ### Fix
 * **train:** Fix optim_d functions called in wrong order ([#269](https://github.com/34j/so-vits-svc-fork/issues/269)) ([`13d6346`](https://github.com/34j/so-vits-svc-fork/commit/13d63469b0a84ace0dc8848df47dc20538b98770))
