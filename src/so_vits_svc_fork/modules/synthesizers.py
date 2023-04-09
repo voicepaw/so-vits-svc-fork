@@ -1,3 +1,4 @@
+import random
 import warnings
 from logging import getLogger
 from typing import Any, Literal, Sequence
@@ -213,9 +214,7 @@ class SynthesizerTrn(nn.Module):
             z_slice = commons.slice_2d_segments(z, slice_starts, self.segment_size)
             f0_slice = commons.slice_1d_segments(f0, slice_starts, self.segment_size)
         else:
-            slice_starts = torch.randint(
-                0, spec_lengths - self.segment_size, (1,)
-            ).item()
+            slice_starts = random.randint(0, spec.size(2) - self.segment_size)
             z_slice = z[..., slice_starts : slice_starts + self.segment_size]
             f0_slice = f0[..., slice_starts : slice_starts + self.segment_size]
 
