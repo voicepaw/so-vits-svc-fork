@@ -75,6 +75,11 @@ def train(
             / len(datamodule.train_dataset)
             * hparams.train.batch_size
         ),
+        precision=16
+        if hparams.train.fp16_run
+        else "bf16"
+        if hparams.train.get("bf16_run", False)
+        else 32,
     )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
     trainer.fit(model, datamodule=datamodule)
