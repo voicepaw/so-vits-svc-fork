@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.5 (2023-04-09)
+### Fix
+* **train:** Fix optim_d functions called in wrong order ([#269](https://github.com/34j/so-vits-svc-fork/issues/269)) ([`13d6346`](https://github.com/34j/so-vits-svc-fork/commit/13d63469b0a84ace0dc8848df47dc20538b98770))
+
 ## v3.1.4 (2023-04-09)
 ### Fix
 * **train:** Add bf16 and fp16 support ([#268](https://github.com/34j/so-vits-svc-fork/issues/268)) ([`4229fd8`](https://github.com/34j/so-vits-svc-fork/commit/4229fd8ead64cf03caad9acd3d8f7f0fec3a7fee))
