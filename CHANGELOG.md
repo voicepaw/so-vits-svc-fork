@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.8 (2023-04-10)
+### Fix
+* **readme:** Fix wrong commands in "Before training" ([#280](https://github.com/34j/so-vits-svc-fork/issues/280)) ([`e056ad9`](https://github.com/34j/so-vits-svc-fork/commit/e056ad9ec22cbaa119f7c93cb60b5b8851e80a7e))
+
 ## v3.1.7 (2023-04-09)
 ### Fix
 * **train:** Improve quality of training ([#274](https://github.com/34j/so-vits-svc-fork/issues/274)) ([`7ed71d6`](https://github.com/34j/so-vits-svc-fork/commit/7ed71d6fd89ca8bf2c4aefbb280e705b1d7ae6b8))
