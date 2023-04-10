@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.9 (2023-04-10)
+### Fix
+* **train:** Fix fp16_run not being mix precision and fix bf16 errors ([#283](https://github.com/34j/so-vits-svc-fork/issues/283)) ([`b0dd0ed`](https://github.com/34j/so-vits-svc-fork/commit/b0dd0ed4014d32e9f19e335ec603bdab92c52039))
+
 ## v3.1.8 (2023-04-10)
 ### Fix
 * **readme:** Fix wrong commands in "Before training" ([#280](https://github.com/34j/so-vits-svc-fork/issues/280)) ([`e056ad9`](https://github.com/34j/so-vits-svc-fork/commit/e056ad9ec22cbaa119f7c93cb60b5b8851e80a7e))
