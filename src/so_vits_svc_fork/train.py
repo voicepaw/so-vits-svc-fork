@@ -159,6 +159,40 @@ class VitsLightning(pl.LightningModule):
 
             torch.stft = stft
 
+        elif "bf" in self.trainer.precision:
+            LOG.warning("Using bf16. Patching torch.stft to use fp32.")
+
+            def stft(
+                input: torch.Tensor,
+                n_fft: int,
+                hop_length: int | None = None,
+                win_length: int | None = None,
+                window: torch.Tensor | None = None,
+                center: bool = True,
+                pad_mode: str = "reflect",
+                normalized: bool = False,
+                onesided: bool | None = None,
+                return_complex: bool | None = None,
+            ) -> torch.Tensor:
+                dtype = input.dtype
+                input = input.float()
+                if window is not None:
+                    window = window.float()
+                return torch.functional.stft(
+                    input,
+                    n_fft,
+                    hop_length,
+                    win_length,
+                    window,
+                    center,
+                    pad_mode,
+                    normalized,
+                    onesided,
+                    return_complex,
+                ).to(dtype)
+
+            torch.stft = stft
+
     def set_current_epoch(self, epoch: int):
         LOG.info(f"Setting current epoch to {epoch}")
         self.trainer.fit_loop.epoch_progress.current.completed = epoch
