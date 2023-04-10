@@ -161,7 +161,7 @@ class VitsLightning(pl.LightningModule):
             torch.stft = stft
 
         elif "bf" in self.trainer.precision:
-            LOG.warning("Using bf16. Patching torch.stft to use fp32.")
+            LOG.warning("Using bf. Patching torch.stft to use fp32.")
 
             def stft(
                 input: torch.Tensor,
