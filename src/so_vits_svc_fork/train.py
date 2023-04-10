@@ -27,6 +27,7 @@ from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
+torch.set_float32_matmul_precision("high")
 
 
 class VCDataModule(pl.LightningDataModule):
