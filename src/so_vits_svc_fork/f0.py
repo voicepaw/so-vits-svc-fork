@@ -179,7 +179,7 @@ def compute_f0_crepe(
         pad=True,
     )
 
-    f0 = pitch.squeeze(0).cpu().numpy()
+    f0 = pitch.squeeze(0).cpu().float().numpy()
     p_len = p_len or wav_numpy.shape[0] // hop_length
     f0 = _resize_f0(f0, p_len)
     return f0

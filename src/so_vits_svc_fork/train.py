@@ -239,7 +239,7 @@ class VitsLightning(pl.LightningModule):
         for k, v in audio_dict.items():
             writer.add_audio(
                 k,
-                v,
+                v.float(),
                 self.total_batch_idx,
                 sample_rate=self.hparams.data.sampling_rate,
             )
@@ -334,21 +334,21 @@ class VitsLightning(pl.LightningModule):
             self.log_image_dict(
                 {
                     "slice/mel_org": utils.plot_spectrogram_to_numpy(
-                        y_mel[0].data.cpu().numpy()
+                        y_mel[0].data.cpu().float().numpy()
                     ),
                     "slice/mel_gen": utils.plot_spectrogram_to_numpy(
-                        y_hat_mel[0].data.cpu().numpy()
+                        y_hat_mel[0].data.cpu().float().numpy()
                     ),
                     "all/mel": utils.plot_spectrogram_to_numpy(
-                        mel[0].data.cpu().numpy()
+                        mel[0].data.cpu().float().numpy()
                     ),
                     "all/lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
-                        lf0[0, 0, :].cpu().numpy(),
-                        pred_lf0[0, 0, :].detach().cpu().numpy(),
+                        lf0[0, 0, :].cpu().float().numpy(),
+                        pred_lf0[0, 0, :].detach().cpu().float().numpy(),
                     ),
                     "all/norm_lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
-                        lf0[0, 0, :].cpu().numpy(),
-                        norm_lf0[0, 0, :].detach().cpu().numpy(),
+                        lf0[0, 0, :].cpu().float().numpy(),
+                        norm_lf0[0, 0, :].detach().cpu().float().numpy(),
                     ),
                 }
             )
@@ -395,9 +395,11 @@ class VitsLightning(pl.LightningModule):
             self.log_image_dict(
                 {
                     "gen/mel": utils.plot_spectrogram_to_numpy(
-                        y_hat_mel[0].cpu().numpy()
+                        y_hat_mel[0].cpu().float().numpy()
                     ),
-                    "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
+                    "gt/mel": utils.plot_spectrogram_to_numpy(
+                        mel[0].cpu().float().numpy()
+                    ),
                 }
             )
             if self.current_epoch == 0 or batch_idx != 0:
