@@ -123,10 +123,10 @@ svc --model-path <model-path> source.wav
 
 - 如果数据集有 BGM,请用例如[Ultimate Vocal Remover](https://ultimatevocalremover.com/)等软件去除 BGM.
   推荐使用`3_HP-Vocal-UVR.pth` 或者 `UVR-MDX-NET Main` . [^1]
-- 如果数据集是包含多个歌手的长音频文件, 使用 `svc sd` 将数据集拆分为多个文件 (使用 `pyannote.audio`)
+- 如果数据集是包含多个歌手的长音频文件, 使用 `svc pre-sd` 将数据集拆分为多个文件 (使用 `pyannote.audio`)
   。为了提高准确率，可能需要手动进行分类。如果歌手的声线多样,请把 --min-speakers 设置为大于实际说话者数量. 如果出现依赖未安装,
   请通过 `pip install pyannote-audio`来安装 `pyannote.audio`。
-- 如果数据集是包含单个歌手的长音频文件, 使用 `svc split` 将数据集拆分为多个文件 (使用 `librosa`).
+- 如果数据集是包含单个歌手的长音频文件, 使用 `svc pre-split` 将数据集拆分为多个文件 (使用 `librosa`).
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
 
