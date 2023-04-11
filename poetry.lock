@@ -1379,14 +1379,14 @@ tool = ["click (>=6.0.0)"]
 
 [[package]]
 name = "gradio"
-version = "3.24.1"
+version = "3.25.0"
 description = "Python library for easily interacting with trained machine learning models"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "gradio-3.24.1-py3-none-any.whl", hash = "sha256:a9b2fb94007b370ba5442159775a0987b27810451582525fe10711517082b1d2"},
-    {file = "gradio-3.24.1.tar.gz", hash = "sha256:19f11c8b5d9b23a22a7e0e3a32332146474d215588674afdfdbe2f86fe0a7811"},
+    {file = "gradio-3.25.0-py3-none-any.whl", hash = "sha256:7363352f35afc98df06c77d52d38d387ec9a20ba3ef5ee0a3dd2ed8374c0fa67"},
+    {file = "gradio-3.25.0.tar.gz", hash = "sha256:1bd8f830bfe0636d27c24a93bd79a7e3915b409789f339cc325ad964fcbe7e5e"},
 ]
 
 [package.dependencies]
@@ -1395,7 +1395,7 @@ aiohttp = "*"
 altair = ">=4.2.0"
 fastapi = "*"
 ffmpy = "*"
-gradio-client = ">=0.0.5"
+gradio-client = ">=0.0.8"
 httpx = "*"
 huggingface-hub = ">=0.13.0"
 jinja2 = "*"
