@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.10 (2023-04-11)
+### Fix
+* **notebooks:** Improves inference ([#286](https://github.com/34j/so-vits-svc-fork/issues/286)) ([`d3228df`](https://github.com/34j/so-vits-svc-fork/commit/d3228df704b2e6a0746b3f842ca5f2240890d829))
+* **train:** Step lr schedulers at end of epoch ([#291](https://github.com/34j/so-vits-svc-fork/issues/291)) ([`3af223e`](https://github.com/34j/so-vits-svc-fork/commit/3af223eeb5146abcbb8198d4c11e2c1895ece130))
+
 ## v3.1.9 (2023-04-10)
 ### Fix
 * **train:** Fix fp16_run not being mix precision and fix bf16 errors ([#283](https://github.com/34j/so-vits-svc-fork/issues/283)) ([`b0dd0ed`](https://github.com/34j/so-vits-svc-fork/commit/b0dd0ed4014d32e9f19e335ec603bdab92c52039))
