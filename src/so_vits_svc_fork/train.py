@@ -392,11 +392,10 @@ class VitsLightning(pl.LightningModule):
                 }
             )
 
-        should_update = (batch_idx + 1) % self.hparams.train.get(
-            "accumulate_grad_batches", 1
-        ) == 0
+        accumulate_grad_batches = self.hparams.train.get("accumulate_grad_batches", 1)
+        should_update = (batch_idx + 1) % accumulate_grad_batches == 0
         # optimizer
-        self.manual_backward(loss_gen_all)
+        self.manual_backward(loss_gen_all / accumulate_grad_batches)
         if should_update:
             optim_g.step()
             optim_g.zero_grad()
@@ -421,7 +420,7 @@ class VitsLightning(pl.LightningModule):
         )
 
         # optimizer
-        self.manual_backward(loss_disc_all)
+        self.manual_backward(loss_disc_all / accumulate_grad_batches)
         if should_update:
             optim_d.step()
             optim_d.zero_grad()
