@@ -392,10 +392,14 @@ class VitsLightning(pl.LightningModule):
                 }
             )
 
+        should_update = (batch_idx + 1) % self.hparams.train.get(
+            "accumulate_grad_batches", 1
+        ) == 0
         # optimizer
-        optim_g.zero_grad()
         self.manual_backward(loss_gen_all)
-        optim_g.step()
+        if should_update:
+            optim_g.step()
+            optim_g.zero_grad()
         self.untoggle_optimizer(optim_g)
 
         # Discriminator
@@ -417,9 +421,10 @@ class VitsLightning(pl.LightningModule):
         )
 
         # optimizer
-        optim_d.zero_grad()
         self.manual_backward(loss_disc_all)
-        optim_d.step()
+        if should_update:
+            optim_d.step()
+            optim_d.zero_grad()
         self.untoggle_optimizer(optim_d)
 
         # end of epoch
