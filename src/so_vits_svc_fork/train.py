@@ -418,6 +418,11 @@ class VitsLightning(pl.LightningModule):
         optim_d.step()
         self.untoggle_optimizer(optim_d)
 
+        # end of epoch
+        if self.trainer.is_last_batch:
+            self.scheduler_g.step()
+            self.scheduler_d.step()
+
     def validation_step(self, batch, batch_idx):
         with torch.no_grad():
             self.net_g.eval()
