@@ -1,4 +1,5 @@
 import os
+import sys
 from logging import (
     DEBUG,
     INFO,
@@ -6,6 +7,7 @@ from logging import (
     StreamHandler,
     basicConfig,
     captureWarnings,
+    getLogger,
 )
 from pathlib import Path
 
@@ -20,10 +22,10 @@ def init_logger() -> None:
         return
 
     IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
-    IS_TEST = "test" in Path(__file__).parent.stem
+    IS_TEST = "test" in Path.cwd().stem
 
     basicConfig(
-        level=DEBUG if IS_TEST else INFO,
+        level=INFO,
         format="%(asctime)s %(message)s",
         datefmt="[%X]",
         handlers=[
@@ -31,5 +33,7 @@ def init_logger() -> None:
             FileHandler(f"{__name__.split('.')[0]}.log"),
         ],
     )
+    if IS_TEST:
+        getLogger(sys.modules[__name__].__package__).setLevel(DEBUG)
     captureWarnings(True)
     LOGGER_INIT = True

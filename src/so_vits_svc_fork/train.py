@@ -27,6 +27,7 @@ from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
 torch.backends.cudnn.benchmark = True
+torch.set_float32_matmul_precision("high")
 
 
 class VCDataModule(pl.LightningDataModule):
@@ -65,17 +66,22 @@ def train(
     utils.ensure_pretrained_model(model_path, hparams.model.get("type_", "hifi-gan"))
 
     datamodule = VCDataModule(hparams)
+    strategy = (
+        "ddp_find_unused_parameters_true" if torch.cuda.device_count() > 1 else "auto"
+    )
+    LOG.info(f"Using strategy: {strategy}")
     trainer = pl.Trainer(
         logger=TensorBoardLogger(model_path),
         # profiler="simple",
         val_check_interval=hparams.train.eval_interval,
         max_epochs=hparams.train.epochs,
         check_val_every_n_epoch=None,
-        precision=16
+        precision="16-mixed"
         if hparams.train.fp16_run
-        else "bf16"
+        else "bf16-mixed"
         if hparams.train.get("bf16_run", False)
         else 32,
+        strategy=strategy,
     )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
     trainer.fit(model, datamodule=datamodule)
@@ -159,6 +165,40 @@ class VitsLightning(pl.LightningModule):
 
             torch.stft = stft
 
+        elif "bf" in self.trainer.precision:
+            LOG.warning("Using bf. Patching torch.stft to use fp32.")
+
+            def stft(
+                input: torch.Tensor,
+                n_fft: int,
+                hop_length: int | None = None,
+                win_length: int | None = None,
+                window: torch.Tensor | None = None,
+                center: bool = True,
+                pad_mode: str = "reflect",
+                normalized: bool = False,
+                onesided: bool | None = None,
+                return_complex: bool | None = None,
+            ) -> torch.Tensor:
+                dtype = input.dtype
+                input = input.float()
+                if window is not None:
+                    window = window.float()
+                return torch.functional.stft(
+                    input,
+                    n_fft,
+                    hop_length,
+                    win_length,
+                    window,
+                    center,
+                    pad_mode,
+                    normalized,
+                    onesided,
+                    return_complex,
+                ).to(dtype)
+
+            torch.stft = stft
+
     def set_current_epoch(self, epoch: int):
         LOG.info(f"Setting current epoch to {epoch}")
         self.trainer.fit_loop.epoch_progress.current.completed = epoch
@@ -239,7 +279,7 @@ class VitsLightning(pl.LightningModule):
         for k, v in audio_dict.items():
             writer.add_audio(
                 k,
-                v,
+                v.float(),
                 self.total_batch_idx,
                 sample_rate=self.hparams.data.sampling_rate,
             )
@@ -291,7 +331,6 @@ class VitsLightning(pl.LightningModule):
         )
 
         # generator loss
-        LOG.debug("Calculating generator loss")
         y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
 
         with autocast(enabled=False):
@@ -334,21 +373,21 @@ class VitsLightning(pl.LightningModule):
             self.log_image_dict(
                 {
                     "slice/mel_org": utils.plot_spectrogram_to_numpy(
-                        y_mel[0].data.cpu().numpy()
+                        y_mel[0].data.cpu().float().numpy()
                     ),
                     "slice/mel_gen": utils.plot_spectrogram_to_numpy(
-                        y_hat_mel[0].data.cpu().numpy()
+                        y_hat_mel[0].data.cpu().float().numpy()
                     ),
                     "all/mel": utils.plot_spectrogram_to_numpy(
-                        mel[0].data.cpu().numpy()
+                        mel[0].data.cpu().float().numpy()
                     ),
                     "all/lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
-                        lf0[0, 0, :].cpu().numpy(),
-                        pred_lf0[0, 0, :].detach().cpu().numpy(),
+                        lf0[0, 0, :].cpu().float().numpy(),
+                        pred_lf0[0, 0, :].detach().cpu().float().numpy(),
                     ),
                     "all/norm_lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
-                        lf0[0, 0, :].cpu().numpy(),
-                        norm_lf0[0, 0, :].detach().cpu().numpy(),
+                        lf0[0, 0, :].cpu().float().numpy(),
+                        norm_lf0[0, 0, :].detach().cpu().float().numpy(),
                     ),
                 }
             )
@@ -383,6 +422,11 @@ class VitsLightning(pl.LightningModule):
         optim_d.step()
         self.untoggle_optimizer(optim_d)
 
+        # end of epoch
+        if self.trainer.is_last_batch:
+            self.scheduler_g.step()
+            self.scheduler_d.step()
+
     def validation_step(self, batch, batch_idx):
         with torch.no_grad():
             self.net_g.eval()
@@ -395,9 +439,11 @@ class VitsLightning(pl.LightningModule):
             self.log_image_dict(
                 {
                     "gen/mel": utils.plot_spectrogram_to_numpy(
-                        y_hat_mel[0].cpu().numpy()
+                        y_hat_mel[0].cpu().float().numpy()
                     ),
-                    "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().numpy()),
+                    "gt/mel": utils.plot_spectrogram_to_numpy(
+                        mel[0].cpu().float().numpy()
+                    ),
                 }
             )
             if self.current_epoch == 0 or batch_idx != 0:

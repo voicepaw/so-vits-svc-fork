@@ -2,6 +2,28 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.13 (2023-04-12)
+### Fix
+* **logger:** Fix too noisy logger ([#300](https://github.com/34j/so-vits-svc-fork/issues/300)) ([`bd0eb33`](https://github.com/34j/so-vits-svc-fork/commit/bd0eb33a66d77afff8328d08008f2643651c712a))
+* **__main__:** Fix cli() not called in __main__ ([#299](https://github.com/34j/so-vits-svc-fork/issues/299)) ([`11f2d24`](https://github.com/34j/so-vits-svc-fork/commit/11f2d245137da240f5e8214e4b6ce4330d726143))
+
+## v3.1.12 (2023-04-12)
+### Fix
+* **train:** Fix ddp not working ([#297](https://github.com/34j/so-vits-svc-fork/issues/297)) ([`bec43fc`](https://github.com/34j/so-vits-svc-fork/commit/bec43fcbedf6b16260411655b19cf780ddbafe8e))
+
+## v3.1.11 (2023-04-12)
+### Fix
+* **logger:** Fix init_logger not showing debug messages in certain conditions as intended ([#296](https://github.com/34j/so-vits-svc-fork/issues/296)) ([`d3ab7d6`](https://github.com/34j/so-vits-svc-fork/commit/d3ab7d667c391ba1d8d1b34e2b66992256b3989d))
+
+## v3.1.10 (2023-04-11)
+### Fix
+* **notebooks:** Improves inference ([#286](https://github.com/34j/so-vits-svc-fork/issues/286)) ([`d3228df`](https://github.com/34j/so-vits-svc-fork/commit/d3228df704b2e6a0746b3f842ca5f2240890d829))
+* **train:** Step lr schedulers at end of epoch ([#291](https://github.com/34j/so-vits-svc-fork/issues/291)) ([`3af223e`](https://github.com/34j/so-vits-svc-fork/commit/3af223eeb5146abcbb8198d4c11e2c1895ece130))
+
+## v3.1.9 (2023-04-10)
+### Fix
+* **train:** Fix fp16_run not being mix precision and fix bf16 errors ([#283](https://github.com/34j/so-vits-svc-fork/issues/283)) ([`b0dd0ed`](https://github.com/34j/so-vits-svc-fork/commit/b0dd0ed4014d32e9f19e335ec603bdab92c52039))
+
 ## v3.1.8 (2023-04-10)
 ### Fix
 * **readme:** Fix wrong commands in "Before training" ([#280](https://github.com/34j/so-vits-svc-fork/issues/280)) ([`e056ad9`](https://github.com/34j/so-vits-svc-fork/commit/e056ad9ec22cbaa119f7c93cb60b5b8851e80a7e))
