@@ -817,3 +817,6 @@ def train_cluster(
         verbose=True,
         use_minibatch=minibatch,
     )
+
+
+cli()
