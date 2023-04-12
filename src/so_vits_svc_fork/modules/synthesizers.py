@@ -3,6 +3,7 @@ from logging import getLogger
 from typing import Any, Literal, Sequence
 
 import torch
+from cm_time import timer
 from torch import nn
 
 import so_vits_svc_fork.f0
@@ -172,27 +173,35 @@ class SynthesizerTrn(nn.Module):
         x = self.pre(c) * x_mask + self.emb_uv(uv.long()).transpose(1, 2)
 
         # f0 predict
-        lf0 = 2595.0 * torch.log10(1.0 + f0.unsqueeze(1) / 700.0) / 500
-        norm_lf0 = so_vits_svc_fork.f0.normalize_f0(lf0, x_mask, uv)
-        pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
+        with timer() as t:
+            lf0 = 2595.0 * torch.log10(1.0 + f0.unsqueeze(1) / 700.0) / 500
+            norm_lf0 = so_vits_svc_fork.f0.normalize_f0(lf0, x_mask, uv)
+            pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
+        LOG.debug(f"F0 decoder time: {t.elapsed:.3f}s")
 
         # encoder
-        z_ptemp, m_p, logs_p, _ = self.enc_p(x, x_mask, f0=f0_to_coarse(f0))
-        z, m_q, logs_q, spec_mask = self.enc_q(spec, spec_lengths, g=g)
+        with timer() as t:
+            z_ptemp, m_p, logs_p, _ = self.enc_p(x, x_mask, f0=f0_to_coarse(f0))
+            z, m_q, logs_q, spec_mask = self.enc_q(spec, spec_lengths, g=g)
+        LOG.debug(f"Encoder time: {t.elapsed:.3f}s")
 
         # flow
-        z_p = self.flow(z, spec_mask, g=g)
-        z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(
-            z, f0, spec_lengths, self.segment_size
-        )
+        with timer() as t:
+            z_p = self.flow(z, spec_mask, g=g)
+            z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(
+                z, f0, spec_lengths, self.segment_size
+            )
+        LOG.debug(f"Flow time: {t.elapsed:.3f}s")
 
-        # MB-iSTFT-VITS
-        if self.mb:
-            o, o_mb = self.dec(z_slice, g=g)
-        # HiFi-GAN
-        else:
-            o = self.dec(z_slice, g=g, f0=pitch_slice)
-            o_mb = None
+        with timer() as t:
+            # MB-iSTFT-VITS
+            if self.mb:
+                o, o_mb = self.dec(z_slice, g=g)
+            # HiFi-GAN
+            else:
+                o = self.dec(z_slice, g=g, f0=pitch_slice)
+                o_mb = None
+        LOG.debug(f"Decoder time: {t.elapsed:.3f}s")
         return (
             o,
             o_mb,

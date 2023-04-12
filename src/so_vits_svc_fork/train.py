@@ -7,6 +7,7 @@ from typing import Any
 
 import lightning.pytorch as pl
 import torch
+from cm_time import timer
 from lightning.pytorch.accelerators import TPUAccelerator
 from lightning.pytorch.loggers import TensorBoardLogger
 from torch.cuda.amp import autocast
@@ -301,52 +302,57 @@ class VitsLightning(pl.LightningModule):
 
         # Generator
         # train
-        self.toggle_optimizer(optim_g)
-        c, f0, spec, mel, y, g, lengths, uv = batch
-        (
-            y_hat,
-            y_hat_mb,
-            ids_slice,
-            z_mask,
-            (z, z_p, m_p, logs_p, m_q, logs_q),
-            pred_lf0,
-            norm_lf0,
-            lf0,
-        ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
-        y_mel = commons.slice_segments(
-            mel,
-            ids_slice,
-            self.hparams.train.segment_size // self.hparams.data.hop_length,
-        )
-        y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
-        y = commons.slice_segments(
-            y,
-            ids_slice * self.hparams.data.hop_length,
-            self.hparams.train.segment_size,
-        )
+        with timer() as t:
+            self.toggle_optimizer(optim_g)
+            c, f0, spec, mel, y, g, lengths, uv = batch
+            (
+                y_hat,
+                y_hat_mb,
+                ids_slice,
+                z_mask,
+                (z, z_p, m_p, logs_p, m_q, logs_q),
+                pred_lf0,
+                norm_lf0,
+                lf0,
+            ) = self.net_g(
+                c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths
+            )
+            y_mel = commons.slice_segments(
+                mel,
+                ids_slice,
+                self.hparams.train.segment_size // self.hparams.data.hop_length,
+            )
+            y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1), self.hparams)
+            y = commons.slice_segments(
+                y,
+                ids_slice * self.hparams.data.hop_length,
+                self.hparams.train.segment_size,
+            )
+        LOG.debug(f"Generator forward: {t.elapsed:.3f}s")
 
         # generator loss
         LOG.debug("Calculating generator loss")
-        y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
+        with timer() as t:
+            y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
 
-        with autocast(enabled=False):
-            loss_mel = F.l1_loss(y_mel, y_hat_mel) * self.hparams.train.c_mel
-            loss_kl = (
-                kl_loss(z_p, logs_q, m_p, logs_p, z_mask) * self.hparams.train.c_kl
-            )
-            loss_fm = feature_loss(fmap_r, fmap_g)
-            loss_gen, losses_gen = generator_loss(y_d_hat_g)
-            loss_lf0 = F.mse_loss(pred_lf0, lf0)
-            loss_gen_all = loss_gen + loss_fm + loss_mel + loss_kl + loss_lf0
+            with autocast(enabled=False):
+                loss_mel = F.l1_loss(y_mel, y_hat_mel) * self.hparams.train.c_mel
+                loss_kl = (
+                    kl_loss(z_p, logs_q, m_p, logs_p, z_mask) * self.hparams.train.c_kl
+                )
+                loss_fm = feature_loss(fmap_r, fmap_g)
+                loss_gen, losses_gen = generator_loss(y_d_hat_g)
+                loss_lf0 = F.mse_loss(pred_lf0, lf0)
+                loss_gen_all = loss_gen + loss_fm + loss_mel + loss_kl + loss_lf0
 
-            # MB-iSTFT-VITS
-            loss_subband = torch.tensor(0.0)
-            if self.hparams.model.get("type_") == "mb-istft":
-                from .modules.decoders.mb_istft import PQMF, subband_stft_loss
+                # MB-iSTFT-VITS
+                loss_subband = torch.tensor(0.0)
+                if self.hparams.model.get("type_") == "mb-istft":
+                    from .modules.decoders.mb_istft import PQMF, subband_stft_loss
 
-                y_mb = PQMF(y.device, self.hparams.model.subbands).analysis(y)
-                loss_subband = subband_stft_loss(self.hparams, y_mb, y_hat_mb)
-            loss_gen_all += loss_subband
+                    y_mb = PQMF(y.device, self.hparams.model.subbands).analysis(y)
+                    loss_subband = subband_stft_loss(self.hparams, y_mb, y_hat_mb)
+                loss_gen_all += loss_subband
 
         # log loss
         self.log_(
@@ -387,24 +393,29 @@ class VitsLightning(pl.LightningModule):
                     ),
                 }
             )
+        LOG.debug(f"Generator loss: {t.elapsed:.3f}s")
 
         # optimizer
-        optim_g.zero_grad()
-        self.manual_backward(loss_gen_all)
-        optim_g.step()
-        self.untoggle_optimizer(optim_g)
-
+        with timer() as t:
+            optim_g.zero_grad()
+            self.manual_backward(loss_gen_all)
+            optim_g.step()
+            self.untoggle_optimizer(optim_g)
+        LOG.debug(f"Generator backward: {t.elapsed:.3f}s")
         # Discriminator
         # train
         self.toggle_optimizer(optim_d)
-        y_d_hat_r, y_d_hat_g, _, _ = self.net_d(y, y_hat.detach())
+        with timer() as t:
+            y_d_hat_r, y_d_hat_g, _, _ = self.net_d(y, y_hat.detach())
+        LOG.debug(f"Discriminator forward: {t.elapsed:.3f}s")
 
         # discriminator loss
-        with autocast(enabled=False):
+        with autocast(enabled=False), timer() as t:
             loss_disc, losses_disc_r, losses_disc_g = discriminator_loss(
                 y_d_hat_r, y_d_hat_g
             )
             loss_disc_all = loss_disc
+        LOG.debug(f"Discriminator loss: {t.elapsed:.3f}s")
 
         # log loss
         self.log_("loss/d/total", loss_disc_all, prog_bar=True)
@@ -413,10 +424,12 @@ class VitsLightning(pl.LightningModule):
         )
 
         # optimizer
-        optim_d.zero_grad()
-        self.manual_backward(loss_disc_all)
-        optim_d.step()
-        self.untoggle_optimizer(optim_d)
+        with timer() as t:
+            optim_d.zero_grad()
+            self.manual_backward(loss_disc_all)
+            optim_d.step()
+            self.untoggle_optimizer(optim_d)
+        LOG.debug(f"Discriminator backward: {t.elapsed:.3f}s")
 
         # end of epoch
         if self.trainer.is_last_batch:
