@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.12 (2023-04-12)
+### Fix
+* **train:** Fix ddp not working ([#297](https://github.com/34j/so-vits-svc-fork/issues/297)) ([`bec43fc`](https://github.com/34j/so-vits-svc-fork/commit/bec43fcbedf6b16260411655b19cf780ddbafe8e))
+
 ## v3.1.11 (2023-04-12)
 ### Fix
 * **logger:** Fix init_logger not showing debug messages in certain conditions as intended ([#296](https://github.com/34j/so-vits-svc-fork/issues/296)) ([`d3ab7d6`](https://github.com/34j/so-vits-svc-fork/commit/d3ab7d667c391ba1d8d1b34e2b66992256b3989d))
