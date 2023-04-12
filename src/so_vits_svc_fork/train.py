@@ -77,6 +77,9 @@ def train(
         else "bf16-mixed"
         if hparams.train.get("bf16_run", False)
         else 32,
+        strategy="ddp_find_unused_parameters_true"
+        if torch.cuda.device_count() > 1
+        else "auto",
     )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
     trainer.fit(model, datamodule=datamodule)
