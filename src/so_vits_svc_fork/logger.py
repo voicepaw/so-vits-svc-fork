@@ -20,7 +20,7 @@ def init_logger() -> None:
         return
 
     IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
-    IS_TEST = "test" in Path(__file__).parent.stem
+    IS_TEST = "test" in Path.cwd().stem
 
     basicConfig(
         level=DEBUG if IS_TEST else INFO,
