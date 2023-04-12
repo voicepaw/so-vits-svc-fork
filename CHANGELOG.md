@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.1.11 (2023-04-12)
+### Fix
+* **logger:** Fix init_logger not showing debug messages in certain conditions as intended ([#296](https://github.com/34j/so-vits-svc-fork/issues/296)) ([`d3ab7d6`](https://github.com/34j/so-vits-svc-fork/commit/d3ab7d667c391ba1d8d1b34e2b66992256b3989d))
+
 ## v3.1.10 (2023-04-11)
 ### Fix
 * **notebooks:** Improves inference ([#286](https://github.com/34j/so-vits-svc-fork/issues/286)) ([`d3228df`](https://github.com/34j/so-vits-svc-fork/commit/d3228df704b2e6a0746b3f842ca5f2240890d829))
