@@ -23,18 +23,19 @@ def train_cluster(
     input_dir = Path(input_dir)
     LOG.info(f"Loading features from {input_dir}")
     features = []
-    nums = 0
     for path in input_dir.rglob("*.data.pt"):
         features.append(
             torch.load(path, weights_only=True)["content"].squeeze(0).numpy().T
         )
+    if not features:
+        raise ValueError(f"No features found in {input_dir}")
     features = np.concatenate(features, axis=0).astype(np.float32)
     if features.shape[0] < n_clusters:
         raise ValueError(
             "Too few HuBERT features to cluster. Consider using a smaller number of clusters."
         )
     LOG.info(
-        f"Nums: {nums}, shape: {features.shape}, size: {features.nbytes/1024**2:.2f} MB, dtype: {features.dtype}"
+        f"shape: {features.shape}, size: {features.nbytes/1024**2:.2f} MB, dtype: {features.dtype}"
     )
     with timer() as t:
         if use_minibatch:
