@@ -307,17 +307,34 @@ class Svc:
         return result_audio
 
 
-def linear_crossfade(
+def sola_crossfade(
     first: ndarray[Any, dtype[float32]],
     second: ndarray[Any, dtype[float32]],
-    length: int,
+    crossfade_len: int,
+    sola_search_len: int,
 ) -> ndarray[Any, dtype[float32]]:
+    cor_nom = np.convolve(
+        second[: sola_search_len + crossfade_len],
+        np.flip(first[-crossfade_len:]),
+        "valid",
+    )
+    cor_den = np.sqrt(
+        np.convolve(
+            second[: sola_search_len + crossfade_len] ** 2,
+            np.ones(crossfade_len),
+            "valid",
+        )
+        + 1e-8
+    )
+    sola_shift = np.argmax(cor_nom / cor_den)
+    LOG.info(f"SOLA shift: {sola_shift}")
+    second = second[sola_shift : sola_shift + len(second) - sola_search_len]
     return np.concatenate(
         [
-            first[:-length],
-            first[-length:] * np.linspace(1, 0, length)
-            + second[:length] * np.linspace(0, 1, length),
-            second[length:],
+            first[:-crossfade_len],
+            first[-crossfade_len:] * np.linspace(1, 0, crossfade_len)
+            + second[:crossfade_len] * np.linspace(0, 1, crossfade_len),
+            second[crossfade_len:],
         ]
     )
 
@@ -329,6 +346,7 @@ class Crossfader:
         additional_infer_before_len: int,
         additional_infer_after_len: int,
         crossfade_len: int,
+        sola_search_len: int = 384,
     ) -> None:
         if additional_infer_before_len < 0:
             raise ValueError("additional_infer_len must be >= 0")
@@ -341,8 +359,12 @@ class Crossfader:
         self.additional_infer_before_len = additional_infer_before_len
         self.additional_infer_after_len = additional_infer_after_len
         self.crossfade_len = crossfade_len
+        self.sola_search_len = sola_search_len
         self.last_input_left = np.zeros(
-            crossfade_len + additional_infer_before_len + additional_infer_after_len,
+            sola_search_len
+            + crossfade_len
+            + additional_infer_before_len
+            + additional_infer_after_len,
             dtype=np.float32,
         )
         self.last_infered_left = np.zeros(crossfade_len, dtype=np.float32)
@@ -384,22 +406,37 @@ class Crossfader:
             )[pad_len:-pad_len]
         else:
             infer_audio_concat = self.infer(input_audio_concat, *args, **kwargs)
+
+        # debug SOLA (using copy synthesis with a random shift)
+        """
+        rs = int(np.random.uniform(-200,200))
+        LOG.info(f"Debug random shift: {rs}")
+        infer_audio_concat = np.roll(input_audio_concat, rs)
+        """
+
         if len(infer_audio_concat) != len(input_audio_concat):
             raise ValueError(
                 f"Inferred audio length ({len(infer_audio_concat)}) should be equal to input audio length ({len(input_audio_concat)})."
             )
-
         infer_audio_to_use = infer_audio_concat[
             -(
-                self.crossfade_len + input_audio_len + self.additional_infer_after_len
-            ) : -(self.crossfade_len + self.additional_infer_after_len)
+                self.sola_search_len
+                + self.crossfade_len
+                + input_audio_len
+                + self.additional_infer_after_len
+            ) : -self.additional_infer_after_len
         ]
         assert (
-            len(infer_audio_to_use) == input_audio_len
-        ), f"{len(infer_audio_to_use)} != {input_audio_len}"
-        result_audio = linear_crossfade(
-            self.last_infered_left, infer_audio_to_use, self.crossfade_len
+            len(infer_audio_to_use)
+            == input_audio_len + self.sola_search_len + self.crossfade_len
+        ), f"{len(infer_audio_to_use)} != {input_audio_len + self.sola_search_len + self.cross_fade_len}"
+        _audio = sola_crossfade(
+            self.last_infered_left,
+            infer_audio_to_use,
+            self.crossfade_len,
+            self.sola_search_len,
         )
+        result_audio = _audio[: -self.crossfade_len]
         assert (
             len(result_audio) == input_audio_len
         ), f"{len(result_audio)} != {input_audio_len}"
@@ -407,16 +444,13 @@ class Crossfader:
         # update last input and inferred
         self.last_input_left = input_audio_concat[
             -(
-                self.crossfade_len
+                self.sola_search_len
+                + self.crossfade_len
                 + self.additional_infer_before_len
                 + self.additional_infer_after_len
             ) :
         ]
-        self.last_infered_left = infer_audio_concat[
-            -(
-                self.crossfade_len + self.additional_infer_after_len
-            ) : -self.additional_infer_after_len
-        ]
+        self.last_infered_left = _audio[-self.crossfade_len :]
         return result_audio
 
     def infer(
