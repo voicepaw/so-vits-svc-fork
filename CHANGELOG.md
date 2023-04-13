@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.6.0 (2023-04-13)
+### Feature
+* **realtime:** Support sola algorithm ([#316](https://github.com/34j/so-vits-svc-fork/issues/316)) ([`0fcbf99`](https://github.com/34j/so-vits-svc-fork/commit/0fcbf9979862e945ca2427612a92549db2d627d0))
+
 ## v3.5.1 (2023-04-13)
 ### Fix
 * **logger:** Do not use rich in notebook ([#317](https://github.com/34j/so-vits-svc-fork/issues/317)) ([`03c8240`](https://github.com/34j/so-vits-svc-fork/commit/03c824015872e3d7e4e5795b9d65fad4116d54e4))
