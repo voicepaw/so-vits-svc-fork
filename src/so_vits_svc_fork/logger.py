@@ -21,19 +21,34 @@ def init_logger() -> None:
     if LOGGER_INIT:
         return
 
-    IN_COLAB = os.getenv("COLAB_RELEASE_TAG")
     IS_TEST = "test" in Path.cwd().stem
-
+    package_name = sys.modules[__name__].__package__
     basicConfig(
         level=INFO,
         format="%(asctime)s %(message)s",
         datefmt="[%X]",
         handlers=[
-            RichHandler() if not IN_COLAB else StreamHandler(),
-            FileHandler(f"{__name__.split('.')[0]}.log"),
+            StreamHandler() if is_notebook() else RichHandler(),
+            FileHandler(f"{package_name}.log"),
         ],
     )
     if IS_TEST:
-        getLogger(sys.modules[__name__].__package__).setLevel(DEBUG)
+        getLogger(package_name).setLevel(DEBUG)
     captureWarnings(True)
     LOGGER_INIT = True
+
+
+def is_notebook():
+    try:
+        from IPython import get_ipython
+
+        if "IPKernelApp" not in get_ipython().config:  # pragma: no cover
+            raise ImportError("console")
+            return False
+        if "VSCODE_PID" in os.environ:  # pragma: no cover
+            raise ImportError("vscode")
+            return False
+    except Exception:
+        return False
+    else:  # pragma: no cover
+        return True

@@ -21,6 +21,7 @@ import so_vits_svc_fork.utils
 
 from . import utils
 from .dataset import TextAudioCollate, TextAudioDataset
+from .logger import is_notebook
 from .modules.descriminators import MultiPeriodDiscriminator
 from .modules.losses import discriminator_loss, feature_loss, generator_loss, kl_loss
 from .modules.mel_processing import mel_spectrogram_torch
@@ -85,7 +86,7 @@ def train(
         if hparams.train.get("bf16_run", False)
         else 32,
         strategy=strategy,
-        callbacks=[pl.callbacks.RichProgressBar()],
+        callbacks=[pl.callbacks.RichProgressBar()] if is_notebook() else None,
     )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
     trainer.fit(model, datamodule=datamodule)
