@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.4.0 (2023-04-13)
+### Feature
+* **train:** Make num_workers configurable ([#315](https://github.com/34j/so-vits-svc-fork/issues/315)) ([`e8df714`](https://github.com/34j/so-vits-svc-fork/commit/e8df7146b0d1d3ee32af576c251f47d8fdd80bb3))
+
 ## v3.3.1 (2023-04-13)
 ### Performance
 * **train:** Specify num_workers in DataLoader ([#313](https://github.com/34j/so-vits-svc-fork/issues/313)) ([`6042164`](https://github.com/34j/so-vits-svc-fork/commit/6042164a60f9990eb0636e37dd650bb0cdff032b))
