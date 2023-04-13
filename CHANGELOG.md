@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.5.0 (2023-04-13)
+### Feature
+* **gui:** Run inference in thread and disable button ([#279](https://github.com/34j/so-vits-svc-fork/issues/279)) ([`c55caa8`](https://github.com/34j/so-vits-svc-fork/commit/c55caa8019cc06fc6bd8851b0fd895b73cf926a4))
+
 ## v3.4.0 (2023-04-13)
 ### Feature
 * **train:** Make num_workers configurable ([#315](https://github.com/34j/so-vits-svc-fork/issues/315)) ([`e8df714`](https://github.com/34j/so-vits-svc-fork/commit/e8df7146b0d1d3ee32af576c251f47d8fdd80bb3))
