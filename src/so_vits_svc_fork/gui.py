@@ -83,6 +83,17 @@ def get_devices(
     return input_devices, output_devices, input_devices_indices, output_devices_indices
 
 
+def after_inference(window: sg.Window, path: Path, auto_play: bool, output_path: Path):
+    try:
+        LOG.info(f"Finished inference for {path.stem}{path.suffix}")
+        window["infer"].update(disabled=False)
+
+        if auto_play:
+            play_audio(output_path)
+    except Exception as e:
+        LOG.exception(e)
+
+
 def main():
     try:
         ensure_pretrained_model(".", "contentvec", tqdm_cls=tqdm_tk)
@@ -541,8 +552,6 @@ def main():
             elif event == "config_path":
                 update_speaker()
             elif event == "infer":
-                from so_vits_svc_fork.inference.main import infer
-
                 input_path = Path(values["input_path"])
                 output_path = (
                     input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
@@ -550,32 +559,45 @@ def main():
                 if not input_path.exists() or not input_path.is_file():
                     LOG.warning(f"Input path {input_path} does not exist.")
                     continue
+
                 try:
-                    infer(
-                        # paths
-                        model_path=Path(values["model_path"]),
-                        output_path=output_path,
-                        input_path=input_path,
-                        config_path=Path(values["config_path"]),
-                        # svc config
-                        speaker=values["speaker"],
-                        cluster_model_path=Path(values["cluster_model_path"])
-                        if values["cluster_model_path"]
-                        else None,
-                        transpose=values["transpose"],
-                        auto_predict_f0=values["auto_predict_f0"],
-                        cluster_infer_ratio=values["cluster_infer_ratio"],
-                        noise_scale=values["noise_scale"],
-                        f0_method=values["f0_method"],
-                        # slice config
-                        db_thresh=values["silence_threshold"],
-                        pad_seconds=values["pad_seconds"],
-                        chunk_seconds=values["chunk_seconds"],
-                        absolute_thresh=values["absolute_thresh"],
-                        device="cpu" if not values["use_gpu"] else get_optimal_device(),
+                    from so_vits_svc_fork.inference.main import infer
+
+                    LOG.info("Starting inference...")
+                    window["infer"].update(disabled=True)
+                    infer_future = pool.schedule(
+                        infer,
+                        kwargs=dict(
+                            # paths
+                            model_path=Path(values["model_path"]),
+                            output_path=output_path,
+                            input_path=input_path,
+                            config_path=Path(values["config_path"]),
+                            # svc config
+                            speaker=values["speaker"],
+                            cluster_model_path=Path(values["cluster_model_path"])
+                            if values["cluster_model_path"]
+                            else None,
+                            transpose=values["transpose"],
+                            auto_predict_f0=values["auto_predict_f0"],
+                            cluster_infer_ratio=values["cluster_infer_ratio"],
+                            noise_scale=values["noise_scale"],
+                            f0_method=values["f0_method"],
+                            # slice config
+                            db_thresh=values["silence_threshold"],
+                            pad_seconds=values["pad_seconds"],
+                            chunk_seconds=values["chunk_seconds"],
+                            absolute_thresh=values["absolute_thresh"],
+                            device="cpu"
+                            if not values["use_gpu"]
+                            else get_optimal_device(),
+                        ),
                     )
-                    if values["auto_play"]:
-                        pool.schedule(play_audio, args=[output_path])
+                    infer_future.add_done_callback(
+                        lambda _future: after_inference(
+                            window, input_path, values["auto_play"], output_path
+                        )
+                    )
                 except Exception as e:
                     LOG.exception(e)
             elif event == "play_input":
