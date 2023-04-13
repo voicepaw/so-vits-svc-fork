@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import warnings
 from logging import getLogger
+from multiprocessing import cpu_count
 from pathlib import Path
 from typing import Any
 
@@ -41,9 +42,10 @@ class VCDataModule(pl.LightningDataModule):
         self.val_dataset = TextAudioDataset(self.__hparams, is_validation=True)
 
     def train_dataloader(self):
-        # since dataset just reads data from a file, set num_workers to 0
         return DataLoader(
             self.train_dataset,
+            # pin_memory=False,
+            num_workers=min(cpu_count(), 4),
             batch_size=self.__hparams.train.batch_size,
             collate_fn=self.collate_fn,
         )
@@ -51,6 +53,7 @@ class VCDataModule(pl.LightningDataModule):
     def val_dataloader(self):
         return DataLoader(
             self.val_dataset,
+            # pin_memory=False,
             batch_size=1,
             collate_fn=self.collate_fn,
         )
