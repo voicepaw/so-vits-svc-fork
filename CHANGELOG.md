@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.3.1 (2023-04-13)
+### Performance
+* **train:** Specify num_workers in DataLoader ([#313](https://github.com/34j/so-vits-svc-fork/issues/313)) ([`6042164`](https://github.com/34j/so-vits-svc-fork/commit/6042164a60f9990eb0636e37dd650bb0cdff032b))
+
 ## v3.3.0 (2023-04-13)
 ### Feature
 * **train:** Use RichProgressBar ([#311](https://github.com/34j/so-vits-svc-fork/issues/311)) ([`17e937a`](https://github.com/34j/so-vits-svc-fork/commit/17e937aae9c90b513e4b7674f442a60161c84e83))
