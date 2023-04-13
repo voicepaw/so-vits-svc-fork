@@ -45,7 +45,7 @@ class VCDataModule(pl.LightningDataModule):
         return DataLoader(
             self.train_dataset,
             # pin_memory=False,
-            num_workers=min(cpu_count(), 4),
+            num_workers=min(cpu_count(), self.__hparams.train.get("num_workers", 4)),
             batch_size=self.__hparams.train.batch_size,
             collate_fn=self.collate_fn,
         )
