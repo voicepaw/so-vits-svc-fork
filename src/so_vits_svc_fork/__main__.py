@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from logging import getLogger
+from multiprocessing import freeze_support
 from pathlib import Path
 from typing import Literal
 
@@ -819,4 +820,6 @@ def train_cluster(
     )
 
 
-cli()
+if __name__ == "__main__":
+    freeze_support()
+    cli()
