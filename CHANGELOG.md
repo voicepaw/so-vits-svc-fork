@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.3.0 (2023-04-13)
+### Feature
+* **train:** Use RichProgressBar ([#311](https://github.com/34j/so-vits-svc-fork/issues/311)) ([`17e937a`](https://github.com/34j/so-vits-svc-fork/commit/17e937aae9c90b513e4b7674f442a60161c84e83))
+
 ## v3.2.0 (2023-04-13)
 ### Feature
 * **train:** Add optional `accumulate_grad_batches` config param ([#306](https://github.com/34j/so-vits-svc-fork/issues/306)) ([`1172b23`](https://github.com/34j/so-vits-svc-fork/commit/1172b2385cfe5239da3222cf93916436395e0f1a))
