@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.5.1 (2023-04-13)
+### Fix
+* **logger:** Do not use rich in notebook ([#317](https://github.com/34j/so-vits-svc-fork/issues/317)) ([`03c8240`](https://github.com/34j/so-vits-svc-fork/commit/03c824015872e3d7e4e5795b9d65fad4116d54e4))
+
 ## v3.5.0 (2023-04-13)
 ### Feature
 * **gui:** Run inference in thread and disable button ([#279](https://github.com/34j/so-vits-svc-fork/issues/279)) ([`c55caa8`](https://github.com/34j/so-vits-svc-fork/commit/c55caa8019cc06fc6bd8851b0fd895b73cf926a4))
