@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.2.0 (2023-04-13)
+### Feature
+* **train:** Add optional `accumulate_grad_batches` config param ([#306](https://github.com/34j/so-vits-svc-fork/issues/306)) ([`1172b23`](https://github.com/34j/so-vits-svc-fork/commit/1172b2385cfe5239da3222cf93916436395e0f1a))
+
 ## v3.1.13 (2023-04-12)
 ### Fix
 * **logger:** Fix too noisy logger ([#300](https://github.com/34j/so-vits-svc-fork/issues/300)) ([`bd0eb33`](https://github.com/34j/so-vits-svc-fork/commit/bd0eb33a66d77afff8328d08008f2643651c712a))
