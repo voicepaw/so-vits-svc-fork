@@ -51,6 +51,10 @@ class SynthesizerTrn(nn.Module):
         gen_istft_n_fft: int = 16,
         gen_istft_hop_size: int = 4,
         subbands: int = 4,
+        encoder_n_layers: int = 16,
+        flow_n_layers: int = 4,
+        n_flows: int = 4,
+        flow_kernel_size: int = 3,
         **kwargs: Any,
     ):
         super().__init__()
@@ -76,6 +80,10 @@ class SynthesizerTrn(nn.Module):
         self.type_ = type_
         self.gen_istft_n_fft = gen_istft_n_fft
         self.gen_istft_hop_size = gen_istft_hop_size
+        self.n_layers_encoder = encoder_n_layers
+        self.n_layers_flow = flow_n_layers
+        self.n_flows = n_flows
+        self.flow_kernel_size = flow_kernel_size
         self.subbands = subbands
         if kwargs:
             warnings.warn(f"Unused arguments: {kwargs}")
@@ -140,25 +148,31 @@ class SynthesizerTrn(nn.Module):
             self.mb = True
 
         self.enc_q = Encoder(
-            spec_channels,
-            inter_channels,
-            hidden_channels,
-            5,
-            1,
-            16,
+            in_channels=spec_channels,
+            out_channels=inter_channels,
+            hidden_channels=hidden_channels,
+            kernel_size=flow_kernel_size,
+            dilation_rate=1,
+            n_layers=encoder_n_layers,
             gin_channels=gin_channels,
         )
         self.flow = ResidualCouplingBlock(
-            inter_channels, hidden_channels, 5, 1, 4, gin_channels=gin_channels
+            channels=inter_channels,
+            hidden_channels=hidden_channels,
+            kernel_size=flow_kernel_size,
+            dilation_rate=1,
+            n_layers=flow_n_layers,
+            n_flows=n_flows,
+            gin_channels=gin_channels,
         )
         self.f0_decoder = F0Decoder(
-            1,
-            hidden_channels,
-            filter_channels,
-            n_heads,
-            n_layers,
-            kernel_size,
-            p_dropout,
+            out_channels=1,
+            hidden_channels=hidden_channels,
+            filter_channels=filter_channels,
+            n_heads=n_heads,
+            n_layers=n_layers,
+            kernel_size=kernel_size,
+            p_dropout=p_dropout,
             spk_channels=gin_channels,
         )
         self.emb_uv = nn.Embedding(2, hidden_channels)
