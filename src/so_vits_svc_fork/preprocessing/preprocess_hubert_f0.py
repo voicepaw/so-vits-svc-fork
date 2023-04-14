@@ -98,7 +98,8 @@ def _process_one(
         "spk": spk,
     }
     data = {k: v.cpu() for k, v in data.items()}
-    torch.save(data, data_path)
+    with data_path.open("wb") as f:
+        torch.save(data, f)
 
 
 def _process_batch(filepaths: Iterable[Path], pbar_position: int, **kwargs):

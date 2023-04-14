@@ -24,9 +24,10 @@ def train_cluster(
     LOG.info(f"Loading features from {input_dir}")
     features = []
     for path in input_dir.rglob("*.data.pt"):
-        features.append(
-            torch.load(path, weights_only=True)["content"].squeeze(0).numpy().T
-        )
+        with path.open("rb") as f:
+            features.append(
+                torch.load(f, weights_only=True)["content"].squeeze(0).numpy().T
+            )
     if not features:
         raise ValueError(f"No features found in {input_dir}")
     features = np.concatenate(features, axis=0).astype(np.float32)
@@ -86,4 +87,5 @@ def main(
     assert parallel_result is not None
     checkpoint = dict(parallel_result)
     output_path.parent.mkdir(exist_ok=True, parents=True)
-    torch.save(checkpoint, output_path)
+    with output_path.open("wb") as f:
+        torch.save(checkpoint, f)
