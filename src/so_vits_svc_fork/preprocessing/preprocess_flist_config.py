@@ -36,11 +36,7 @@ def preprocess_config(
         spk_dict[speaker] = spk_id
         spk_id += 1
         paths = []
-        for path in tqdm(list((input_dir / speaker).glob("**/*.wav"))):
-            if not path.name.isascii():
-                LOG.warning(
-                    f"file name {path} contains non-ascii characters. torch.save() and torch.load() may not work."
-                )
+        for path in tqdm(list((input_dir / speaker).rglob("*.wav"))):
             if get_duration(filename=path) < 0.3:
                 LOG.warning(f"skip {path} because it is too short.")
                 continue
