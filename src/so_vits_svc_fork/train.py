@@ -358,9 +358,6 @@ class VitsLightning(pl.LightningModule):
             loss_gen_all += loss_subband
 
         # log loss
-        self.log_(
-            "grad_norm_g", commons.clip_grad_value_(self.net_g.parameters(), None)
-        )
         self.log_("lr", self.optim_g.param_groups[0]["lr"])
         self.log_dict_(
             {
@@ -402,6 +399,9 @@ class VitsLightning(pl.LightningModule):
         # optimizer
         self.manual_backward(loss_gen_all / accumulate_grad_batches)
         if should_update:
+            self.log_(
+                "grad_norm_g", commons.clip_grad_value_(self.net_g.parameters(), None)
+            )
             optim_g.step()
             optim_g.zero_grad()
         self.untoggle_optimizer(optim_g)
@@ -420,13 +420,13 @@ class VitsLightning(pl.LightningModule):
 
         # log loss
         self.log_("loss/d/total", loss_disc_all, prog_bar=True)
-        self.log_(
-            "grad_norm_d", commons.clip_grad_value_(self.net_d.parameters(), None)
-        )
 
         # optimizer
         self.manual_backward(loss_disc_all / accumulate_grad_batches)
         if should_update:
+            self.log_(
+                "grad_norm_d", commons.clip_grad_value_(self.net_d.parameters(), None)
+            )
             optim_d.step()
             optim_d.zero_grad()
         self.untoggle_optimizer(optim_d)
