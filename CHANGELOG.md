@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.6.1 (2023-04-14)
+### Fix
+* **train:** Fix gradient logging ([#320](https://github.com/34j/so-vits-svc-fork/issues/320)) ([`73ef3dc`](https://github.com/34j/so-vits-svc-fork/commit/73ef3dc94ccd4c0514ab33b0c5a65edf8b356484))
+
 ## v3.6.0 (2023-04-13)
 ### Feature
 * **realtime:** Support sola algorithm ([#316](https://github.com/34j/so-vits-svc-fork/issues/316)) ([`0fcbf99`](https://github.com/34j/so-vits-svc-fork/commit/0fcbf9979862e945ca2427612a92549db2d627d0))
