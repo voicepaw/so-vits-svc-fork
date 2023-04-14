@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.7.0 (2023-04-14)
+### Feature
+* **train:** Add option to specify TensorBoardLogger version parameter support ([#331](https://github.com/34j/so-vits-svc-fork/issues/331)) ([`a685123`](https://github.com/34j/so-vits-svc-fork/commit/a685123a4063e08e0b021a1ad51098d3154b75de))
+
 ## v3.6.2 (2023-04-14)
 ### Fix
 * Fix torch.load and save to use file objects and weights_only and remove unidecode ([#327](https://github.com/34j/so-vits-svc-fork/issues/327)) ([`4aad701`](https://github.com/34j/so-vits-svc-fork/commit/4aad701badc1eae5195e874dec40f9ed8dd40ee6))
