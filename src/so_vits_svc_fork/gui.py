@@ -76,10 +76,13 @@ def get_devices(
         for d in devices
         if d["max_output_channels"] > 0
     ]
-    input_devices_indices = [d["index"] for d in devices if d["max_input_channels"] > 0]
+    input_devices_indices = [
+        d["index"] for d in devices if "index" in d and d["max_input_channels"] > 0
+        ]
     output_devices_indices = [
-        d["index"] for d in devices if d["max_output_channels"] > 0
+        d["index"] for d in devices if "index" in d and d["max_output_channels"] > 0
     ]
+
     return input_devices, output_devices, input_devices_indices, output_devices_indices
 
 
