@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.6.2 (2023-04-14)
+### Fix
+* Fix torch.load and save to use file objects and weights_only and remove unidecode ([#327](https://github.com/34j/so-vits-svc-fork/issues/327)) ([`4aad701`](https://github.com/34j/so-vits-svc-fork/commit/4aad701badc1eae5195e874dec40f9ed8dd40ee6))
+
 ## v3.6.1 (2023-04-14)
 ### Fix
 * **train:** Fix gradient logging ([#320](https://github.com/34j/so-vits-svc-fork/issues/320)) ([`73ef3dc`](https://github.com/34j/so-vits-svc-fork/commit/73ef3dc94ccd4c0514ab33b0c5a65edf8b356484))
