@@ -1,9 +1,9 @@
 import torch
 from torch import nn
 
+import so_vits_svc_fork.modules.flows
 from so_vits_svc_fork.modules import attentions as attentions
 from so_vits_svc_fork.modules import commons as commons
-from so_vits_svc_fork.modules import modules as modules
 
 
 class SpeakerEncoder(torch.nn.Module):
@@ -79,7 +79,7 @@ class Encoder(nn.Module):
         self.gin_channels = gin_channels
 
         self.pre = nn.Conv1d(in_channels, hidden_channels, 1)
-        self.enc = modules.WN(
+        self.enc = so_vits_svc_fork.modules.flows.WN(
             hidden_channels,
             kernel_size,
             dilation_rate,
