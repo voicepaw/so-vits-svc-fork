@@ -4836,13 +4836,13 @@ widechars = ["wcwidth"]
 
 [[package]]
 name = "tensorboard"
-version = "2.12.1"
+version = "2.12.2"
 description = "TensorBoard lets you watch Tensors Flow"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "tensorboard-2.12.1-py3-none-any.whl", hash = "sha256:58f1c2a25b4829b9c48d2b1ec951dedc9325dcd1ea4b0f601d241d2887d0ed65"},
+    {file = "tensorboard-2.12.2-py3-none-any.whl", hash = "sha256:811ab0d27a139445836db9fd4f974424602c3dce12379364d379bcba7c783a68"},
 ]
 
 [package.dependencies]
