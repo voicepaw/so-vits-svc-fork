@@ -75,7 +75,9 @@ def train(
     )
     LOG.info(f"Using strategy: {strategy}")
     trainer = pl.Trainer(
-        logger=TensorBoardLogger(model_path),
+        logger=TensorBoardLogger(
+            model_path, "lightning_logs", hparams.train.get("log_version", 0)
+        ),
         # profiler="simple",
         val_check_interval=hparams.train.eval_interval,
         max_epochs=hparams.train.epochs,

@@ -20,7 +20,8 @@
     "max_speclen": 512,
     "port": "8001",
     "keep_ckpts": 3,
-    "num_workers": 4
+    "num_workers": 4,
+    "log_version": 0
   },
   "data": {
     "training_files": "filelists/44k/train.txt",
