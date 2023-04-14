@@ -188,7 +188,7 @@ def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> Non
     shape_missmatch = []
     for k, v in from_.items():
         if k not in to_:
-            warnings.warn(f"Key {k} not found in model state dict")
+            pass
         elif hasattr(v, "shape"):
             if not hasattr(to_[k], "shape"):
                 raise ValueError(f"Key {k} is not a tensor")
