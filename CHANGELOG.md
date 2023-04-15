@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.7.1 (2023-04-15)
+### Fix
+* **train:** Fix check for notebook / Colab ([#335](https://github.com/34j/so-vits-svc-fork/issues/335)) ([`7f69814`](https://github.com/34j/so-vits-svc-fork/commit/7f698141e1b65e901579a5dbbabf28bfae5cc91f))
+
 ## v3.7.0 (2023-04-14)
 ### Feature
 * **train:** Add option to specify TensorBoardLogger version parameter support ([#331](https://github.com/34j/so-vits-svc-fork/issues/331)) ([`a685123`](https://github.com/34j/so-vits-svc-fork/commit/a685123a4063e08e0b021a1ad51098d3154b75de))
