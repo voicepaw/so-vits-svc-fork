@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.8.0 (2023-04-15)
+### Feature
+* **train:** Automatically decide batch_size ([#342](https://github.com/34j/so-vits-svc-fork/issues/342)) ([`8ffa128`](https://github.com/34j/so-vits-svc-fork/commit/8ffa128aa209787fde8fb1f0e4ae5c96dfe31217))
+
 ## v3.7.3 (2023-04-15)
 ### Fix
 * **gui:** Show errors raised in inference ([#341](https://github.com/34j/so-vits-svc-fork/issues/341)) ([`99833c5`](https://github.com/34j/so-vits-svc-fork/commit/99833c55045647b9a766042765b454cb3d7d18ce))
