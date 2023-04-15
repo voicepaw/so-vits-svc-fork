@@ -18,6 +18,8 @@ from so_vits_svc_fork.modules.decoders.mb_istft import (
 from so_vits_svc_fork.modules.encoders import PosteriorEncoder, TextEncoder
 from so_vits_svc_fork.modules.flows import ResidualCouplingBlock
 
+from ..hparams import HParams
+
 LOG = getLogger(__name__)
 
 
@@ -68,6 +70,7 @@ class SynthesizerTrn(nn.Module):
         n_mag_allpass: int = 256,
         n_mag_harmonic: int = 512,
         n_mag_noise: int = 256,
+        bigvgan_h: HParams | None = None,
         **kwargs: Any,
     ):
         super().__init__()
@@ -188,6 +191,10 @@ class SynthesizerTrn(nn.Module):
                     n_unit=inter_channels,
                     n_spk=n_speakers,
                 )
+        elif type_ == "bigvgan":
+            from .decoders.bigvgan import BigVGAN
+
+            self.dec = BigVGAN(bigvgan_h)
         else:
             raise ValueError(f"Unknown type: {type_}")
 
@@ -268,6 +275,8 @@ class SynthesizerTrn(nn.Module):
             o, _, (s_h, s_n) = self.dec(
                 z_slice.transpose(1, 2), pitch_slice.unsqueeze(-1), volume, g
             )
+        elif "bigvgan" in self.type_:
+            o = self.dec(z_slice)
         else:
             o = self.dec(z_slice, g=g, f0=pitch_slice)
         return (
@@ -326,6 +335,8 @@ class SynthesizerTrn(nn.Module):
             o, _, _ = self.dec(
                 (z * c_mask).transpose(1, 2), f0.unsqueeze(-1), volume, spk
             )
+        elif "bigvgan" in self.type_:
+            o = self.dec(z)
         else:
             o = self.dec(z * c_mask, g=spk, f0=f0)
         return o

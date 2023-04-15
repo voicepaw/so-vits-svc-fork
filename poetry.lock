@@ -161,6 +161,17 @@ files = [
 ]
 
 [[package]]
+name = "alias-free-torch"
+version = "0.0.6"
+description = "alias free torch"
+category = "dev"
+optional = false
+python-versions = ">=3"
+files = [
+    {file = "alias_free_torch-0.0.6-py3-none-any.whl", hash = "sha256:3a77e81147caf00f0b05483498e672ad3623b05800b82ace163d7adecac8b033"},
+]
+
+[[package]]
 name = "altair"
 version = "4.2.2"
 description = "Altair: A declarative statistical visualization library for Python."
@@ -5732,4 +5743,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "02cd04faa99a9dde14922bfabfe90416ed03c748415d6cd311943bf25e944d1d"
+content-hash = "e829c9c315ebb001ad4a95a2ee95f9172454d598b542e9585e346cbf2581b53d"
