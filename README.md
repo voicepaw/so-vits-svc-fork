@@ -180,8 +180,8 @@ svc train -t
 
 #### Notes
 
-- Dataset audio duration per file should be <~ 10s or VRAM will run out.
-- It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity.
+- Dataset audio duration per file should be <~ 10s.
+- It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity. Setting `batch_size` to `auto-{init_batch_size}-{max_n_trials}` (or simply `auto`) will automatically increase `batch_size` until OOM error occurs, but may not be useful in some cases.
 - To use `CREPE`, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`.
 - To use `QuickVC`, replace `svc pre-config` with `svc pre-config -t quickvc`.
 - Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
