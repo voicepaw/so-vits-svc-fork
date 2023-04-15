@@ -88,7 +88,7 @@ def train(
         if hparams.train.get("bf16_run", False)
         else 32,
         strategy=strategy,
-        callbacks=[pl.callbacks.RichProgressBar()] if is_notebook() else None,
+        callbacks=[pl.callbacks.RichProgressBar()] if not is_notebook() else None,
     )
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
     trainer.fit(model, datamodule=datamodule)
