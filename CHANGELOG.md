@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.7.2 (2023-04-15)
+### Fix
+* **train:** Suppress pytorch logs for deprecated TypedStorage ([#336](https://github.com/34j/so-vits-svc-fork/issues/336)) ([`e67ac62`](https://github.com/34j/so-vits-svc-fork/commit/e67ac621296cf6667d05b51f23ce8cb9ef8a0855))
+
 ## v3.7.1 (2023-04-15)
 ### Fix
 * **train:** Fix check for notebook / Colab ([#335](https://github.com/34j/so-vits-svc-fork/issues/335)) ([`7f69814`](https://github.com/34j/so-vits-svc-fork/commit/7f698141e1b65e901579a5dbbabf28bfae5cc91f))
