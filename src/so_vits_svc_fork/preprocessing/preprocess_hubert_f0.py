@@ -71,6 +71,12 @@ def _process_one(
     mel_spec = spec_to_mel_torch(spec, hps)
     torch.cuda.empty_cache()
 
+    # compute volume
+    if "ddsp" in hps.model.get("type_"):
+        from ..modules.decoders.pc_ddsp import VolumeExtractor
+
+        volume = VolumeExtractor().extract(audio)
+
     # fix lengths
     lmin = min(spec.shape[1], mel_spec.shape[1], f0.shape[0], uv.shape[0], c.shape[1])
     spec, mel_spec, f0, uv, c = (
@@ -80,6 +86,9 @@ def _process_one(
         uv[:lmin],
         c[:, :lmin],
     )
+    if "ddsp" in hps.model.get("type_"):
+        volume = volume[:lmin]
+        volume = torch.from_numpy(volume).float()
 
     # get speaker id
     spk_name = filepath.parent.name
@@ -97,6 +106,8 @@ def _process_one(
         "audio": audio,
         "spk": spk,
     }
+    if "ddsp" in hps.model.get("type_"):
+        data["volume"] = volume
     data = {k: v.cpu() for k, v in data.items()}
     with data_path.open("wb") as f:
         torch.save(data, f)

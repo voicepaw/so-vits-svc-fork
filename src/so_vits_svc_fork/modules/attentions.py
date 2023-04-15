@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import math
 
 import torch
-from torch import nn
+from torch import Tensor, nn
 from torch.nn import functional as F
 
 from so_vits_svc_fork.modules import commons
@@ -11,15 +13,14 @@ from so_vits_svc_fork.modules.modules import LayerNorm
 class FFT(nn.Module):
     def __init__(
         self,
-        hidden_channels,
-        filter_channels,
-        n_heads,
-        n_layers=1,
-        kernel_size=1,
-        p_dropout=0.0,
-        proximal_bias=False,
-        proximal_init=True,
-        **kwargs
+        hidden_channels: int,
+        filter_channels: int,
+        n_heads: int,
+        n_layers: int = 1,
+        kernel_size: int = 1,
+        p_dropout: float = 0.0,
+        proximal_bias: bool = False,
+        proximal_init: bool = True,
     ):
         super().__init__()
         self.hidden_channels = hidden_channels
@@ -60,7 +61,7 @@ class FFT(nn.Module):
             )
             self.norm_layers_1.append(LayerNorm(hidden_channels))
 
-    def forward(self, x, x_mask):
+    def forward(self, x: Tensor, x_mask: Tensor) -> Tensor:
         """
         x: decoder input
         h: encoder output
@@ -84,14 +85,13 @@ class FFT(nn.Module):
 class Encoder(nn.Module):
     def __init__(
         self,
-        hidden_channels,
-        filter_channels,
-        n_heads,
-        n_layers,
-        kernel_size=1,
-        p_dropout=0.0,
-        window_size=4,
-        **kwargs
+        hidden_channels: int,
+        filter_channels: int,
+        n_heads: int,
+        n_layers: int,
+        kernel_size: int = 1,
+        p_dropout: float = 0.0,
+        window_size: int = 4,
     ):
         super().__init__()
         self.hidden_channels = hidden_channels
@@ -129,7 +129,7 @@ class Encoder(nn.Module):
             )
             self.norm_layers_2.append(LayerNorm(hidden_channels))
 
-    def forward(self, x, x_mask):
+    def forward(self, x: Tensor, x_mask: Tensor) -> Tensor:
         attn_mask = x_mask.unsqueeze(2) * x_mask.unsqueeze(-1)
         x = x * x_mask
         for i in range(self.n_layers):
@@ -147,16 +147,15 @@ class Encoder(nn.Module):
 class Decoder(nn.Module):
     def __init__(
         self,
-        hidden_channels,
-        filter_channels,
-        n_heads,
-        n_layers,
-        kernel_size=1,
-        p_dropout=0.0,
-        proximal_bias=False,
-        proximal_init=True,
-        **kwargs
-    ):
+        hidden_channels: int,
+        filter_channels: int,
+        n_heads: int,
+        n_layers: int,
+        kernel_size: int = 1,
+        p_dropout: float = 0.0,
+        proximal_bias: bool = False,
+        proximal_init: bool = True,
+    ) -> None:
         super().__init__()
         self.hidden_channels = hidden_channels
         self.filter_channels = filter_channels
@@ -204,7 +203,7 @@ class Decoder(nn.Module):
             )
             self.norm_layers_2.append(LayerNorm(hidden_channels))
 
-    def forward(self, x, x_mask, h, h_mask):
+    def forward(self, x: Tensor, x_mask: Tensor, h: Tensor, h_mask: Tensor) -> Tensor:
         """
         x: decoder input
         h: encoder output
@@ -233,15 +232,15 @@ class Decoder(nn.Module):
 class MultiHeadAttention(nn.Module):
     def __init__(
         self,
-        channels,
-        out_channels,
-        n_heads,
-        p_dropout=0.0,
-        window_size=None,
-        heads_share=True,
-        block_length=None,
-        proximal_bias=False,
-        proximal_init=False,
+        channels: int,
+        out_channels: int,
+        n_heads: int,
+        p_dropout: float = 0.0,
+        window_size: int = None,
+        heads_share: bool = True,
+        block_length: int = None,
+        proximal_bias: bool = False,
+        proximal_init: bool = False,
     ):
         super().__init__()
         assert channels % n_heads == 0
@@ -284,7 +283,7 @@ class MultiHeadAttention(nn.Module):
                 self.conv_k.weight.copy_(self.conv_q.weight)
                 self.conv_k.bias.copy_(self.conv_q.bias)
 
-    def forward(self, x, c, attn_mask=None):
+    def forward(self, x: Tensor, c: Tensor, attn_mask: Tensor | None = None) -> Tensor:
         q = self.conv_q(x)
         k = self.conv_k(c)
         v = self.conv_v(c)
@@ -294,7 +293,9 @@ class MultiHeadAttention(nn.Module):
         x = self.conv_o(x)
         return x
 
-    def attention(self, query, key, value, mask=None):
+    def attention(
+        self, query: Tensor, key: Tensor, value: Tensor, mask: Tensor | None = None
+    ) -> Tensor:
         # reshape [b, d, t] -> [b, n_h, t, d_k]
         b, d, t_s, t_t = (*key.size(), query.size(2))
         query = query.view(b, self.n_heads, self.k_channels, t_t).transpose(2, 3)
@@ -433,13 +434,13 @@ class MultiHeadAttention(nn.Module):
 class FFN(nn.Module):
     def __init__(
         self,
-        in_channels,
-        out_channels,
-        filter_channels,
-        kernel_size,
-        p_dropout=0.0,
-        activation=None,
-        causal=False,
+        in_channels: int,
+        out_channels: int,
+        filter_channels: int,
+        kernel_size: int,
+        p_dropout: float = 0.0,
+        activation: nn.Module | None = None,
+        causal: bool = False,
     ):
         super().__init__()
         self.in_channels = in_channels

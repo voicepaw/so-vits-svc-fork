@@ -216,10 +216,10 @@ class Svc:
                 audio = self.net_g.infer(
                     c,
                     f0=f0,
-                    g=sid,
+                    spk=sid,
                     uv=uv,
                     predict_f0=auto_predict_f0,
-                    noice_scale=noise_scale,
+                    noise_scale=noise_scale,
                 )[0, 0].data.float()
             audio_duration = audio.shape[-1] / self.target_sample
             LOG.info(

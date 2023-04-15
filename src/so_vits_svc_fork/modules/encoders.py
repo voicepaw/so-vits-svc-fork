@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+from torch import Tensor, nn
 
 import so_vits_svc_fork.modules.flows
 from so_vits_svc_fork.modules import attentions as attentions
@@ -9,10 +9,10 @@ from so_vits_svc_fork.modules import commons as commons
 class SpeakerEncoder(torch.nn.Module):
     def __init__(
         self,
-        mel_n_channels=80,
-        model_num_layers=3,
-        model_hidden_size=256,
-        model_embedding_size=256,
+        mel_n_channels: int = 80,
+        model_num_layers: int = 3,
+        model_hidden_size: int = 256,
+        model_embedding_size: int = 256,
     ):
         super().__init__()
         self.lstm = nn.LSTM(
@@ -21,21 +21,24 @@ class SpeakerEncoder(torch.nn.Module):
         self.linear = nn.Linear(model_hidden_size, model_embedding_size)
         self.relu = nn.ReLU()
 
-    def forward(self, mels):
+    def forward(self, mels: Tensor) -> Tensor:
         self.lstm.flatten_parameters()
         _, (hidden, _) = self.lstm(mels)
         embeds_raw = self.relu(self.linear(hidden[-1]))
         return embeds_raw / torch.norm(embeds_raw, dim=1, keepdim=True)
 
-    def compute_partial_slices(self, total_frames, partial_frames, partial_hop):
+    def compute_partial_slices(
+        self, total_frames: int, partial_frames: int, partial_hop: int
+    ) -> list[Tensor]:
         mel_slices = []
         for i in range(0, total_frames - partial_frames, partial_hop):
             mel_range = torch.arange(i, i + partial_frames)
             mel_slices.append(mel_range)
-
         return mel_slices
 
-    def embed_utterance(self, mel, partial_frames=128, partial_hop=64):
+    def embed_utterance(
+        self, mel: Tensor, partial_frames: int = 128, partial_hop: int = 64
+    ) -> Tensor:
         mel_len = mel.size(1)
         last_mel = mel[:, -partial_frames:]
 
@@ -58,16 +61,16 @@ class SpeakerEncoder(torch.nn.Module):
         return embed
 
 
-class Encoder(nn.Module):
+class PosteriorEncoder(nn.Module):
     def __init__(
         self,
-        in_channels,
-        out_channels,
-        hidden_channels,
-        kernel_size,
-        dilation_rate,
-        n_layers,
-        gin_channels=0,
+        in_channels: int,
+        out_channels: int,
+        hidden_channels: int,
+        kernel_size: int,
+        dilation_rate: int,
+        n_layers: int,
+        gin_channels: int = 0,
     ):
         super().__init__()
         self.in_channels = in_channels
@@ -88,8 +91,7 @@ class Encoder(nn.Module):
         )
         self.proj = nn.Conv1d(hidden_channels, out_channels * 2, 1)
 
-    def forward(self, x, x_lengths, g=None):
-        # print(x.shape,x_lengths.shape)
+    def forward(self, x: Tensor, x_lengths: Tensor, g: Tensor | None = None):
         x_mask = torch.unsqueeze(commons.sequence_mask(x_lengths, x.size(2)), 1).to(
             x.dtype
         )
@@ -104,14 +106,14 @@ class Encoder(nn.Module):
 class TextEncoder(nn.Module):
     def __init__(
         self,
-        out_channels,
-        hidden_channels,
-        kernel_size,
-        n_layers,
-        gin_channels=0,
-        filter_channels=None,
-        n_heads=None,
-        p_dropout=None,
+        out_channels: int,
+        hidden_channels: int,
+        kernel_size: int,
+        n_layers: int,
+        gin_channels: int,
+        filter_channels: int,
+        n_heads: int,
+        p_dropout: float,
     ):
         super().__init__()
         self.out_channels = out_channels
@@ -119,18 +121,17 @@ class TextEncoder(nn.Module):
         self.kernel_size = kernel_size
         self.n_layers = n_layers
         self.gin_channels = gin_channels
-        self.proj = nn.Conv1d(hidden_channels, out_channels * 2, 1)
-        self.f0_emb = nn.Embedding(256, hidden_channels)
 
+        self.proj = nn.Conv1d(hidden_channels, out_channels * 2, 1)
+        self.f0_emb = nn.Embedding(gin_channels, hidden_channels)
         self.enc_ = attentions.Encoder(
             hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout
         )
 
-    def forward(self, x, x_mask, f0=None, noice_scale=1):
+    def forward(self, x: Tensor, x_mask: Tensor, f0: Tensor, noise_scale: float = 1):
         x = x + self.f0_emb(f0).transpose(1, 2)
         x = self.enc_(x * x_mask, x_mask)
         stats = self.proj(x) * x_mask
         m, logs = torch.split(stats, self.out_channels, dim=1)
-        z = (m + torch.randn_like(m) * torch.exp(logs) * noice_scale) * x_mask
-
+        z = (m + torch.randn_like(m) * torch.exp(logs) * noise_scale) * x_mask
         return z, m, logs, x_mask

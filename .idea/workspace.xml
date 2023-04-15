@@ -2,23 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7aacf003-229b-4eb0-80a4-ff105dc3c3d4" name="変更" comment="">
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/__main__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/__main__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/gui.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/model_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/_model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/onnx_export.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/so_vits_svc_fork/modules/onnx/_export.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/1.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/10.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/2.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/3.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/4.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/5.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/6.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/7.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/8.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/9.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/dataset_raw/34j/nested/あ.wav" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -129,6 +113,7 @@
       <workItem from="1680174456649" duration="1005000" />
       <workItem from="1680251014707" duration="2800000" />
       <workItem from="1680319074742" duration="3292000" />
+      <workItem from="1681476243233" duration="1232000" />
     </task>
     <servers />
   </component>

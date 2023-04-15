@@ -93,6 +93,9 @@ def train(
 
 
 class VitsLightning(pl.LightningModule):
+    net_g: SynthesizerTrn
+    net_d: MultiPeriodDiscriminator
+
     def __init__(self, reset_optimizer: bool = False, **hparams: Any):
         super().__init__()
         self._temp_epoch = 0  # Add this line to initialize the _temp_epoch attribute
@@ -312,7 +315,15 @@ class VitsLightning(pl.LightningModule):
         # Generator
         # train
         self.toggle_optimizer(optim_g)
-        c, f0, spec, mel, y, g, lengths, uv = batch
+        c = batch["content"]
+        f0 = batch["f0"]
+        spec = batch["spec"]
+        mel = batch["mel_spec"]
+        y = batch["audio"]
+        spk = batch["spk"]
+        lengths = batch["length"]
+        uv = batch["uv"]
+        volume = batch.get("volume", None)
         (
             y_hat,
             y_hat_mb,
@@ -322,7 +333,16 @@ class VitsLightning(pl.LightningModule):
             pred_lf0,
             norm_lf0,
             lf0,
-        ) = self.net_g(c, f0, uv, spec, g=g, c_lengths=lengths, spec_lengths=lengths)
+        ) = self.net_g(
+            c,
+            f0,
+            uv,
+            spec,
+            spk=spk,
+            c_lengths=lengths,
+            spec_lengths=lengths,
+            volume=volume,
+        )
         y_mel = commons.slice_segments(
             mel,
             ids_slice,
@@ -439,8 +459,14 @@ class VitsLightning(pl.LightningModule):
     def validation_step(self, batch, batch_idx):
         with torch.no_grad():
             self.net_g.eval()
-            c, f0, _, mel, y, g, _, uv = batch
-            y_hat = self.net_g.infer(c, f0, uv, g=g)
+            c = batch["content"]
+            f0 = batch["f0"]
+            mel = batch["mel_spec"]
+            y = batch["audio"]
+            uv = batch["uv"]
+            spk = batch["spk"]
+            volume = batch["volume"]
+            y_hat = self.net_g.infer(c, f0, uv, spk=spk, volume=volume)
             y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
             self.log_audio_dict(
                 {f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]}
