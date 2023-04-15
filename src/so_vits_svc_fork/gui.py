@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from copy import copy
 from logging import getLogger
 from pathlib import Path
 
@@ -514,6 +515,7 @@ def main():
     update_devices()
     with ProcessPool(max_workers=1) as pool:
         future: None | ProcessFuture = None
+        infer_futures: set[ProcessFuture] = set()
         while True:
             event, values = window.read(200)
             if event == sg.WIN_CLOSED:
@@ -598,6 +600,7 @@ def main():
                             window, input_path, values["auto_play"], output_path
                         )
                     )
+                    infer_futures.add(infer_future)
                 except Exception as e:
                     LOG.exception(e)
             elif event == "play_input":
@@ -676,6 +679,14 @@ def main():
                 except Exception as e:
                     LOG.exception(e)
                 future = None
+            for future in copy(infer_futures):
+                if future.done():
+                    LOG.error("Error in inference: ")
+                    try:
+                        future.result()
+                    except Exception as e:
+                        LOG.exception(e)
+                    infer_futures.remove(future)
         if future:
             future.cancel()
     window.close()
