@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.9.2 (2023-04-16)
+### Fix
+* **train:** Fix y_mel length ([#356](https://github.com/34j/so-vits-svc-fork/issues/356)) ([`2d71992`](https://github.com/34j/so-vits-svc-fork/commit/2d71992d80ba4142d2d5a5df17c69c2f2ac553fd))
+
 ## v3.9.1 (2023-04-16)
 ### Fix
 * **train:** Allow higher segment size ([#351](https://github.com/34j/so-vits-svc-fork/issues/351)) ([`09d5a52`](https://github.com/34j/so-vits-svc-fork/commit/09d5a52b9bfc8eba8857f2b6c804ecdb39b4b38b))
