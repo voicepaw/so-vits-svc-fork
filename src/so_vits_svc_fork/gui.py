@@ -675,18 +675,18 @@ def main():
                 except Exception as e:
                     LOG.exception(e)
             if future is not None and future.done():
-                LOG.error("Error in realtime: ")
                 try:
                     future.result()
                 except Exception as e:
+                    LOG.error("Error in realtime: ")
                     LOG.exception(e)
                 future = None
             for future in copy(infer_futures):
                 if future.done():
-                    LOG.error("Error in inference: ")
                     try:
                         future.result()
                     except Exception as e:
+                        LOG.error("Error in inference: ")
                         LOG.exception(e)
                     infer_futures.remove(future)
         if future:
