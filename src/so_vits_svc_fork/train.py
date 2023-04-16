@@ -8,7 +8,7 @@ from typing import Any
 
 import lightning.pytorch as pl
 import torch
-from lightning.pytorch.accelerators import TPUAccelerator
+from lightning.pytorch.accelerators import MPSAccelerator, TPUAccelerator
 from lightning.pytorch.loggers import TensorBoardLogger
 from lightning.pytorch.tuner import Tuner
 from torch.cuda.amp import autocast
@@ -175,10 +175,10 @@ class VitsLightning(pl.LightningModule):
             global_step = total_batch_idx * self.optimizers_count
             self.set_global_step(global_step)
 
-        # check if using tpu
-        if isinstance(self.trainer.accelerator, TPUAccelerator):
+        # check if using tpu or mps
+        if isinstance(self.trainer.accelerator, (TPUAccelerator, MPSAccelerator)):
             # patch torch.stft to use cpu
-            LOG.warning("Using TPU. Patching torch.stft to use cpu.")
+            LOG.warning("Using TPU/MPS. Patching torch.stft to use cpu.")
 
             def stft(
                 input: torch.Tensor,
