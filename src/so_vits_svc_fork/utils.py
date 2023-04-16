@@ -13,6 +13,7 @@ import matplotlib.pylab as plt
 import numpy as np
 import requests
 import torch
+import torch.backends.mps
 from cm_time import timer
 from fairseq import checkpoint_utils
 from fairseq.models.hubert.hubert import HubertModel
@@ -28,6 +29,8 @@ HUBERT_SAMPLING_RATE = 16000
 def get_optimal_device(index: int = 0) -> torch.device:
     if torch.cuda.is_available():
         return torch.device(f"cuda:{index % torch.cuda.device_count()}")
+    elif torch.backends.mps.is_available():
+        return torch.device("mps")
     else:
         try:
             import torch_xla.core.xla_model as xm  # noqa
