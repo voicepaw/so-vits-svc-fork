@@ -25,7 +25,9 @@
     "win_lengths": [300, 600, 120],
     "window": "hann_window",
     "num_workers": 4,
-    "log_version": 0
+    "log_version": 0,
+    "ckpt_name_by_step": false,
+    "accumulate_grad_batches": 1
   },
   "data": {
     "training_files": "filelists/44k/train.txt",
