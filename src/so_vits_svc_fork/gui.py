@@ -9,7 +9,7 @@ import PySimpleGUI as sg
 import sounddevice as sd
 import soundfile as sf
 import torch
-from pebble import ProcessFuture, ProcessPool
+from pebble import ProcessFuture, ThreadPool
 from tqdm.tk import tqdm_tk
 
 from .utils import ensure_pretrained_model, get_optimal_device
@@ -513,7 +513,9 @@ def main():
     del default_name
     update_speaker()
     update_devices()
-    with ProcessPool(max_workers=1) as pool:
+    # with ProcessPool(max_workers=1) as pool:
+    # with ProcessPool(max_workers=1, context="spawn") as pool:
+    with ThreadPool(max_workers=1) as pool:
         future: None | ProcessFuture = None
         infer_futures: set[ProcessFuture] = set()
         while True:
