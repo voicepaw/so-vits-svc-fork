@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.9.3 (2023-04-16)
+### Fix
+* **gui:** Fix subprocess errors in linux and fix wrong error logging ([#358](https://github.com/34j/so-vits-svc-fork/issues/358)) ([`fd67db6`](https://github.com/34j/so-vits-svc-fork/commit/fd67db6312944557c09afd7b1ccbb97987a03489))
+
 ## v3.9.2 (2023-04-16)
 ### Fix
 * **train:** Fix y_mel length ([#356](https://github.com/34j/so-vits-svc-fork/issues/356)) ([`2d71992`](https://github.com/34j/so-vits-svc-fork/commit/2d71992d80ba4142d2d5a5df17c69c2f2ac553fd))
