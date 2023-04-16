@@ -375,6 +375,7 @@ class VitsLightning(pl.LightningModule):
             ids_slice * self.hparams.data.hop_length,
             self.hparams.train.segment_size,
         )
+        y = y[..., : y_hat.shape[-1]]
 
         # generator loss
         y_d_hat_r, y_d_hat_g, fmap_r, fmap_g = self.net_d(y, y_hat)
