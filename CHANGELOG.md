@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.8.1 (2023-04-16)
+### Fix
+* Patch stft and add mps to get_optimal_device() ([#352](https://github.com/34j/so-vits-svc-fork/issues/352)) ([`da928aa`](https://github.com/34j/so-vits-svc-fork/commit/da928aa0bb1399bf5780526f8a7e9b674476a000))
+
 ## v3.8.0 (2023-04-15)
 ### Feature
 * **train:** Automatically decide batch_size ([#342](https://github.com/34j/so-vits-svc-fork/issues/342)) ([`8ffa128`](https://github.com/34j/so-vits-svc-fork/commit/8ffa128aa209787fde8fb1f0e4ae5c96dfe31217))
