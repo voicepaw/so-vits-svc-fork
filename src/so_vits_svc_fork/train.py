@@ -505,14 +505,16 @@ class VitsLightning(pl.LightningModule):
                 self.optim_g,
                 self.learning_rate,
                 self.current_epoch + 1,  # prioritize prevention of undervaluation
-                Path(self.hparams.model_dir) / f"G_{self.total_batch_idx}.pth",
+                Path(self.hparams.model_dir)
+                / f"G_{self.total_batch_idx if self.hparams.train.get('ckpt_name_by_step', False) else self.current_epoch + 1}.pth",
             )
             utils.save_checkpoint(
                 self.net_d,
                 self.optim_d,
                 self.learning_rate,
                 self.current_epoch + 1,
-                Path(self.hparams.model_dir) / f"D_{self.total_batch_idx}.pth",
+                Path(self.hparams.model_dir)
+                / f"D_{self.total_batch_idx if self.hparams.train.get('ckpt_name_by_step', False) else self.current_epoch + 1}.pth",
             )
             keep_ckpts = self.hparams.train.get("keep_ckpts", 0)
             if keep_ckpts > 0:
