@@ -273,7 +273,10 @@ class SynthesizerTrn(nn.Module):
             o, o_mb = self.dec(z_slice, g=g)
         elif "ddsp" in self.type_:
             o, _, (s_h, s_n) = self.dec(
-                z_slice.transpose(1, 2), pitch_slice.unsqueeze(-1), volume, g
+                z_slice.transpose(1, 2),
+                pitch_slice.unsqueeze(-1),
+                volume.transpose(0, 1),
+                spk.long(),
             )
         elif "bigvgan" in self.type_:
             o = self.dec(z_slice)
@@ -332,8 +335,12 @@ class SynthesizerTrn(nn.Module):
         if "istft" in self.type_:
             o, _ = self.dec(z * c_mask, g=spk)
         elif "ddsp" in self.type_:
+            assert volume is not None
             o, _, _ = self.dec(
-                (z * c_mask).transpose(1, 2), f0.unsqueeze(-1), volume, spk
+                (z * c_mask).transpose(1, 2),
+                f0.unsqueeze(-1),
+                volume.transpose(0, 1),
+                spk.long(),
             )
         elif "bigvgan" in self.type_:
             o = self.dec(z)

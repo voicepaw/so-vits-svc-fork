@@ -465,7 +465,7 @@ class VitsLightning(pl.LightningModule):
             y = batch["audio"]
             uv = batch["uv"]
             spk = batch["spk"]
-            volume = batch["volume"]
+            volume = batch.get("volume", None)
             y_hat = self.net_g.infer(c, f0, uv, spk=spk, volume=volume)
             y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
             self.log_audio_dict(
