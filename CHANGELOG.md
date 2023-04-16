@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.9.0 (2023-04-16)
+### Feature
+* **train:** Add option to name ckpts by epochs ([#353](https://github.com/34j/so-vits-svc-fork/issues/353)) ([`bba24c4`](https://github.com/34j/so-vits-svc-fork/commit/bba24c4a62b935ed29572aa2c2c437d1b54aa2e2))
+
 ## v3.8.1 (2023-04-16)
 ### Fix
 * Patch stft and add mps to get_optimal_device() ([#352](https://github.com/34j/so-vits-svc-fork/issues/352)) ([`da928aa`](https://github.com/34j/so-vits-svc-fork/commit/da928aa0bb1399bf5780526f8a7e9b674476a000))
