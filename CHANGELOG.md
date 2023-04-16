@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v3.9.1 (2023-04-16)
+### Fix
+* **train:** Allow higher segment size ([#351](https://github.com/34j/so-vits-svc-fork/issues/351)) ([`09d5a52`](https://github.com/34j/so-vits-svc-fork/commit/09d5a52b9bfc8eba8857f2b6c804ecdb39b4b38b))
+* **cluster:** Do not use weights_only in get_cluster_model() ([#354](https://github.com/34j/so-vits-svc-fork/issues/354)) ([`24c05d1`](https://github.com/34j/so-vits-svc-fork/commit/24c05d16c3b55f664699400496a7e0fd2fd84353))
+
 ## v3.9.0 (2023-04-16)
 ### Feature
 * **train:** Add option to name ckpts by epochs ([#353](https://github.com/34j/so-vits-svc-fork/issues/353)) ([`bba24c4`](https://github.com/34j/so-vits-svc-fork/commit/bba24c4a62b935ed29572aa2c2c437d1b54aa2e2))
