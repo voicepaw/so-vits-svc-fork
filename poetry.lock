@@ -2972,32 +2972,32 @@ lint = ["black (>=22.3)", "clang-format (==13.0.0)", "flake8 (>=5.0.2)", "isort[
 
 [[package]]
 name = "onnxoptimizer"
-version = "0.3.10"
+version = "0.3.11"
 description = "Open Neural Network Exchange"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "onnxoptimizer-0.3.10-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:2dd82596fc81d508d635e75e0eb0a4517fdecd16bde0808d0e2661e560a6cc5f"},
-    {file = "onnxoptimizer-0.3.10-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:2b3044a9cd7d3b83e84ac443dfd5373911fb275e26c5843fb1eec75fb58775a1"},
-    {file = "onnxoptimizer-0.3.10-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:dab6d00b202ddf82655d816f43292e947166b6a465b59047712a1c1c0cd70ee2"},
-    {file = "onnxoptimizer-0.3.10-cp310-cp310-win_amd64.whl", hash = "sha256:063609bf76ae5e787686b10f08f176f70cccabb08aa25b8ff99ea30fbaaafdb7"},
-    {file = "onnxoptimizer-0.3.10-cp311-cp311-macosx_10_15_universal2.whl", hash = "sha256:efc14a0be850efe2472991f6d089b59ad4942bcc7a3c53f1623b931d93213bde"},
-    {file = "onnxoptimizer-0.3.10-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:9df03e49e758b3d57d3f9ce7e78588deb3f7e040a0753910665c386a98822bdb"},
-    {file = "onnxoptimizer-0.3.10-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:05d24a9b76641f16866a2f99c177b631fba17c8da55afcd8aa404fdd8cf769dc"},
-    {file = "onnxoptimizer-0.3.10-cp311-cp311-win_amd64.whl", hash = "sha256:064cc155a01e11b038fda0e4e1ee514eb6487b5dd3e3128cd35d268ff8770ba2"},
-    {file = "onnxoptimizer-0.3.10-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:59968fd584318dc996646a97cd862d4c206327b3ad10861268763ccd0c7e27bf"},
-    {file = "onnxoptimizer-0.3.10-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ab956e2dcb94030be9dc4c8b8fd41cb12283c4e6d9e19d40cee2653551ec1b73"},
-    {file = "onnxoptimizer-0.3.10-cp37-cp37m-win_amd64.whl", hash = "sha256:7ac6f63346091cceb23b5a5507b4a6caad9023d340a952901fac68b2e4e20831"},
-    {file = "onnxoptimizer-0.3.10-cp38-cp38-macosx_10_15_universal2.whl", hash = "sha256:48b4cf84685b980931ef80db594f1c9c9f628b79fb0ffde31216942139ea0561"},
-    {file = "onnxoptimizer-0.3.10-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:02456d52f00a699100ac799f45096e7ed0157915c7a27503412c187415df3a30"},
-    {file = "onnxoptimizer-0.3.10-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:534a4d5c41cb6aab7c3b7dbb051664bf99e4ed28033a02d2ff610041b9104689"},
-    {file = "onnxoptimizer-0.3.10-cp38-cp38-win_amd64.whl", hash = "sha256:50142ac2aba3e292b57f50446f10966602e009ef5ea7458b63e3fa1a5f186057"},
-    {file = "onnxoptimizer-0.3.10-cp39-cp39-macosx_10_15_universal2.whl", hash = "sha256:8982f4fadfd81401b6bffe0aaea2eb4757ca4e989ba9974105309d53fcaa3cb9"},
-    {file = "onnxoptimizer-0.3.10-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:a532786bd7920552c5058824d6449720736cdd3547edb3504ec53c46a48093de"},
-    {file = "onnxoptimizer-0.3.10-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:58bbebd245cedfb4b3d01babefb54ed70468d4de5ea01308567e1522ff7f14e3"},
-    {file = "onnxoptimizer-0.3.10-cp39-cp39-win_amd64.whl", hash = "sha256:c637600ad403fc1ab3bf5b9d670385d817ef2e062871a82745db0d0afcf03cdf"},
-    {file = "onnxoptimizer-0.3.10.tar.gz", hash = "sha256:d459030cd147f45e5216cf0f634aef1734b1fa68cd073f2d57e670675b82e012"},
+    {file = "onnxoptimizer-0.3.11-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:b872d5e84339e94594b27a305074ccc64cbda030d7cf9af60dea0d066071e069"},
+    {file = "onnxoptimizer-0.3.11-cp310-cp310-macosx_10_15_x86_64.whl", hash = "sha256:b907bc60b9334936ddc5f2b45babde390e6eee09f4cc7d37d0fabadcf61a8ab7"},
+    {file = "onnxoptimizer-0.3.11-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a030ae40e46f815571577b8c37371959a00cedfd2dd7008f5f9fffcdd9a777a6"},
+    {file = "onnxoptimizer-0.3.11-cp310-cp310-win_amd64.whl", hash = "sha256:89b01f3a82ec27caeede128668935cbfea09cc22151a31c4dc7c193372fc234e"},
+    {file = "onnxoptimizer-0.3.11-cp311-cp311-macosx_10_15_universal2.whl", hash = "sha256:e263d75d10d95798201e03b89b599b27ec0e97741dd0b3a48566d82b535e1a12"},
+    {file = "onnxoptimizer-0.3.11-cp311-cp311-macosx_10_15_x86_64.whl", hash = "sha256:3df20b979a6b66eb48bf0d996e6621f299d291869bf72dcf2e6380c54e22ad6b"},
+    {file = "onnxoptimizer-0.3.11-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:c2ffe2402dfa109b6d3423314d5fd169942c1a1ef87c6d892da4b8d1de51a943"},
+    {file = "onnxoptimizer-0.3.11-cp311-cp311-win_amd64.whl", hash = "sha256:8a6db5b81d0984f73a2777224b8ced6f73d546321e0979af2d281411e7395ee8"},
+    {file = "onnxoptimizer-0.3.11-cp37-cp37m-macosx_10_15_x86_64.whl", hash = "sha256:9229e6860b03a454b6315adfb529534195c0597e1f4a996dc45b5391202d35a4"},
+    {file = "onnxoptimizer-0.3.11-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:30bf66b91128aae2e739820141c754813531ccf8b503ab4fa8bbaecd8919abc0"},
+    {file = "onnxoptimizer-0.3.11-cp37-cp37m-win_amd64.whl", hash = "sha256:4bfb6fb6608a08f97a34b392a5e3da4f3b8cfcc9be373005fb1e8a5eeb693a76"},
+    {file = "onnxoptimizer-0.3.11-cp38-cp38-macosx_10_15_universal2.whl", hash = "sha256:5107577152e7f6afaf48b48f2c89758d571c1d77e0cf18ddeccadcf42528fd1a"},
+    {file = "onnxoptimizer-0.3.11-cp38-cp38-macosx_10_15_x86_64.whl", hash = "sha256:f909c9d92ef84e295700cd7509f4c2e01b5d4aa0cf7e4cbf628b4de2802497ec"},
+    {file = "onnxoptimizer-0.3.11-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ff08dcaf15b86524f623d7ff6931f69288b00b3875c5a19b803fbea6093a84e5"},
+    {file = "onnxoptimizer-0.3.11-cp38-cp38-win_amd64.whl", hash = "sha256:fb27c7c7a11fa17efa6039ef5c4fc4a2e76c1cb26165c0f04e56130092dba016"},
+    {file = "onnxoptimizer-0.3.11-cp39-cp39-macosx_10_15_universal2.whl", hash = "sha256:a9370e4dff82d820c96833966ecb83171b69d6ae59cfff4aebda409ca05bfa17"},
+    {file = "onnxoptimizer-0.3.11-cp39-cp39-macosx_10_15_x86_64.whl", hash = "sha256:fb17041d8ffeeac286b72d3cf0e6196b0b309b9bc58520874451a5727381e378"},
+    {file = "onnxoptimizer-0.3.11-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:014e924d7a109ffdfc4def91e88ce45cefaf9ebbaf3061625f346d07a788d9d1"},
+    {file = "onnxoptimizer-0.3.11-cp39-cp39-win_amd64.whl", hash = "sha256:4ab3364790e64a2d2b064a03e1619795ad5d51c99eb96947c33649814c9e91b3"},
+    {file = "onnxoptimizer-0.3.11.tar.gz", hash = "sha256:c52c09294a8465c659603b286d3773caeb5eeaeaa95d6eb53ed5a9e408712150"},
 ]
 
 [package.dependencies]
@@ -3008,27 +3008,27 @@ mypy = ["mypy (==0.600)"]
 
 [[package]]
 name = "onnxsim"
-version = "0.4.19"
+version = "0.4.20"
 description = "Simplify your ONNX model"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "onnxsim-0.4.19-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:4398fec541913c9d383bfbc032dcdfe274890b7ff8dfd26a736ae718274cd349"},
-    {file = "onnxsim-0.4.19-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3bb8fdff1cc902426ea0fc42d3f90787d0b64d7fe00af2ebea119c77748dfc2c"},
-    {file = "onnxsim-0.4.19-cp310-cp310-win_amd64.whl", hash = "sha256:11d6cb941d4a1590b3ded9d591f661e36bc7a6788c7537a7d42d3ff77b2a1a7e"},
-    {file = "onnxsim-0.4.19-cp311-cp311-macosx_10_15_universal2.whl", hash = "sha256:1650269b7d3f01fcc0a890bf9e6005225dfea3db48ccf5792a144673ac8e9877"},
-    {file = "onnxsim-0.4.19-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:cb63d7dcc03945980f0e3ea46d6bff98ab2e7a7f8a665fdc667926ff2c72bf49"},
-    {file = "onnxsim-0.4.19-cp311-cp311-win_amd64.whl", hash = "sha256:319d688682733215ddb1b419c15a0947f503404a1f04748a7631c300fb6d209c"},
-    {file = "onnxsim-0.4.19-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fbb7472efff479d7533fc21436eb4a737efa93b67dcc2bbf418a43dfd07c07ee"},
-    {file = "onnxsim-0.4.19-cp37-cp37m-win_amd64.whl", hash = "sha256:4c700bfc4ebea8211f34812cd94b8123d1ac2b169907fe5ab1d8e4edc094999e"},
-    {file = "onnxsim-0.4.19-cp38-cp38-macosx_10_15_universal2.whl", hash = "sha256:0998818d02ba941646f5721c75cec43d4e8d8f5c04830b47ca60b091fe3918ff"},
-    {file = "onnxsim-0.4.19-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:922eda68539b8907440e67572ac6fccaaf5b0ac8fb6059f7ae74b95eda9edcae"},
-    {file = "onnxsim-0.4.19-cp38-cp38-win_amd64.whl", hash = "sha256:e2b8541893801bf6d1ceb76e40e51968dd75d5d816e7231f78cb38053714f6ff"},
-    {file = "onnxsim-0.4.19-cp39-cp39-macosx_10_15_universal2.whl", hash = "sha256:125de47796d3cd3ffd5be21344cef7a3f0a0a0709beab0271f08a20411143883"},
-    {file = "onnxsim-0.4.19-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:71b99c2f83192ce52f03bddd0c25daad41400fdcb5b53bf83a140980a7e4ab0c"},
-    {file = "onnxsim-0.4.19-cp39-cp39-win_amd64.whl", hash = "sha256:680fc2f43e5a78f2314811067ec7533552421695ca50473ca91a4dc0ccb5d9c5"},
-    {file = "onnxsim-0.4.19.tar.gz", hash = "sha256:fbd1d3f1aeeab59a0b04c2dd718ba93cd415d0eddc6049cbcc7e90d578ed288e"},
+    {file = "onnxsim-0.4.20-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:96bf03452f882c5100004de38e7d714d5f451bb2526b1831f949564ecfee58a1"},
+    {file = "onnxsim-0.4.20-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:070c59aca0a1aebe584263732b93a235758d6ee117a109d1a20b4b75830a221f"},
+    {file = "onnxsim-0.4.20-cp310-cp310-win_amd64.whl", hash = "sha256:9a31249dfe7cb6b7dc5433bf7a5b2e0aadb4dc9200634a3352128c665b2ee253"},
+    {file = "onnxsim-0.4.20-cp311-cp311-macosx_10_15_universal2.whl", hash = "sha256:04d0dfa8aa96db2a66f8e625b01e218b78239aec07a26c5ea095749f26bb9e92"},
+    {file = "onnxsim-0.4.20-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e1e3cd43bfaf0df1f92e2fc8c83a24ad4f598c6885aeda6ba3c61765a96810b1"},
+    {file = "onnxsim-0.4.20-cp311-cp311-win_amd64.whl", hash = "sha256:7ccde066419b5274865d71cf4357e6d9bef522ebc7994e21246fc0030bd0e2c4"},
+    {file = "onnxsim-0.4.20-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:8c2ebf5abfec3bfc48d5751dd30b5067ed65cacf026ad7ed18440ec8d6ae9766"},
+    {file = "onnxsim-0.4.20-cp37-cp37m-win_amd64.whl", hash = "sha256:1aa33d3f6690f98c225097451e33656d9a0a8a918acf0c62a97d2c937caad7ac"},
+    {file = "onnxsim-0.4.20-cp38-cp38-macosx_10_15_universal2.whl", hash = "sha256:e3ceef8a974862b6362e49fdc120cab2fe55243e813f04af3d5633c8aae185a4"},
+    {file = "onnxsim-0.4.20-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f68b182f82d03d5113d82e20ffa665033fd0011bf156774fd3fc060161db2268"},
+    {file = "onnxsim-0.4.20-cp38-cp38-win_amd64.whl", hash = "sha256:3b882989b878c4d4a6d57bb9b1c660939d656fea248d503db6726de3f62624e5"},
+    {file = "onnxsim-0.4.20-cp39-cp39-macosx_10_15_universal2.whl", hash = "sha256:78406cb4a17a04760bb1a587859114559f802a7ef19398e3b40bf2a46ca30f09"},
+    {file = "onnxsim-0.4.20-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:151d13d28979421752ac32b8d8141ed14e25e13dd109fc5814c1aab64858eb54"},
+    {file = "onnxsim-0.4.20-cp39-cp39-win_amd64.whl", hash = "sha256:c2bf0e1b9106b1adaecfeef6454f9c9aeeb27b23c5bdea059daf7eb926454a80"},
+    {file = "onnxsim-0.4.20.tar.gz", hash = "sha256:6cf268d310b69c8c54310a1c0a0f20ace9351f7921e5035780ee5f22d57f5090"},
 ]
 
 [package.dependencies]
