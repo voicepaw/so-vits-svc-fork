@@ -38,12 +38,12 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 - **Realtime voice conversion** (enhanced in v1.1.0)
 - Integrates [`QuickVC`](https://github.com/quickvc/QuickVC-VoiceConversion)
-- Fixed misuse of `ContentVec` in the original repository.[^c]
+- Fixed misuse of [`ContentVec`](https://github.com/auspicious3000/contentvec) in the original repository.[^c]
 - More accurate pitch estimation using [`CREPE`](https://github.com/marl/crepe/).
 - GUI and unified CLI available
 - ~2x faster training
 - Ready to use just by installing with `pip`.
-- Automatically download pretrained models.
+- Automatically download pretrained models. No need to install `fairseq`.
 - Code completely formatted with black, isort, autoflake etc.
 
 [^c]: [#206](https://github.com/34j/so-vits-svc-fork/issues/206)
@@ -97,7 +97,7 @@ pip install -U so-vits-svc-fork
 <details>
   <summary>Notes</summary>
 
-- If no GPU is available, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118`.
+- If no GPU is available or using MacOS, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118`. MPS is probably supported.
 - If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu118` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows ([#120](https://github.com/34j/so-vits-svc-fork/issues/120)).
   </details>
 
@@ -180,8 +180,11 @@ svc train -t
 - Dataset audio duration per file should be <~ 10s.
 - It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity. Setting `batch_size` to `auto-{init_batch_size}-{max_n_trials}` (or simply `auto`) will automatically increase `batch_size` until OOM error occurs, but may not be useful in some cases.
 - To use `CREPE`, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`.
+- To use `ContentVec` correctly, replace `svc pre-config` with `-t so-vits-svc-4.0v1`. Training may take slightly longer because some weights are reset due to reusing legacy initial generator weights.
 - To use `QuickVC`, replace `svc pre-config` with `svc pre-config -t quickvc`.
 - Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
+- If you have trained on a large, copyright-free dataset, consider releasing it as an initial model.
+- For further details (e.g. parameters, etc.), you can see the [Wiki](https://github.com/34j/so-vits-svc-fork/wiki) or [Discussions](https://github.com/34j/so-vits-svc-fork/discussions).
 
 ### Further help
 
