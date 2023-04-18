@@ -11,10 +11,9 @@ import sounddevice as sd
 import soundfile as sf
 import torch
 from pebble import ProcessFuture, ProcessPool
-from tqdm.tk import tqdm_tk
 
 from . import __version__
-from .utils import ensure_pretrained_model, get_optimal_device
+from .utils import get_optimal_device
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
@@ -99,23 +98,6 @@ def after_inference(window: sg.Window, path: Path, auto_play: bool, output_path:
 
 def main():
     LOG.info(f"version: {__version__}")
-    try:
-        ensure_pretrained_model(".", "contentvec", tqdm_cls=tqdm_tk)
-    except Exception as e:
-        LOG.exception(e)
-        LOG.info("Trying tqdm.std...")
-        try:
-            ensure_pretrained_model(".", "contentvec")
-        except Exception as e:
-            LOG.exception(e)
-            try:
-                ensure_pretrained_model(".", "contentvec", disabled=True)
-            except Exception as e:
-                LOG.exception(e)
-                LOG.error(
-                    "Failed to download Hubert model. Please download it manually."
-                )
-                return
 
     sg.theme("Dark")
     model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))

@@ -9,9 +9,9 @@ import librosa
 import numpy as np
 import torch
 import torchaudio
-from fairseq.models.hubert import HubertModel
 from joblib import Parallel, cpu_count, delayed
 from tqdm import tqdm
+from transformers import HubertModel
 
 import so_vits_svc_fork.f0
 from so_vits_svc_fork import utils
@@ -103,7 +103,10 @@ def _process_one(
 
 
 def _process_batch(filepaths: Iterable[Path], pbar_position: int, **kwargs):
-    content_model = utils.get_hubert_model(get_optimal_device())
+    hps = kwargs["hps"]
+    content_model = utils.get_hubert_model(
+        get_optimal_device(), hps.data.get("contentvec_final_proj", True)
+    )
 
     for filepath in tqdm(filepaths, position=pbar_position):
         _process_one(
@@ -122,7 +125,6 @@ def preprocess_hubert_f0(
 ):
     input_dir = Path(input_dir)
     config_path = Path(config_path)
-    utils.ensure_pretrained_model(".", "contentvec")
     hps = utils.get_hparams(config_path)
     if n_jobs is None:
         # add cpu_count() to avoid SIGKILL
