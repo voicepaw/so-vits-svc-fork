@@ -19,8 +19,6 @@ IS_TEST = "test" in Path(__file__).parent.stem
 if IS_TEST:
     LOG.debug("Test mode is on.")
 
-LOG.info(f"Version: {__version__}")
-
 
 class RichHelpFormatter(click.HelpFormatter):
     def __init__(
@@ -31,6 +29,7 @@ class RichHelpFormatter(click.HelpFormatter):
     ) -> None:
         width = 100
         super().__init__(indent_increment, width, max_width)
+        LOG.info(f"Version: {__version__}")
 
 
 def patch_wrap_text():
