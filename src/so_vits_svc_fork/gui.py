@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import multiprocessing
 from copy import copy
 from logging import getLogger
 from pathlib import Path
@@ -9,7 +10,7 @@ import PySimpleGUI as sg
 import sounddevice as sd
 import soundfile as sf
 import torch
-from pebble import ProcessFuture, ThreadPool
+from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
 from .utils import ensure_pretrained_model, get_optimal_device
@@ -514,8 +515,11 @@ def main():
     update_speaker()
     update_devices()
     # with ProcessPool(max_workers=1) as pool:
-    # with ProcessPool(max_workers=1, context="spawn") as pool:
-    with ThreadPool(max_workers=1) as pool:
+    # to support Linux
+    with ProcessPool(
+        max_workers=min(2, multiprocessing.cpu_count()),
+        context=multiprocessing.get_context("spawn"),
+    ) as pool:
         future: None | ProcessFuture = None
         infer_futures: set[ProcessFuture] = set()
         while True:
