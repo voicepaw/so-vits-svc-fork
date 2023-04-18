@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.9.5 (2023-04-18)
+### Fix
+* **train:** Set persistent_workers = True in DataLoader for performance, do not save checkpoints, fix logging issue and multiple warning issues, do not do validation when global_step == 0 ([#384](https://github.com/34j/so-vits-svc-fork/issues/384)) ([`6cab9af`](https://github.com/34j/so-vits-svc-fork/commit/6cab9af86e3a96e79243fa890eb1c6c51fae4476))
+
 ## v3.9.4 (2023-04-18)
 ### Fix
 * **gui:** Always use "spawn" context in ProcessPool ([#383](https://github.com/34j/so-vits-svc-fork/issues/383)) ([`5d7fb77`](https://github.com/34j/so-vits-svc-fork/commit/5d7fb774e8d5e97a9a31dbc891892e9f934f3884))
