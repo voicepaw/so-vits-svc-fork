@@ -482,6 +482,9 @@ class VitsLightning(pl.LightningModule):
             self.scheduler_d.step()
 
     def validation_step(self, batch, batch_idx):
+        # avoid logging with wrong global step
+        if self.global_step == 0:
+            return
         with torch.no_grad():
             self.net_g.eval()
             c, f0, _, mel, y, g, _, uv = batch
