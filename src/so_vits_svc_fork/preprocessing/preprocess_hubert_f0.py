@@ -125,7 +125,6 @@ def preprocess_hubert_f0(
 ):
     input_dir = Path(input_dir)
     config_path = Path(config_path)
-    utils.ensure_pretrained_model(".", "contentvec")
     hps = utils.get_hparams(config_path)
     if n_jobs is None:
         # add cpu_count() to avoid SIGKILL
