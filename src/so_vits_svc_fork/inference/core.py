@@ -106,7 +106,9 @@ class Svc:
         self.target_sample = self.hps.data.sampling_rate
         self.hop_size = self.hps.data.hop_length
         self.spk2id = self.hps.spk
-        self.hubert_model = utils.get_hubert_model(self.device)
+        self.hubert_model = utils.get_hubert_model(
+            self.device, self.hps.data.get("contentvec_final_proj", True)
+        )
         self.dtype = torch.float16 if half else torch.float32
         self.contentvec_final_proj = self.hps.data.__dict__.get(
             "contentvec_final_proj", True
