@@ -29,7 +29,6 @@ from .modules.mel_processing import mel_spectrogram_torch
 from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
-torch.backends.cudnn.benchmark = True
 torch.set_float32_matmul_precision("high")
 
 
@@ -94,6 +93,7 @@ def train(
         else 32,
         strategy=strategy,
         callbacks=[pl.callbacks.RichProgressBar()] if not is_notebook() else None,
+        benchmark=True,
     )
     tuner = Tuner(trainer)
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
