@@ -94,6 +94,7 @@ def train(
         strategy=strategy,
         callbacks=[pl.callbacks.RichProgressBar()] if not is_notebook() else None,
         benchmark=True,
+        enable_checkpointing=False,
     )
     tuner = Tuner(trainer)
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
