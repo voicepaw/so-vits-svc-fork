@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.9.4 (2023-04-18)
+### Fix
+* **gui:** Always use "spawn" context in ProcessPool ([#383](https://github.com/34j/so-vits-svc-fork/issues/383)) ([`5d7fb77`](https://github.com/34j/so-vits-svc-fork/commit/5d7fb774e8d5e97a9a31dbc891892e9f934f3884))
+
 ## v3.9.3 (2023-04-16)
 ### Fix
 * **gui:** Fix subprocess errors in linux and fix wrong error logging ([#358](https://github.com/34j/so-vits-svc-fork/issues/358)) ([`fd67db6`](https://github.com/34j/so-vits-svc-fork/commit/fd67db6312944557c09afd7b1ccbb97987a03489))
