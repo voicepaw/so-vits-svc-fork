@@ -191,7 +191,7 @@ def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> Non
     shape_missmatch = []
     for k, v in from_.items():
         if k not in to_:
-            warnings.warn(f"Key {k} not found in model state dict")
+            pass
         elif hasattr(v, "shape"):
             if not hasattr(to_[k], "shape"):
                 raise ValueError(f"Key {k} is not a tensor")
@@ -225,7 +225,11 @@ def load_checkpoint(
     if not Path(checkpoint_path).is_file():
         raise FileNotFoundError(f"File {checkpoint_path} not found")
     with Path(checkpoint_path).open("rb") as f:
-        checkpoint_dict = torch.load(f, map_location="cpu", weights_only=True)
+        with warnings.catch_warnings():
+            warnings.filterwarnings(
+                "ignore", category=UserWarning, message="TypedStorage is deprecated"
+            )
+            checkpoint_dict = torch.load(f, map_location="cpu", weights_only=True)
     iteration = checkpoint_dict["iteration"]
     learning_rate = checkpoint_dict["learning_rate"]
 
