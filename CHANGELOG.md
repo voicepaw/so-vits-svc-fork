@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.10.0 (2023-04-18)
+### Feature
+* Replace `fairseq` with `transformers` ([#385](https://github.com/34j/so-vits-svc-fork/issues/385)) ([`a2fe0f3`](https://github.com/34j/so-vits-svc-fork/commit/a2fe0f376d33f02987c91a57bd90a794de90a0e1))
+
 ## v3.9.5 (2023-04-18)
 ### Fix
 * **train:** Set persistent_workers = True in DataLoader for performance, do not save checkpoints, fix logging issue and multiple warning issues, do not do validation when global_step == 0 ([#384](https://github.com/34j/so-vits-svc-fork/issues/384)) ([`6cab9af`](https://github.com/34j/so-vits-svc-fork/commit/6cab9af86e3a96e79243fa890eb1c6c51fae4476))
