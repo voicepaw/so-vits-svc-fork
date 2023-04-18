@@ -78,6 +78,16 @@ myst-parser = ">=0.16"
 sphinx = ">=4.0"
 sphinx-rtd-theme = ">=1.0"
 
+
+[tool.poetry.group.pc_ddsp.dependencies]
+gin = "^0.1.6"
+gin-config = "^0.5.0"
+local-attention = "^1.8.5"
+
+
+[tool.poetry.group.bigvgan.dependencies]
+alias-free-torch = "^0.0.6"
+
 [tool.semantic_release]
 branch = "main"
 version_toml = "pyproject.toml:tool.poetry.version"

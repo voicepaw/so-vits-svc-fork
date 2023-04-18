@@ -53,6 +53,12 @@ def _process_one(
     f0 = torch.from_numpy(f0).float()
     uv = torch.from_numpy(uv).float()
 
+    # compute volume
+    if "ddsp" in hps.model.get("type_"):
+        from ..modules.decoders.pc_ddsp import VolumeExtractor
+
+        volume = VolumeExtractor().extract(audio)
+
     # Compute HuBERT content
     audio = torch.from_numpy(audio).float().to(device)
     c = utils.get_content(
@@ -80,6 +86,9 @@ def _process_one(
         uv[:lmin],
         c[:, :lmin],
     )
+    if "ddsp" in hps.model.get("type_"):
+        volume = torch.from_numpy(volume).float()
+        volume = volume[:lmin]
 
     # get speaker id
     spk_name = filepath.parent.name
@@ -97,6 +106,8 @@ def _process_one(
         "audio": audio,
         "spk": spk,
     }
+    if "ddsp" in hps.model.get("type_"):
+        data["volume"] = volume
     data = {k: v.cpu() for k, v in data.items()}
     with data_path.open("wb") as f:
         torch.save(data, f)

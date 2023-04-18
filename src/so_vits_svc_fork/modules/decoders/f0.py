@@ -1,20 +1,20 @@
 import torch
-from torch import nn
+from torch import Tensor, nn
 
-from so_vits_svc_fork.modules import attentions as attentions
+from ..attentions import FFT
 
 
 class F0Decoder(nn.Module):
     def __init__(
         self,
-        out_channels,
-        hidden_channels,
-        filter_channels,
-        n_heads,
-        n_layers,
-        kernel_size,
-        p_dropout,
-        spk_channels=0,
+        out_channels: int,
+        hidden_channels: int,
+        filter_channels: int,
+        n_heads: int,
+        n_layers: int,
+        kernel_size: int,
+        p_dropout: float,
+        spk_channels: int,
     ):
         super().__init__()
         self.out_channels = out_channels
@@ -27,14 +27,20 @@ class F0Decoder(nn.Module):
         self.spk_channels = spk_channels
 
         self.prenet = nn.Conv1d(hidden_channels, hidden_channels, 3, padding=1)
-        self.decoder = attentions.FFT(
+        self.decoder = FFT(
             hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout
         )
         self.proj = nn.Conv1d(hidden_channels, out_channels, 1)
         self.f0_prenet = nn.Conv1d(1, hidden_channels, 3, padding=1)
         self.cond = nn.Conv1d(spk_channels, hidden_channels, 1)
 
-    def forward(self, x, norm_f0, x_mask, spk_emb=None):
+    def forward(
+        self,
+        x: Tensor,
+        norm_f0: Tensor,
+        x_mask: Tensor,
+        spk_emb: Tensor | None = None,
+    ) -> Tensor:
         x = torch.detach(x)
         if spk_emb is not None:
             x = x + self.cond(spk_emb)

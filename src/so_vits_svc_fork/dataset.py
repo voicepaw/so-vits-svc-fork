@@ -64,7 +64,7 @@ def _pad_stack(array: Sequence[torch.Tensor]) -> torch.Tensor:
 class TextAudioCollate(nn.Module):
     def forward(
         self, batch: Sequence[dict[str, torch.Tensor]]
-    ) -> tuple[torch.Tensor, ...]:
+    ) -> dict[str, torch.Tensor]:
         batch = [b for b in batch if b is not None]
         batch = list(sorted(batch, key=lambda x: x["mel_spec"].shape[1], reverse=True))
         lengths = torch.tensor([b["mel_spec"].shape[1] for b in batch]).long()
@@ -74,14 +74,5 @@ class TextAudioCollate(nn.Module):
                 results[key] = _pad_stack([b[key] for b in batch]).cpu()
             else:
                 results[key] = torch.tensor([[b[key]] for b in batch]).cpu()
-
-        return (
-            results["content"],
-            results["f0"],
-            results["spec"],
-            results["mel_spec"],
-            results["audio"],
-            results["spk"],
-            lengths,
-            results["uv"],
-        )
+        results["length"] = lengths
+        return results

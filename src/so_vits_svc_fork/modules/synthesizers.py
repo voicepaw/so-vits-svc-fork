@@ -3,7 +3,7 @@ from logging import getLogger
 from typing import Any, Literal, Sequence
 
 import torch
-from torch import nn
+from torch import Tensor, nn
 
 import so_vits_svc_fork.f0
 from so_vits_svc_fork.f0 import f0_to_coarse
@@ -15,8 +15,10 @@ from so_vits_svc_fork.modules.decoders.mb_istft import (
     Multistream_iSTFT_Generator,
     iSTFT_Generator,
 )
-from so_vits_svc_fork.modules.encoders import Encoder, TextEncoder
+from so_vits_svc_fork.modules.encoders import PosteriorEncoder, TextEncoder
 from so_vits_svc_fork.modules.flows import ResidualCouplingBlock
+
+from ..hparams import HParams
 
 LOG = getLogger(__name__)
 
@@ -47,10 +49,28 @@ class SynthesizerTrn(nn.Module):
         ssl_dim: int,
         n_speakers: int,
         sampling_rate: int = 44100,
-        type_: Literal["hifi-gan", "istft", "ms-istft", "mb-istft"] = "hifi-gan",
+        type_: Literal[
+            "hifi-gan",
+            "istft",
+            "ms-istft",
+            "mb-istft",
+            "ddsp-sins",
+            "ddsp-combsub",
+            "ddsp-combsubfast",
+        ] = "hifi-gan",
         gen_istft_n_fft: int = 16,
         gen_istft_hop_size: int = 4,
         subbands: int = 4,
+        encoder_n_layers: int = 16,
+        flow_n_layers: int = 4,
+        n_flows: int = 4,
+        flow_kernel_size: int = 3,
+        block_size: int = 512,
+        n_harmonics: int = 128,
+        n_mag_allpass: int = 256,
+        n_mag_harmonic: int = 512,
+        n_mag_noise: int = 256,
+        bigvgan_h: HParams | None = None,
         **kwargs: Any,
     ):
         super().__init__()
@@ -76,7 +96,12 @@ class SynthesizerTrn(nn.Module):
         self.type_ = type_
         self.gen_istft_n_fft = gen_istft_n_fft
         self.gen_istft_hop_size = gen_istft_hop_size
+        self.n_layers_encoder = encoder_n_layers
+        self.n_layers_flow = flow_n_layers
+        self.n_flows = n_flows
+        self.flow_kernel_size = flow_kernel_size
         self.subbands = subbands
+        self.type_ = type_
         if kwargs:
             warnings.warn(f"Unused arguments: {kwargs}")
 
@@ -90,6 +115,7 @@ class SynthesizerTrn(nn.Module):
         self.enc_p = TextEncoder(
             inter_channels,
             hidden_channels,
+            gin_channels=256,
             filter_channels=filter_channels,
             n_heads=n_heads,
             n_layers=n_layers,
@@ -111,8 +137,8 @@ class SynthesizerTrn(nn.Module):
                 "gin_channels": gin_channels,
             }
             self.dec = NSFHifiGANGenerator(h=hps)
-            self.mb = False
-        else:
+            self._return_mb = False
+        elif "istft" in type_:
             hps = {
                 "initial_channel": inter_channels,
                 "resblock": resblock,
@@ -135,64 +161,127 @@ class SynthesizerTrn(nn.Module):
                 self.dec = Multistream_iSTFT_Generator(**hps)
             elif type_ == "mb-istft":
                 self.dec = Multiband_iSTFT_Generator(**hps)
-            else:
-                raise ValueError(f"Unknown type: {type_}")
-            self.mb = True
+        elif type_ in ["ddsp-sins", "ddsp-combsub", "ddsp-combsubfast"]:
+            from .decoders.pc_ddsp import CombSub, CombSubFast, Sins
 
-        self.enc_q = Encoder(
-            spec_channels,
-            inter_channels,
-            hidden_channels,
-            5,
-            1,
-            16,
+            if type_ == "ddsp-sins":
+                self.dec = Sins(
+                    sampling_rate=sampling_rate,
+                    block_size=block_size,
+                    n_harmonics=n_harmonics,
+                    n_mag_allpass=n_mag_allpass,
+                    n_mag_noise=n_mag_noise,
+                    n_unit=inter_channels,
+                    n_spk=n_speakers,
+                )
+            elif type_ == "ddsp-combsub":
+                self.dec = CombSub(
+                    sampling_rate=sampling_rate,
+                    block_size=block_size,
+                    n_mag_allpass=n_mag_allpass,
+                    n_mag_harmonic=n_mag_harmonic,
+                    n_mag_noise=n_mag_noise,
+                    n_unit=inter_channels,
+                    n_spk=n_speakers,
+                )
+            elif type_ == "ddsp-combsubfast":
+                self.dec = CombSubFast(
+                    sampling_rate=sampling_rate,
+                    block_size=block_size,
+                    n_unit=inter_channels,
+                    n_spk=n_speakers,
+                )
+        elif type_ == "bigvgan":
+            from .decoders.bigvgan import BigVGAN
+
+            self.dec = BigVGAN(bigvgan_h)
+        else:
+            raise ValueError(f"Unknown type: {type_}")
+
+        self.enc_q = PosteriorEncoder(
+            in_channels=spec_channels,
+            out_channels=inter_channels,
+            hidden_channels=hidden_channels,
+            kernel_size=flow_kernel_size,
+            dilation_rate=1,
+            n_layers=encoder_n_layers,
             gin_channels=gin_channels,
         )
         self.flow = ResidualCouplingBlock(
-            inter_channels, hidden_channels, 5, 1, 4, gin_channels=gin_channels
+            channels=inter_channels,
+            hidden_channels=hidden_channels,
+            kernel_size=flow_kernel_size,
+            dilation_rate=1,
+            n_layers=flow_n_layers,
+            n_flows=n_flows,
+            gin_channels=gin_channels,
         )
         self.f0_decoder = F0Decoder(
-            1,
-            hidden_channels,
-            filter_channels,
-            n_heads,
-            n_layers,
-            kernel_size,
-            p_dropout,
+            out_channels=1,
+            hidden_channels=hidden_channels,
+            filter_channels=filter_channels,
+            n_heads=n_heads,
+            n_layers=n_layers,
+            kernel_size=kernel_size,
+            p_dropout=p_dropout,
             spk_channels=gin_channels,
         )
         self.emb_uv = nn.Embedding(2, hidden_channels)
 
-    def forward(self, c, f0, uv, spec, g=None, c_lengths=None, spec_lengths=None):
-        g = self.emb_g(g).transpose(1, 2)
+    def forward(
+        self,
+        c: Tensor,
+        f0: Tensor,
+        uv: Tensor,
+        spec: Tensor,
+        spk: Tensor | None = None,
+        c_lengths: Tensor | None = None,
+        spec_lengths: Tensor | None = None,
+        volume: Tensor | None = None,
+    ):
+        # speaker embedding
+        g = self.emb_g(spk).transpose(1, 2)
+
         # ssl prenet
         x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(
             c.dtype
         )
         x = self.pre(c) * x_mask + self.emb_uv(uv.long()).transpose(1, 2)
 
-        # f0 predict
+        # f0 decoder
         lf0 = 2595.0 * torch.log10(1.0 + f0.unsqueeze(1) / 700.0) / 500
         norm_lf0 = so_vits_svc_fork.f0.normalize_f0(lf0, x_mask, uv)
         pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
 
-        # encoder
-        z_ptemp, m_p, logs_p, _ = self.enc_p(x, x_mask, f0=f0_to_coarse(f0))
+        # posterior encoder
+        _, m_p, logs_p, _ = self.enc_p(x, x_mask, f0=f0_to_coarse(f0))
+
+        # spectrogram encoder
         z, m_q, logs_q, spec_mask = self.enc_q(spec, spec_lengths, g=g)
 
         # flow
         z_p = self.flow(z, spec_mask, g=g)
+
+        # slice z, pitch with segment_size to decrease memory usage
         z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(
             z, f0, spec_lengths, self.segment_size
         )
 
-        # MB-iSTFT-VITS
-        if self.mb:
+        # decoder
+        o_mb = None
+        if "istft" in self.type_:
             o, o_mb = self.dec(z_slice, g=g)
-        # HiFi-GAN
+        elif "ddsp" in self.type_:
+            o, _, (s_h, s_n) = self.dec(
+                z_slice.transpose(1, 2),
+                pitch_slice.unsqueeze(-1),
+                volume.transpose(0, 1),
+                spk.long(),
+            )
+        elif "bigvgan" in self.type_:
+            o = self.dec(z_slice)
         else:
             o = self.dec(z_slice, g=g, f0=pitch_slice)
-            o_mb = None
         return (
             o,
             o_mb,
@@ -204,30 +293,57 @@ class SynthesizerTrn(nn.Module):
             lf0,
         )
 
-    def infer(self, c, f0, uv, g=None, noice_scale=0.35, predict_f0=False):
+    def infer(
+        self,
+        c: Tensor,
+        f0: Tensor,
+        uv: Tensor,
+        spk: Tensor,
+        noise_scale: float = 0.35,
+        predict_f0: bool = False,
+        volume: Tensor | None = None,
+    ) -> Tensor:
         c_lengths = (torch.ones(c.size(0)) * c.size(-1)).to(c.device)
-        g = self.emb_g(g).transpose(1, 2)
+
+        # speaker embedding
+        spk = self.emb_g(spk).transpose(1, 2)
+
+        # ssl prenet
         x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(
             c.dtype
         )
         x = self.pre(c) * x_mask + self.emb_uv(uv.long()).transpose(1, 2)
 
+        # f0 decoder
         if predict_f0:
             lf0 = 2595.0 * torch.log10(1.0 + f0.unsqueeze(1) / 700.0) / 500
             norm_lf0 = so_vits_svc_fork.f0.normalize_f0(
                 lf0, x_mask, uv, random_scale=False
             )
-            pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
+            pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=spk)
             f0 = (700 * (torch.pow(10, pred_lf0 * 500 / 2595) - 1)).squeeze(1)
 
-        z_p, m_p, logs_p, c_mask = self.enc_p(
-            x, x_mask, f0=f0_to_coarse(f0), noice_scale=noice_scale
+        # posterior encoder
+        z_p, _, _, c_mask = self.enc_p(
+            x, x_mask, f0=f0_to_coarse(f0), noise_scale=noise_scale
         )
-        z = self.flow(z_p, c_mask, g=g, reverse=True)
 
-        # MB-iSTFT-VITS
-        if self.mb:
-            o, o_mb = self.dec(z * c_mask, g=g)
+        # flow (reverse)
+        z = self.flow(z_p, c_mask, g=spk, reverse=True)
+
+        # decoder
+        if "istft" in self.type_:
+            o, _ = self.dec(z * c_mask, g=spk)
+        elif "ddsp" in self.type_:
+            assert volume is not None
+            o, _, _ = self.dec(
+                (z * c_mask).transpose(1, 2),
+                f0.unsqueeze(-1),
+                volume.transpose(0, 1),
+                spk.long(),
+            )
+        elif "bigvgan" in self.type_:
+            o = self.dec(z)
         else:
-            o = self.dec(z * c_mask, g=g, f0=f0)
+            o = self.dec(z * c_mask, g=spk, f0=f0)
         return o

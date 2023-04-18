@@ -8,7 +8,7 @@ import torch
 import torchcrepe
 from cm_time import timer
 from numpy import dtype, float32, ndarray
-from torch import FloatTensor, Tensor
+from torch import Tensor
 
 from so_vits_svc_fork.utils import get_optimal_device
 
@@ -16,8 +16,8 @@ LOG = getLogger(__name__)
 
 
 def normalize_f0(
-    f0: FloatTensor, x_mask: FloatTensor, uv: FloatTensor, random_scale=True
-) -> FloatTensor:
+    f0: Tensor, x_mask: Tensor, uv: Tensor, random_scale: bool = True
+) -> Tensor:
     # calculate means based on x_mask
     uv_sum = torch.sum(uv, dim=1, keepdim=True)
     uv_sum[uv_sum == 0] = 9999
