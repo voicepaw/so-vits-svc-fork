@@ -1,6 +1,5 @@
 import os
 import sys
-import warnings
 from logging import (
     DEBUG,
     INFO,
@@ -36,9 +35,6 @@ def init_logger() -> None:
     if IS_TEST:
         getLogger(package_name).setLevel(DEBUG)
     captureWarnings(True)
-    warnings.filterwarnings(
-        "ignore", category=UserWarning, message="TypedStorage is deprecated"
-    )
     LOGGER_INIT = True
 
 

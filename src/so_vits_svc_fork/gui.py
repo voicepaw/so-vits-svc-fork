@@ -13,6 +13,7 @@ import torch
 from pebble import ProcessFuture, ProcessPool
 from tqdm.tk import tqdm_tk
 
+from . import __version__
 from .utils import ensure_pretrained_model, get_optimal_device
 
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
@@ -97,6 +98,7 @@ def after_inference(window: sg.Window, path: Path, auto_play: bool, output_path:
 
 
 def main():
+    LOG.info(f"version: {__version__}")
     try:
         ensure_pretrained_model(".", "contentvec", tqdm_cls=tqdm_tk)
     except Exception as e:

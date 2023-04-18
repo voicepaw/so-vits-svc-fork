@@ -29,7 +29,6 @@ from .modules.mel_processing import mel_spectrogram_torch
 from .modules.synthesizers import SynthesizerTrn
 
 LOG = getLogger(__name__)
-torch.backends.cudnn.benchmark = True
 torch.set_float32_matmul_precision("high")
 
 
@@ -51,16 +50,15 @@ class VCDataModule(pl.LightningDataModule):
     def train_dataloader(self):
         return DataLoader(
             self.train_dataset,
-            # pin_memory=False,
-            num_workers=min(cpu_count(), self.__hparams.train.get("num_workers", 4)),
+            num_workers=min(cpu_count(), self.__hparams.train.get("num_workers", 8)),
             batch_size=self.batch_size,
             collate_fn=self.collate_fn,
+            persistent_workers=True,
         )
 
     def val_dataloader(self):
         return DataLoader(
             self.val_dataset,
-            # pin_memory=False,
             batch_size=1,
             collate_fn=self.collate_fn,
         )
@@ -95,6 +93,8 @@ def train(
         else 32,
         strategy=strategy,
         callbacks=[pl.callbacks.RichProgressBar()] if not is_notebook() else None,
+        benchmark=True,
+        enable_checkpointing=False,
     )
     tuner = Tuner(trainer)
     model = VitsLightning(reset_optimizer=reset_optimizer, **hparams)
@@ -482,6 +482,9 @@ class VitsLightning(pl.LightningModule):
             self.scheduler_d.step()
 
     def validation_step(self, batch, batch_idx):
+        # avoid logging with wrong global step
+        if self.global_step == 0:
+            return
         with torch.no_grad():
             self.net_g.eval()
             c, f0, _, mel, y, g, _, uv = batch
