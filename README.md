@@ -181,7 +181,7 @@ svc train -t
 - It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity. Setting `batch_size` to `auto-{init_batch_size}-{max_n_trials}` (or simply `auto`) will automatically increase `batch_size` until OOM error occurs, but may not be useful in some cases.
 - To use `CREPE`, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`.
 - To use `ContentVec` correctly, replace `svc pre-config` with `-t so-vits-svc-4.0v1`. Training may take slightly longer because some weights are reset due to reusing legacy initial generator weights.
-- To use `QuickVC`, replace `svc pre-config` with `svc pre-config -t quickvc`.
+- To use `MS-iSTFT Decoder`, replace `svc pre-config` with `svc pre-config -t quickvc`.
 - Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
 - If you have trained on a large, copyright-free dataset, consider releasing it as an initial model.
 - For further details (e.g. parameters, etc.), you can see the [Wiki](https://github.com/34j/so-vits-svc-fork/wiki) or [Discussions](https://github.com/34j/so-vits-svc-fork/discussions).
