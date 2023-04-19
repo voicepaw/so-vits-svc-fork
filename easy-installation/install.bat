@@ -31,14 +31,20 @@ if %errorlevel%==0 (
     if %errorlevel%==0 (
         echo CUDA is already installed.
     ) else (
-        echo Please install CUDA 11.7 from https://developer.nvidia.com/cuda-11-8-0-download-archive?target_os=Windows & exit /b 1
+        echo CUDA is not installed.
+        echo Please install CUDA 11.7 from https://developer.nvidia.com/cuda-11-8-0-download-archive?target_os=Windows
+        echo If you are sure it is already installed and added to path, press any key to force the installation to continue
+        Pause
     )
 
     echo Checking cuDNN...
     if exist "C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v11.8\bin\cudnn64_8.dll" (
         echo cuDNN is already installed.
     ) else (
-        echo Please install cuDNN for CUDA 11.x from https://developer.nvidia.com/cudnn (https://developer.nvidia.com/downloads/compute/cudnn/secure/8.8.1/local_installers/11.8/cudnn-windows-x86_64-8.8.1.3_cuda11-archive.zip/) & exit /b 1
+        echo cuDNN is not installed.
+        echo Please install cuDNN 11.8 from https://developer.nvidia.com/cudnn (https://developer.nvidia.com/downloads/compute/cudnn/secure/8.8.1/local_installers/11.8/cudnn-windows-x86_64-8.8.1.3_cuda11-archive.zip/)
+        echo If you are sure it is already installed and added to path, press any key to force the installation to continue
+        Pause
     )
 )
 
