@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.10.3 (2023-04-19)
+### Fix
+* **train:** Don't save model when tuning for auto batch size ([`2311a35`](https://github.com/voicepaw/so-vits-svc-fork/commit/2311a35c36315123c87b7f20dde3c4dda723bea3))
+
 ## v3.10.2 (2023-04-19)
 ### Fix
 * **train:** Properly stop training after `epochs` has been reached ([`f9bb3d8`](https://github.com/voicepaw/so-vits-svc-fork/commit/f9bb3d86605321288f11387bc853143378c3284e))
