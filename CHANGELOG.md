@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.10.1 (2023-04-19)
+### Fix
+* **train:** Support ddp in Windows (gloo backend) ([#394](https://github.com/34j/so-vits-svc-fork/issues/394)) ([`bcb0507`](https://github.com/34j/so-vits-svc-fork/commit/bcb05078d8ca7a6ac681de919552b3a190b2cd9b))
+
 ## v3.10.0 (2023-04-18)
 ### Feature
 * Replace `fairseq` with `transformers` ([#385](https://github.com/34j/so-vits-svc-fork/issues/385)) ([`a2fe0f3`](https://github.com/34j/so-vits-svc-fork/commit/a2fe0f376d33f02987c91a57bd90a794de90a0e1))
