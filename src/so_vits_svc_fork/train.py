@@ -254,7 +254,8 @@ class VitsLightning(pl.LightningModule):
             torch.stft = stft
 
     def on_train_end(self) -> None:
-        self.save_checkpoints(adjust=0)
+        if not self.tuning:
+            self.save_checkpoints(adjust=0)
 
     def save_checkpoints(self, adjust=1):
         # `on_train_end` will be the actual epoch, not a -1, so we have to call it with `adjust = 0`
@@ -546,5 +547,5 @@ class VitsLightning(pl.LightningModule):
             )
 
     def on_validation_end(self) -> None:
-        if not self.trainer.sanity_checking:
+        if not self.trainer.sanity_checking and not self.tuning:
             self.save_checkpoints()
