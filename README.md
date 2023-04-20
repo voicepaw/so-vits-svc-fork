@@ -265,6 +265,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://tec.hxlxz.com/"><img src="https://avatars.githubusercontent.com/u/6624983?v=4?s=80" width="80px;" alt="Xianglong He"/><br /><sub><b>Xianglong He</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3Ahxl9654" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/75aosu"><img src="https://avatars.githubusercontent.com/u/79185331?v=4?s=80" width="80px;" alt="75aosu"/><br /><sub><b>75aosu</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3A75aosu" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tonyco82"><img src="https://avatars.githubusercontent.com/u/56610534?v=4?s=80" width="80px;" alt="tonyco82"/><br /><sub><b>tonyco82</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3Atonyco82" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/yxlllc"><img src="https://avatars.githubusercontent.com/u/33565655?v=4?s=80" width="80px;" alt="yxlllc"/><br /><sub><b>yxlllc</b></sub></a><br /><a href="#ideas-yxlllc" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=yxlllc" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
