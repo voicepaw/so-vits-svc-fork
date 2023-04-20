@@ -206,6 +206,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "DuctTapeGames",
+      "name": "Duct Tape Games",
+      "avatar_url": "https://avatars.githubusercontent.com/u/84365142?v=4",
+      "profile": "https://github.com/DuctTapeGames",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
