@@ -1,6 +1,6 @@
 {
   "projectName": "so-vits-svc-fork",
-  "projectOwner": "34j",
+  "projectOwner": "voicepaw",
   "repoType": "github",
   "repoHost": "https://github.com",
   "files": [
@@ -169,6 +169,15 @@
       "contributions": [
         "ideas",
         "userTesting"
+      ]
+    },
+    {
+      "login": "Meldoner",
+      "name": "Meldoner",
+      "avatar_url": "https://avatars.githubusercontent.com/u/43951115?v=4",
+      "profile": "https://github.com/Meldoner",
+      "contributions": [
+        "bug"
       ]
     }
   ],
