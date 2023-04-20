@@ -270,6 +270,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/escoolioinglesias"><img src="https://avatars.githubusercontent.com/u/73505402?v=4?s=80" width="80px;" alt="escoolioinglesias"/><br /><sub><b>escoolioinglesias</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3Aescoolioinglesias" title="Bug reports">🐛</a> <a href="#userTesting-escoolioinglesias" title="User Testing">📓</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Blacksingh"><img src="https://avatars.githubusercontent.com/u/130872856?v=4?s=80" width="80px;" alt="Blacksingh"/><br /><sub><b>Blacksingh</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3ABlacksingh" title="Bug reports">🐛</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="http://tybantarnusa.com"><img src="https://avatars.githubusercontent.com/u/9532857?v=4?s=80" width="80px;" alt="Mgs. M. Thoyib Antarnusa"/><br /><sub><b>Mgs. M. Thoyib Antarnusa</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3Atybantarnusa" title="Bug reports">🐛</a></td>
+    </tr>
   </tbody>
 </table>
 
