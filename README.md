@@ -261,6 +261,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Likkkez"><img src="https://avatars.githubusercontent.com/u/44336181?v=4?s=80" width="80px;" alt="Likkkez"/><br /><sub><b>Likkkez</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3ALikkkez" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/DuctTapeGames"><img src="https://avatars.githubusercontent.com/u/84365142?v=4?s=80" width="80px;" alt="Duct Tape Games"/><br /><sub><b>Duct Tape Games</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3ADuctTapeGames" title="Bug reports">🐛</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://tec.hxlxz.com/"><img src="https://avatars.githubusercontent.com/u/6624983?v=4?s=80" width="80px;" alt="Xianglong He"/><br /><sub><b>Xianglong He</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3Ahxl9654" title="Bug reports">🐛</a></td>
+    </tr>
   </tbody>
 </table>
 
