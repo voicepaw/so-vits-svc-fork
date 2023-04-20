@@ -265,6 +265,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "escoolioinglesias",
+      "name": "escoolioinglesias",
+      "avatar_url": "https://avatars.githubusercontent.com/u/73505402?v=4",
+      "profile": "https://github.com/escoolioinglesias",
+      "contributions": [
+        "bug",
+        "userTesting"
+      ]
     }
   ],
   "contributorsPerLine": 7,
