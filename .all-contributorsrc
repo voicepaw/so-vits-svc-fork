@@ -303,6 +303,17 @@
         "bug",
         "code"
       ]
+    },
+    {
+      "login": "guranon",
+      "name": "guranon",
+      "avatar_url": "https://avatars.githubusercontent.com/u/130421189?v=4",
+      "profile": "https://github.com/guranon",
+      "contributions": [
+        "bug",
+        "ideas",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
