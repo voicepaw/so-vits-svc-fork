@@ -324,8 +324,9 @@ def clean_checkpoints(
         to_delete_list = list(group_items)[:-n_ckpts_to_keep]
 
         for to_delete in to_delete_list:
-            LOG.info(f"Removing {to_delete}")
-            to_delete.unlink()
+            if to_delete.exists():
+                LOG.info(f"Removing {to_delete}")
+                to_delete.unlink()
 
 
 def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path | None:
