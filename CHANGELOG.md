@@ -2,6 +2,32 @@
 
 <!--next-version-placeholder-->
 
+## v3.10.4 (2023-04-21)
+### Fix
+* **train:** Only save checkpoints on main device ([`1aaaac6`](https://github.com/voicepaw/so-vits-svc-fork/commit/1aaaac6328476249371799b92ced3edcbaac8d18))
+
+### Documentation
+* Add sbersier as a contributor for bug ([#437](https://github.com/voicepaw/so-vits-svc-fork/issues/437)) ([`58b936d`](https://github.com/voicepaw/so-vits-svc-fork/commit/58b936d669fbf5156f1ae1381393762994dd7414))
+* Add escoolioinglesias as a contributor for video ([#436](https://github.com/voicepaw/so-vits-svc-fork/issues/436)) ([`69f097f`](https://github.com/voicepaw/so-vits-svc-fork/commit/69f097f388447d64b7807cf554a5c310c34b7ef0))
+* Add GarrettConway as a contributor for review ([#435](https://github.com/voicepaw/so-vits-svc-fork/issues/435)) ([`c1e4ada`](https://github.com/voicepaw/so-vits-svc-fork/commit/c1e4ada97739bf0b360295335475fef7029fbe49))
+* Add BlueAmulet as a contributor for maintenance ([#434](https://github.com/voicepaw/so-vits-svc-fork/issues/434)) ([`514ed84`](https://github.com/voicepaw/so-vits-svc-fork/commit/514ed84ffda901243c1bd6f39677eb020257f11f))
+* Add guranon as a contributor for bug, ideas, and code ([#433](https://github.com/voicepaw/so-vits-svc-fork/issues/433)) ([`b9eb3fd`](https://github.com/voicepaw/so-vits-svc-fork/commit/b9eb3fdc350588b9528a74d5b7be8e80b2bfbd51))
+* Add ZeroHackz as a contributor for bug, and code ([#432](https://github.com/voicepaw/so-vits-svc-fork/issues/432)) ([`66d5adc`](https://github.com/voicepaw/so-vits-svc-fork/commit/66d5adcf6dbb60fd6b6800162e3e16570a8dac1c))
+* Add tybantarnusa as a contributor for bug ([#431](https://github.com/voicepaw/so-vits-svc-fork/issues/431)) ([`e6e57b3`](https://github.com/voicepaw/so-vits-svc-fork/commit/e6e57b3e0d97ac91cadde45d5f080ced873df959))
+* Add Blacksingh as a contributor for bug ([#430](https://github.com/voicepaw/so-vits-svc-fork/issues/430)) ([`7bc76ba`](https://github.com/voicepaw/so-vits-svc-fork/commit/7bc76ba9355089ab94fce9231f5dbbdd54e849ee))
+* Add escoolioinglesias as a contributor for bug, and userTesting ([#429](https://github.com/voicepaw/so-vits-svc-fork/issues/429)) ([`f00fe6e`](https://github.com/voicepaw/so-vits-svc-fork/commit/f00fe6e15cd12085cd01ae3c2676c195e7924429))
+* Add outhipped as a contributor for bug ([#428](https://github.com/voicepaw/so-vits-svc-fork/issues/428)) ([`7497175`](https://github.com/voicepaw/so-vits-svc-fork/commit/74971752821a852154bbfc35c318bb05e7b1169c))
+* Add yxlllc as a contributor for ideas, and code ([#427](https://github.com/voicepaw/so-vits-svc-fork/issues/427)) ([`42e35d2`](https://github.com/voicepaw/so-vits-svc-fork/commit/42e35d2a1f83be25e3fb0318e694163b0e936c59))
+* Add Lordmau5 as a contributor for ideas, maintenance, and 2 more ([#426](https://github.com/voicepaw/so-vits-svc-fork/issues/426)) ([`352451c`](https://github.com/voicepaw/so-vits-svc-fork/commit/352451ccc9c1e1f800dc7697d5c705c0b9707c96))
+* Add tonyco82 as a contributor for bug ([#425](https://github.com/voicepaw/so-vits-svc-fork/issues/425)) ([`036ce90`](https://github.com/voicepaw/so-vits-svc-fork/commit/036ce9052f145cf047434d472f775b563e503946))
+* Add 75aosu as a contributor for bug ([#424](https://github.com/voicepaw/so-vits-svc-fork/issues/424)) ([`5afc28b`](https://github.com/voicepaw/so-vits-svc-fork/commit/5afc28bf918e1a62343f445a72487c1d932dc7b4))
+* Add hxl9654 as a contributor for bug ([#423](https://github.com/voicepaw/so-vits-svc-fork/issues/423)) ([`0953f1f`](https://github.com/voicepaw/so-vits-svc-fork/commit/0953f1fd0dfbfa557f639eb8d917805f8891d7b0))
+* Add DuctTapeGames as a contributor for bug ([#422](https://github.com/voicepaw/so-vits-svc-fork/issues/422)) ([`b0f4d39`](https://github.com/voicepaw/so-vits-svc-fork/commit/b0f4d39371ed2913ad792a46754469eb68c8c72d))
+* Add Likkkez as a contributor for bug ([#421](https://github.com/voicepaw/so-vits-svc-fork/issues/421)) ([`4a12109`](https://github.com/voicepaw/so-vits-svc-fork/commit/4a12109b6a0b3cd2741f10d6e9027204603b0f27))
+* Add AlonDan as a contributor for bug ([#420](https://github.com/voicepaw/so-vits-svc-fork/issues/420)) ([`662ec4b`](https://github.com/voicepaw/so-vits-svc-fork/commit/662ec4b39816b1a1311d56e3edaca31fb442bb8d))
+* Add mmodeusher as a contributor for bug ([#419](https://github.com/voicepaw/so-vits-svc-fork/issues/419)) ([`6a78df9`](https://github.com/voicepaw/so-vits-svc-fork/commit/6a78df97d8191b62a04c9ec48b74cf1f00e47c30))
+* Add Meldoner as a contributor for bug ([#418](https://github.com/voicepaw/so-vits-svc-fork/issues/418)) ([`5586bec`](https://github.com/voicepaw/so-vits-svc-fork/commit/5586becd35b456523cec1e1aa8c601cd1039dd1c))
+
 ## v3.10.3 (2023-04-19)
 ### Fix
 * **train:** Don't save model when tuning for auto batch size ([`2311a35`](https://github.com/voicepaw/so-vits-svc-fork/commit/2311a35c36315123c87b7f20dde3c4dda723bea3))
