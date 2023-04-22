@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.10.5 (2023-04-22)
+### Fix
+* **utils:** Fix so-vits-svc style contentvec usage ([#455](https://github.com/voicepaw/so-vits-svc-fork/issues/455)) ([`6d35139`](https://github.com/voicepaw/so-vits-svc-fork/commit/6d351390354b17a2cd004bc9572d7dc1202f236c))
+
 ## v3.10.4 (2023-04-21)
 ### Fix
 * **train:** Only save checkpoints on main device ([`1aaaac6`](https://github.com/voicepaw/so-vits-svc-fork/commit/1aaaac6328476249371799b92ced3edcbaac8d18))
