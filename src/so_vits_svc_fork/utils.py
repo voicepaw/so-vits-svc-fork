@@ -173,12 +173,14 @@ def get_content(
     if audio.ndim == 1:
         audio = audio.unsqueeze(0)
     with torch.no_grad(), timer() as t:
-        c = cmodel(audio)["last_hidden_state"]
         if legacy_final_proj:
             warnings.warn("legacy_final_proj is deprecated")
             if not hasattr(cmodel, "final_proj"):
                 raise ValueError("HubertModel does not have final_proj")
+            c = cmodel(audio, output_hidden_states=True)["hidden_states"][9]
             c = cmodel.final_proj(c)
+        else:
+            c = cmodel(audio)["last_hidden_state"]
         c = c.transpose(1, 2)
     wav_len = audio.shape[-1] / HUBERT_SAMPLING_RATE
     LOG.info(
