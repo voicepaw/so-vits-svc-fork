@@ -57,6 +57,50 @@ def delete_preset(name: str) -> dict:
     return load_presets()
 
 
+def get_output_path(input_path: Path) -> Path:
+    # Default output path
+    output_path = input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
+
+    # Increment file number in path if output file already exists
+    file_num = 1
+    while output_path.exists():
+        output_path = (
+            input_path.parent / f"{input_path.stem}.out_{file_num}{input_path.suffix}"
+        )
+        file_num += 1
+    return output_path
+
+
+def get_supported_file_types() -> tuple[tuple[str], ...]:
+    return tuple(
+        [
+            ((extension, f".{extension.lower()}"))
+            for extension in sf.available_formats().keys()
+        ]
+    )
+
+
+def validate_output_file_type(output_path: Path) -> bool:
+    supported_file_types = sorted(
+        [f".{extension.lower()}" for extension in sf.available_formats().keys()]
+    )
+    if not output_path.suffix:
+        sg.popup_ok(
+            "Error: Output path missing file type extension, enter "
+            + "one of the following manually:\n\n"
+            + "\n".join(supported_file_types)
+        )
+        return False
+    if output_path.suffix.lower() not in supported_file_types:
+        sg.popup_ok(
+            f"Error: {output_path.suffix.lower()} is not a supported "
+            + "extension; use one of the following:\n\n"
+            + "\n".join(supported_file_types)
+        )
+        return False
+    return True
+
+
 def get_devices(
     update: bool = True,
 ) -> tuple[list[str], list[str], list[int], list[int]]:
@@ -255,9 +299,19 @@ def main():
             [
                 sg.Text("Input audio path"),
                 sg.Push(),
-                sg.InputText(key="input_path"),
+                sg.InputText(key="input_path", enable_events=True),
                 sg.FileBrowse(initial_folder=".", key="input_path_browse"),
                 sg.Button("Play", key="play_input"),
+            ],
+            [
+                sg.Text("Output audio path"),
+                sg.Push(),
+                sg.InputText(key="output_path"),
+                sg.FileSaveAs(
+                    initial_folder=".",
+                    key="output_path_browse",
+                    file_types=get_supported_file_types(),
+                ),
             ],
             [sg.Checkbox(key="auto_play", text="Auto play", default=True)],
         ],
@@ -528,6 +582,10 @@ def main():
                 disabled=values["auto_predict_f0"],
                 visible=not values["auto_predict_f0"],
             )
+
+            input_path = Path(values["input_path"])
+            output_path = Path(values["output_path"])
+
             if event == "add_preset":
                 presets = add_preset(
                     values["preset_name"], {key: values[key] for key in PRESET_KEYS}
@@ -543,13 +601,17 @@ def main():
                 update_devices()
             elif event == "config_path":
                 update_speaker()
+            elif event == "input_path":
+                # Don't change the output path if it's already set
+                if values["output_path"]:
+                    continue
+                # Set a sensible default output path
+                window.Element("output_path").Update(str(get_output_path(input_path)))
             elif event == "infer":
-                input_path = Path(values["input_path"])
-                output_path = (
-                    input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
-                )
                 if not input_path.exists() or not input_path.is_file():
                     LOG.warning(f"Input path {input_path} does not exist.")
+                    continue
+                if not validate_output_file_type(output_path):
                     continue
 
                 try:
