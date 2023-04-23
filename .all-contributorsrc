@@ -318,6 +318,15 @@
         "ideas",
         "code"
       ]
+    },
+    {
+      "login": "alexanderkoumis",
+      "name": "Alexander Koumis",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5108856?v=4",
+      "profile": "https://github.com/alexanderkoumis",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
