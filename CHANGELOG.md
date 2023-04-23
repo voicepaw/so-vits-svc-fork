@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v3.11.0 (2023-04-23)
+### Feature
+* **gui:** Configurable output file (#452) ([#453](https://github.com/voicepaw/so-vits-svc-fork/issues/453)) ([`d2e3596`](https://github.com/voicepaw/so-vits-svc-fork/commit/d2e3596d5c0874918712488765e068f4010d62b9))
+
+### Documentation
+* Add alexanderkoumis as a contributor for code ([#468](https://github.com/voicepaw/so-vits-svc-fork/issues/468)) ([`5e032a3`](https://github.com/voicepaw/so-vits-svc-fork/commit/5e032a3e1eb36b0a7f99fd440b3e2a82f2345747))
+
 ## v3.10.5 (2023-04-22)
 ### Fix
 * **utils:** Fix so-vits-svc style contentvec usage ([#455](https://github.com/voicepaw/so-vits-svc-fork/issues/455)) ([`6d35139`](https://github.com/voicepaw/so-vits-svc-fork/commit/6d351390354b17a2cd004bc9572d7dc1202f236c))
