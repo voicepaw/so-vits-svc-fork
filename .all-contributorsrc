@@ -327,6 +327,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "acekagami",
+      "name": "acekagami",
+      "avatar_url": "https://avatars.githubusercontent.com/u/127201056?v=4",
+      "profile": "https://github.com/acekagami",
+      "contributions": [
+        "translation"
+      ]
     }
   ],
   "contributorsPerLine": 7,
