@@ -137,7 +137,7 @@ svc vc
 svc infer source.wav
 ```
 
-[Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on HuggingFace.
+[Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on Hugging Face.
 
 #### Notes
 
