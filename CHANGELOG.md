@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v3.12.1 (2023-04-30)
+### Fix
+* **utils:** Fix epoch variable name to log in checkpoint save/load functions ([#519](https://github.com/voicepaw/so-vits-svc-fork/issues/519)) ([`0530ea3`](https://github.com/voicepaw/so-vits-svc-fork/commit/0530ea34fa42d9af51c73872b02d6453427c5a00))
+
+### Documentation
+* Add Scorpi as a contributor for code ([#532](https://github.com/voicepaw/so-vits-svc-fork/issues/532)) ([`542d3a8`](https://github.com/voicepaw/so-vits-svc-fork/commit/542d3a8382d97064f13c1dcc4ba11107614dec3f))
+
 ## v3.12.0 (2023-04-30)
 ### Feature
 * **preprocessing:** Add pre-classify command to manually classify files ([#527](https://github.com/voicepaw/so-vits-svc-fork/issues/527)) ([`7a0319c`](https://github.com/voicepaw/so-vits-svc-fork/commit/7a0319c65f42b0cc54d1d86ae5945d4a356b507a))
