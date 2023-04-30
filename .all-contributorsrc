@@ -345,6 +345,15 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "Scorpi",
+      "name": "Scorpi",
+      "avatar_url": "https://avatars.githubusercontent.com/u/969654?v=4",
+      "profile": "https://github.com/Scorpi",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
