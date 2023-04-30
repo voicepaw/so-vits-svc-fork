@@ -37,6 +37,7 @@ class F0Decoder(nn.Module):
     def forward(self, x, norm_f0, x_mask, spk_emb=None):
         x = torch.detach(x)
         if spk_emb is not None:
+            spk_emb = torch.detach(spk_emb)
             x = x + self.cond(spk_emb)
         x += self.f0_prenet(norm_f0)
         x = self.prenet(x) * x_mask
