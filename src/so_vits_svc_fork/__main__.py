@@ -721,6 +721,7 @@ def pre_split(
     "-i",
     "--input-dir",
     type=click.Path(exists=True),
+    required=True,
     help="path to source dir",
 )
 @click.option(
