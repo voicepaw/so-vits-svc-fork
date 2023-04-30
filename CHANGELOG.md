@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v3.11.1 (2023-04-30)
+### Fix
+* Specify encoding to utf-8 in read_text() and write_text() ([#524](https://github.com/voicepaw/so-vits-svc-fork/issues/524)) ([`e947336`](https://github.com/voicepaw/so-vits-svc-fork/commit/e94733678955430f4e0c8ee5a26627077c0ffad9))
+
+### Documentation
+* Add Highupech as a contributor for bug ([#526](https://github.com/voicepaw/so-vits-svc-fork/issues/526)) ([`8eedc24`](https://github.com/voicepaw/so-vits-svc-fork/commit/8eedc2439b6987f70c94033c3f375ea330498a64))
+* **readme:** Fix typo in README.md ([`1773940`](https://github.com/voicepaw/so-vits-svc-fork/commit/1773940ae4a17a522ebc9fe6c1c70c3e02728341))
+* Add acekagami as a contributor for translation ([#486](https://github.com/voicepaw/so-vits-svc-fork/issues/486)) ([`958b9fd`](https://github.com/voicepaw/so-vits-svc-fork/commit/958b9fdf5fd1d527b63ac488ad21db2ce90539aa))
+* **readme_zh_cn:** Update README_zh_CN.md ([#477](https://github.com/voicepaw/so-vits-svc-fork/issues/477)) ([`1ccd594`](https://github.com/voicepaw/so-vits-svc-fork/commit/1ccd5941e5f17a273dad681301a287aafb7973d9))
+
 ## v3.11.0 (2023-04-23)
 ### Feature
 * **gui:** Configurable output file (#452) ([#453](https://github.com/voicepaw/so-vits-svc-fork/issues/453)) ([`d2e3596`](https://github.com/voicepaw/so-vits-svc-fork/commit/d2e3596d5c0874918712488765e068f4010d62b9))
