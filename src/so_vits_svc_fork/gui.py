@@ -29,9 +29,11 @@ def play_audio(path: Path | str):
 
 
 def load_presets() -> dict:
-    defaults = json.loads(GUI_DEFAULT_PRESETS_PATH.read_text())
+    defaults = json.loads(GUI_DEFAULT_PRESETS_PATH.read_text("utf-8"))
     users = (
-        json.loads(GUI_PRESETS_PATH.read_text()) if GUI_PRESETS_PATH.exists() else {}
+        json.loads(GUI_PRESETS_PATH.read_text("utf-8"))
+        if GUI_PRESETS_PATH.exists()
+        else {}
     )
     # prioriy: defaults > users
     # order: defaults -> users
