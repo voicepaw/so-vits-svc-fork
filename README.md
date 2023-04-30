@@ -151,6 +151,7 @@ svc infer source.wav
 - If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
 - If your dataset is a long audio file with a single speaker, use `svc pre-split` to split the dataset into multiple files (using `librosa`).
 - If your dataset is a long audio file with multiple speakers, use `svc pre-sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
+- To manually classify audio files, `svc pre-classify` is available. Up and down arrow keys can be used to change the playback speed.
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
 
@@ -209,7 +210,8 @@ Options:
 Commands:
   clean          Clean up files, only useful if you are using the default file structure
   infer          Inference
-  onnx           Export model to onnx
+  onnx           Export model to onnx (currently not working)
+  pre-classify   Classify multiple audio files into multiple files
   pre-config     Preprocessing part 2: config
   pre-hubert     Preprocessing part 3: hubert If the HuBERT model is not found, it will be...
   pre-resample   Preprocessing part 1: resample
