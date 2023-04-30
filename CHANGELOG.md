@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.12.0 (2023-04-30)
+### Feature
+* **preprocessing:** Add pre-classify command to manually classify files ([#527](https://github.com/voicepaw/so-vits-svc-fork/issues/527)) ([`7a0319c`](https://github.com/voicepaw/so-vits-svc-fork/commit/7a0319c65f42b0cc54d1d86ae5945d4a356b507a))
+
 ## v3.11.2 (2023-04-30)
 ### Fix
 * **train:** Decouple lf0 predictor from speaker embeddings ([#528](https://github.com/voicepaw/so-vits-svc-fork/issues/528)) ([`7ab47f4`](https://github.com/voicepaw/so-vits-svc-fork/commit/7ab47f44e2ec77aa8c9e36b2e322d2dca0f94fb0))
