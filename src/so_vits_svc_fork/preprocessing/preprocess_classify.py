@@ -28,6 +28,7 @@ def preprocess_classify(
     # get audio paths and folders
     audio_paths = list(input_dir_.glob("*.*"))
     last_folders = [x for x in output_dir_.glob("*") if x.is_dir()]
+    console.print("Press ↑ or ↓ to change speed. Press any other key to classify.")
     console.print(f"Folders: {[x.name for x in last_folders]}")
 
     pbar_description = ""
