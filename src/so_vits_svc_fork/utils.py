@@ -256,7 +256,7 @@ def load_checkpoint(
             warnings.simplefilter("ignore")
             safe_load(optimizer, checkpoint_dict["optimizer"])
 
-    LOG.info(f"Loaded checkpoint '{checkpoint_path}' (iteration {iteration})")
+    LOG.info(f"Loaded checkpoint '{checkpoint_path}' (epoch {iteration})")
     return model, optimizer, learning_rate, iteration
 
 
@@ -268,7 +268,7 @@ def save_checkpoint(
     checkpoint_path: Path | str,
 ) -> None:
     LOG.info(
-        "Saving model and optimizer state at iteration {} to {}".format(
+        "Saving model and optimizer state at epoch {} to {}".format(
             iteration, checkpoint_path
         )
     )
