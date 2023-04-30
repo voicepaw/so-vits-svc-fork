@@ -377,7 +377,7 @@ def get_backup_hparams(
 
 
 def get_hparams(config_path: Path | str) -> HParams:
-    config = json.loads(Path(config_path).read_text())
+    config = json.loads(Path(config_path).read_text("utf-8"))
     hparams = HParams(**config)
     return hparams
 

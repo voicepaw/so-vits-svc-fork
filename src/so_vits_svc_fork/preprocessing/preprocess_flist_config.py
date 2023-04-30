@@ -52,32 +52,28 @@ def preprocess_config(
 
     LOG.info(f"Writing {train_list_path}")
     train_list_path.parent.mkdir(parents=True, exist_ok=True)
-    with train_list_path.open("w", encoding="utf-8") as f:
-        for fname in train:
-            wavpath = fname.as_posix()
-            f.write(wavpath + "\n")
+    train_list_path.write_text(
+        "\n".join([x.as_posix() for x in train]), encoding="utf-8"
+    )
 
     LOG.info(f"Writing {val_list_path}")
     val_list_path.parent.mkdir(parents=True, exist_ok=True)
-    with val_list_path.open("w", encoding="utf-8") as f:
-        for fname in val:
-            wavpath = fname.as_posix()
-            f.write(wavpath + "\n")
+    val_list_path.write_text("\n".join([x.as_posix() for x in val]), encoding="utf-8")
 
     LOG.info(f"Writing {test_list_path}")
     test_list_path.parent.mkdir(parents=True, exist_ok=True)
-    with test_list_path.open("w", encoding="utf-8") as f:
-        for fname in test:
-            wavpath = fname.as_posix()
-            f.write(wavpath + "\n")
+    test_list_path.write_text("\n".join([x.as_posix() for x in test]), encoding="utf-8")
 
     config = deepcopy(
         json.loads(
             (
-                CONFIG_TEMPLATE_DIR / f"{config_name}.json"
-                if not config_name.endswith(".json")
-                else config_name
-            ).read_text()
+                CONFIG_TEMPLATE_DIR
+                / (
+                    config_name
+                    if config_name.endswith(".json")
+                    else config_name + ".json"
+                )
+            ).read_text(encoding="utf-8")
         )
     )
     config["spk"] = spk_dict

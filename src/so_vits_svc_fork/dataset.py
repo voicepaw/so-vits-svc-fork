@@ -19,7 +19,7 @@ class TextAudioDataset(Dataset):
             for x in Path(
                 hps.data.validation_files if is_validation else hps.data.training_files
             )
-            .read_text()
+            .read_text("utf-8")
             .splitlines()
         ]
         self.hps = hps

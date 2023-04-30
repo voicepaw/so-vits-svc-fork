@@ -63,7 +63,7 @@ class TestMain(TestCase):
         from so_vits_svc_fork.train import train
 
         config_path = Path("tests/logs/44k/config.json")
-        config_json = json.loads(config_path.read_text())
+        config_json = json.loads(config_path.read_text("utf-8"))
         config_json["train"]["epochs"] = 1
-        config_path.write_text(json.dumps(config_json))
+        config_path.write_text(json.dumps(config_json), "utf-8")
         train(config_path, "tests/logs/44k")
