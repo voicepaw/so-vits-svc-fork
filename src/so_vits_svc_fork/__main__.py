@@ -716,6 +716,44 @@ def pre_split(
     )
 
 
+@cli.command()
+@click.option(
+    "-i",
+    "--input-dir",
+    type=click.Path(exists=True),
+    help="path to source dir",
+)
+@click.option(
+    "-o",
+    "--output-dir",
+    type=click.Path(),
+    default=None,
+    help="path to output dir",
+)
+@click.option(
+    "-c/-nc",
+    "--create-new/--no-create-new",
+    type=bool,
+    default=True,
+    help="create a new folder for the speaker if not exist",
+)
+def pre_classify(
+    input_dir: Path | str,
+    output_dir: Path | str | None,
+    create_new: bool,
+) -> None:
+    """Classify multiple audio files into multiple files"""
+    from so_vits_svc_fork.preprocessing.preprocess_classify import preprocess_classify
+
+    if output_dir is None:
+        output_dir = input_dir
+    preprocess_classify(
+        input_dir=input_dir,
+        output_dir=output_dir,
+        create_new=create_new,
+    )
+
+
 @cli.command
 def clean():
     """Clean up files, only useful if you are using the default file structure"""
