@@ -802,8 +802,8 @@ def clean():
 def onnx(
     input_path: Path, output_path: Path, config_path: Path, device: torch.device | str
 ) -> None:
+    """Export model to onnx (currently not working)"""
     raise NotImplementedError("ONNX export is not yet supported")
-    """Export model to onnx"""
     input_path = Path(input_path)
     if input_path.is_dir():
         input_path = list(input_path.glob("*.pth"))[0]

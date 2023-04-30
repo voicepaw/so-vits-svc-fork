@@ -210,7 +210,7 @@ Options:
 Commands:
   clean          Clean up files, only useful if you are using the default file structure
   infer          Inference
-  onnx
+  onnx           Export model to onnx (currently not working)
   pre-classify   Classify multiple audio files into multiple files
   pre-config     Preprocessing part 2: config
   pre-hubert     Preprocessing part 3: hubert If the HuBERT model is not found, it will be...
