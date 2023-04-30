@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.11.2 (2023-04-30)
+### Fix
+* **train:** Decouple lf0 predictor from speaker embeddings ([#528](https://github.com/voicepaw/so-vits-svc-fork/issues/528)) ([`7ab47f4`](https://github.com/voicepaw/so-vits-svc-fork/commit/7ab47f44e2ec77aa8c9e36b2e322d2dca0f94fb0))
+
 ## v3.11.1 (2023-04-30)
 ### Fix
 * Specify encoding to utf-8 in read_text() and write_text() ([#524](https://github.com/voicepaw/so-vits-svc-fork/issues/524)) ([`e947336`](https://github.com/voicepaw/so-vits-svc-fork/commit/e94733678955430f4e0c8ee5a26627077c0ffad9))
