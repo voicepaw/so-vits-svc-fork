@@ -70,6 +70,80 @@ def infer(
     soundfile.write(output_path, audio, svc_model.target_sample)
 
 
+def batch_infer(
+    *,
+    # paths
+    input_dir: Path | str,
+    output_dir: Path | str,
+    model_path: Path | str,
+    config_path: Path | str,
+    # svc config
+    speaker: int | str,
+    cluster_model_path: Path | str | None = None,
+    transpose: int = 0,
+    auto_predict_f0: bool = False,
+    cluster_infer_ratio: float = 0,
+    noise_scale: float = 0.4,
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
+    # slice config
+    db_thresh: int = -40,
+    pad_seconds: float = 0.5,
+    chunk_seconds: float = 0.5,
+    absolute_thresh: bool = False,
+    device: str | torch.device = get_optimal_device(),
+):
+    model_path = Path(model_path)
+    output_dir = Path(output_dir)
+    input_dir = Path(input_dir)
+    config_path = Path(config_path)
+    cluster_model_path = Path(cluster_model_path) if cluster_model_path else None
+    svc_model = Svc(
+        net_g_path=model_path.as_posix(),
+        config_path=config_path.as_posix(),
+        cluster_model_path=cluster_model_path.as_posix()
+        if cluster_model_path
+        else None,
+        device=device,
+    )
+
+    in_paths = []
+    out_paths = []
+    for in_path in input_dir.rglob("*.*"):
+        in_path_relative = in_path.relative_to(input_dir)
+        file_name = in_path_relative.with_suffix(".wav").name
+        out_path = output_dir / file_name
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        in_paths.append(in_path)
+        out_paths.append(out_path)
+    for input_path, output_path in zip(in_paths, out_paths):
+        try:
+            audio, sr = librosa.load(input_path, sr=svc_model.target_sample, mono=True)
+
+        # Audioread is the last backend it will attempt, so this is the exception thrown on failure
+        except Exception as e:
+            # Failure due to attempting to load a file that is not audio
+            LOG.warning(f"Failed to load {input_path} due to error: {e}")
+            LOG.info(f"Skipping file: {input_path}")
+            # Skip this file
+            continue
+
+        audio = svc_model.infer_silence(
+            audio.astype(np.float32),
+            speaker=speaker,
+            transpose=transpose,
+            auto_predict_f0=auto_predict_f0,
+            cluster_infer_ratio=cluster_infer_ratio,
+            noise_scale=noise_scale,
+            f0_method=f0_method,
+            db_thresh=db_thresh,
+            pad_seconds=pad_seconds,
+            chunk_seconds=chunk_seconds,
+            absolute_thresh=absolute_thresh,
+        )
+
+        soundfile.write(output_path, audio, svc_model.target_sample)
+
+
 def realtime(
     *,
     # paths

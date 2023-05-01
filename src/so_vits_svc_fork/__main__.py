@@ -140,7 +140,7 @@ def train(
     "-o",
     "--output-path",
     type=click.Path(),
-    help="path to output dir",
+    help="path to output file",
 )
 @click.option("-s", "--speaker", type=str, default=None, help="speaker name")
 @click.option(
@@ -249,6 +249,156 @@ def infer(
         # paths
         input_path=input_path,
         output_path=output_path,
+        model_path=model_path,
+        config_path=config_path,
+        # svc config
+        speaker=speaker,
+        cluster_model_path=cluster_model_path,
+        transpose=transpose,
+        auto_predict_f0=auto_predict_f0,
+        cluster_infer_ratio=cluster_infer_ratio,
+        noise_scale=noise_scale,
+        f0_method=f0_method,
+        # slice config
+        db_thresh=db_thresh,
+        pad_seconds=pad_seconds,
+        chunk_seconds=chunk_seconds,
+        absolute_thresh=absolute_thresh,
+        device=device,
+    )
+
+
+@cli.command()
+@click.argument(
+    "input-dir",
+    type=click.Path(exists=True),
+)
+@click.option(
+    "-o",
+    "--output-dir",
+    type=click.Path(),
+    help="path to output dir",
+)
+@click.option("-s", "--speaker", type=str, default=None, help="speaker name")
+@click.option(
+    "-m",
+    "--model-path",
+    type=click.Path(exists=True),
+    default=Path("./logs/44k/"),
+    help="path to model",
+)
+@click.option(
+    "-c",
+    "--config-path",
+    type=click.Path(exists=True),
+    default=Path("./configs/44k/config.json"),
+    help="path to config",
+)
+@click.option(
+    "-k",
+    "--cluster-model-path",
+    type=click.Path(exists=True),
+    default=None,
+    help="path to cluster model",
+)
+@click.option("-t", "--transpose", type=int, default=0, help="transpose")
+@click.option(
+    "-db", "--db-thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)"
+)
+@click.option(
+    "-fm",
+    "--f0-method",
+    type=click.Choice(["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"]),
+    default="dio",
+    help="f0 prediction method",
+)
+@click.option(
+    "-a/-na",
+    "--auto-predict-f0/--no-auto-predict-f0",
+    type=bool,
+    default=True,
+    help="auto predict f0",
+)
+@click.option(
+    "-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio"
+)
+@click.option("-n", "--noise-scale", type=float, default=0.4, help="noise scale")
+@click.option("-p", "--pad-seconds", type=float, default=0.5, help="pad seconds")
+@click.option(
+    "-d",
+    "--device",
+    type=str,
+    default=get_optimal_device(),
+    help="device",
+)
+@click.option("-ch", "--chunk-seconds", type=float, default=0.5, help="chunk seconds")
+@click.option(
+    "-ab/-nab",
+    "--absolute-thresh/--no-absolute-thresh",
+    type=bool,
+    default=False,
+    help="absolute thresh",
+)
+def batch_infer(
+    # paths
+    input_dir: Path,
+    output_dir: Path,
+    model_path: Path,
+    config_path: Path,
+    # svc config
+    speaker: str,
+    cluster_model_path: Path | None = None,
+    transpose: int = 0,
+    auto_predict_f0: bool = False,
+    cluster_infer_ratio: float = 0,
+    noise_scale: float = 0.4,
+    f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"] = "dio",
+    # slice config
+    db_thresh: int = -40,
+    pad_seconds: float = 0.5,
+    chunk_seconds: float = 0.5,
+    absolute_thresh: bool = False,
+    device: str | torch.device = get_optimal_device(),
+):
+    """Batch Inference"""
+    from so_vits_svc_fork.inference.main import batch_infer
+
+    if not auto_predict_f0:
+        LOG.warning(
+            f"auto_predict_f0 = False, transpose = {transpose}. If you want to change the pitch, please set transpose."
+            "Generally transpose = 0 does not work because your voice pitch and target voice pitch are different."
+        )
+
+    input_dir = Path(input_dir)
+    if input_dir.is_dir():
+        LOG.info(f"Running inference on all files in directory: {input_dir}")
+    else:
+        LOG.error(
+            "Input is not a directory."
+            "Please specify a directory or use the normal infer to run inference on a single file."
+        )
+        return
+
+    if output_dir is None:
+        output_dir = input_dir.parent / f"{input_dir.stem}-out"
+        LOG.info(
+            f"Output directory not specified. Output will be written to {output_dir}"
+        )
+
+    output_dir = Path(output_dir)
+    model_path = Path(model_path)
+    if model_path.is_dir():
+        model_path = list(
+            sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)
+        )[-1]
+        LOG.info(f"Since model_path is a directory, using {model_path}")
+    config_path = Path(config_path)
+    if cluster_model_path is not None:
+        cluster_model_path = Path(cluster_model_path)
+    batch_infer(
+        # paths
+        input_dir=input_dir,
+        output_dir=output_dir,
         model_path=model_path,
         config_path=config_path,
         # svc config
