@@ -66,7 +66,7 @@ def infer(
         pad_seconds=pad_seconds,
         chunk_seconds=chunk_seconds,
         absolute_thresh=absolute_thresh,
-        max_chunk_seconds=max_chunk_seconds
+        max_chunk_seconds=max_chunk_seconds,
     )
 
     soundfile.write(output_path, audio, svc_model.target_sample)

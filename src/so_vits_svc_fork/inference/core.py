@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from copy import deepcopy
 from logging import getLogger
-from math import ceil
 from pathlib import Path
 from typing import Any, Callable, Iterable, Literal
 
@@ -65,7 +64,7 @@ def split_silence(
     frame_length: int = 2048,
     hop_length: int = 512,
     aggregate: Callable[[ndarray[Any, dtype[float32]]], float] = np.mean,
-    max_chunk_length: int = 0
+    max_chunk_length: int = 0,
 ) -> Iterable[Chunk]:
     non_silence_indices = librosa.effects.split(
         audio,
@@ -82,7 +81,12 @@ def split_silence(
                 is_speech=False, audio=audio[last_end:start], start=last_end, end=start
             )
         while max_chunk_length > 0 and end - start > max_chunk_length:
-            yield Chunk(is_speech=True, audio=audio[start:start + max_chunk_length], start=start, end=start + max_chunk_length)
+            yield Chunk(
+                is_speech=True,
+                audio=audio[start : start + max_chunk_length],
+                start=start,
+                end=start + max_chunk_length,
+            )
             start += max_chunk_length
         if end - start > 0:
             yield Chunk(is_speech=True, audio=audio[start:end], start=start, end=end)
