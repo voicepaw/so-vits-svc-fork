@@ -36,6 +36,7 @@ def infer(
     pad_seconds: float = 0.5,
     chunk_seconds: float = 0.5,
     absolute_thresh: bool = False,
+    max_chunk_seconds: float = 40,
     device: str | torch.device = get_optimal_device(),
 ):
     model_path = Path(model_path)
@@ -65,6 +66,7 @@ def infer(
         pad_seconds=pad_seconds,
         chunk_seconds=chunk_seconds,
         absolute_thresh=absolute_thresh,
+        max_chunk_seconds=max_chunk_seconds
     )
 
     soundfile.write(output_path, audio, svc_model.target_sample)
