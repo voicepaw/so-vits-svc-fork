@@ -204,7 +204,7 @@ def train(
 )
 @click.option(
     "-mc",
-    "--max_chunk_seconds",
+    "--max-chunk-seconds",
     type=float,
     default=40,
     help="maximum allowed single chunk length, set lower if you get out of memory (0 to disable)",
