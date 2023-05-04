@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v3.13.0 (2023-05-04)
+### Feature
+* **infer:** Add max_chunk_seconds option ([#550](https://github.com/voicepaw/so-vits-svc-fork/issues/550)) ([`101b948`](https://github.com/voicepaw/so-vits-svc-fork/commit/101b9484a86cce634a71054e5b8110998566197b))
+
+### Documentation
+* Add maximxlss as a contributor for code ([#554](https://github.com/voicepaw/so-vits-svc-fork/issues/554)) ([`435ca3c`](https://github.com/voicepaw/so-vits-svc-fork/commit/435ca3c58ab48934622c3d192cc11fd130a4a6f7))
+
 ## v3.12.1 (2023-04-30)
 ### Fix
 * **utils:** Fix epoch variable name to log in checkpoint save/load functions ([#519](https://github.com/voicepaw/so-vits-svc-fork/issues/519)) ([`0530ea3`](https://github.com/voicepaw/so-vits-svc-fork/commit/0530ea34fa42d9af51c73872b02d6453427c5a00))
