@@ -202,6 +202,13 @@ def train(
     default=False,
     help="absolute thresh",
 )
+@click.option(
+    "-mc",
+    "--max-chunk-seconds",
+    type=float,
+    default=40,
+    help="maximum allowed single chunk length, set lower if you get out of memory (0 to disable)",
+)
 def infer(
     # paths
     input_path: Path,
@@ -221,6 +228,7 @@ def infer(
     pad_seconds: float = 0.5,
     chunk_seconds: float = 0.5,
     absolute_thresh: bool = False,
+    max_chunk_seconds: float = 40,
     device: str | torch.device = get_optimal_device(),
 ):
     """Inference"""
@@ -264,6 +272,7 @@ def infer(
         pad_seconds=pad_seconds,
         chunk_seconds=chunk_seconds,
         absolute_thresh=absolute_thresh,
+        max_chunk_seconds=max_chunk_seconds,
         device=device,
     )
 

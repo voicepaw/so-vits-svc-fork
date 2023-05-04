@@ -64,6 +64,7 @@ def split_silence(
     frame_length: int = 2048,
     hop_length: int = 512,
     aggregate: Callable[[ndarray[Any, dtype[float32]]], float] = np.mean,
+    max_chunk_length: int = 0,
 ) -> Iterable[Chunk]:
     non_silence_indices = librosa.effects.split(
         audio,
@@ -79,7 +80,16 @@ def split_silence(
             yield Chunk(
                 is_speech=False, audio=audio[last_end:start], start=last_end, end=start
             )
-        yield Chunk(is_speech=True, audio=audio[start:end], start=start, end=end)
+        while max_chunk_length > 0 and end - start > max_chunk_length:
+            yield Chunk(
+                is_speech=True,
+                audio=audio[start : start + max_chunk_length],
+                start=start,
+                end=start + max_chunk_length,
+            )
+            start += max_chunk_length
+        if end - start > 0:
+            yield Chunk(is_speech=True, audio=audio[start:end], start=start, end=end)
         last_end = end
     if last_end != len(audio):
         yield Chunk(
@@ -248,6 +258,7 @@ class Svc:
         pad_seconds: float = 0.5,
         chunk_seconds: float = 0.5,
         absolute_thresh: bool = False,
+        max_chunk_seconds: float = 40,
         # fade_seconds: float = 0.0,
     ) -> np.ndarray[Any, np.dtype[np.float32]]:
         sr = self.target_sample
@@ -267,6 +278,7 @@ class Svc:
             frame_length=chunk_length_min * 2,
             hop_length=chunk_length_min,
             ref=1 if absolute_thresh else np.max,
+            max_chunk_length=int(max_chunk_seconds * sr),
         ):
             LOG.info(f"Chunk: {chunk}")
             if not chunk.is_speech:
