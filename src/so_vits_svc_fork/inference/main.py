@@ -53,7 +53,7 @@ def infer(
         device=device,
     )
 
-    audio, _ = librosa.load(input_path, sr=svc_model.target_sample)
+    audio, _ = librosa.load(str(input_path), sr=svc_model.target_sample)
     audio = svc_model.infer_silence(
         audio.astype(np.float32),
         speaker=speaker,
@@ -69,7 +69,7 @@ def infer(
         max_chunk_seconds=max_chunk_seconds,
     )
 
-    soundfile.write(output_path, audio, svc_model.target_sample)
+    soundfile.write(str(output_path), audio, svc_model.target_sample)
 
 
 def realtime(
