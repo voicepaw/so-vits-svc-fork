@@ -1,14 +1,6 @@
 import os
 import sys
-from logging import (
-    DEBUG,
-    INFO,
-    FileHandler,
-    StreamHandler,
-    basicConfig,
-    captureWarnings,
-    getLogger,
-)
+from logging import DEBUG, INFO, StreamHandler, basicConfig, captureWarnings, getLogger
 from pathlib import Path
 
 from rich.logging import RichHandler
@@ -29,7 +21,7 @@ def init_logger() -> None:
         datefmt="[%X]",
         handlers=[
             StreamHandler() if is_notebook() else RichHandler(),
-            FileHandler(f"{package_name}.log"),
+            # FileHandler(f"{package_name}.log"),
         ],
     )
     if IS_TEST:
