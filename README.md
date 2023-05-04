@@ -153,14 +153,12 @@ Pretrained models are available on [Hugging Face](https://huggingface.co/models?
 
 #### Before training
 
-- Need at least 4GB of VRAM. [^r-training]
 - If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
 - If your dataset is a long audio file with a single speaker, use `svc pre-split` to split the dataset into multiple files (using `librosa`).
 - If your dataset is a long audio file with multiple speakers, use `svc pre-sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
 - To manually classify audio files, `svc pre-classify` is available. Up and down arrow keys can be used to change the playback speed.
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
-[^r-training]: [#456](https://github.com/voicepaw/so-vits-svc-fork/issues/456)
 
 #### Cloud
 
@@ -186,6 +184,7 @@ svc train -t
 #### Notes
 
 - Dataset audio duration per file should be <~ 10s.
+- Need at least 4GB of VRAM. [^r-training]
 - It is recommended to increase the `batch_size` as much as possible in `config.json` before the `train` command to match the VRAM capacity. Setting `batch_size` to `auto-{init_batch_size}-{max_n_trials}` (or simply `auto`) will automatically increase `batch_size` until OOM error occurs, but may not be useful in some cases.
 - To use `CREPE`, replace `svc pre-hubert` with `svc pre-hubert -fm crepe`.
 - To use `ContentVec` correctly, replace `svc pre-config` with `-t so-vits-svc-4.0v1`. Training may take slightly longer because some weights are reset due to reusing legacy initial generator weights.
@@ -193,6 +192,8 @@ svc train -t
 - Silence removal and volume normalization are automatically performed (as in the upstream repo) and are not required.
 - If you have trained on a large, copyright-free dataset, consider releasing it as an initial model.
 - For further details (e.g. parameters, etc.), you can see the [Wiki](https://github.com/34j/so-vits-svc-fork/wiki) or [Discussions](https://github.com/34j/so-vits-svc-fork/discussions).
+
+[^r-training]: [#456](https://github.com/voicepaw/so-vits-svc-fork/issues/456)
 
 ### Further help
 
