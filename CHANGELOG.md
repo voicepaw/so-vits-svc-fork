@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.13.1 (2023-05-04)
+### Fix
+* **logger:** Remove FileHandler to avoid PermissionError ([#557](https://github.com/voicepaw/so-vits-svc-fork/issues/557)) ([`38e0c4e`](https://github.com/voicepaw/so-vits-svc-fork/commit/38e0c4ed471c4520571a1585d868e325ea1a57e3))
+
 ## v3.13.0 (2023-05-04)
 ### Feature
 * **infer:** Add max_chunk_seconds option ([#550](https://github.com/voicepaw/so-vits-svc-fork/issues/550)) ([`101b948`](https://github.com/voicepaw/so-vits-svc-fork/commit/101b9484a86cce634a71054e5b8110998566197b))
