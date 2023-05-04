@@ -56,6 +56,8 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
   <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
 </a>
 
+This BAT file will automatically perform the steps described below.
+
 ### Manual installation
 
 <details>
@@ -137,7 +139,11 @@ svc vc
 svc infer source.wav
 ```
 
-[Pretrained models](https://huggingface.co/models?search=so-vits-svc-4.0) are available on Hugging Face.
+- Pretrained models are available on [Hugging Face](https://huggingface.co/models?search=so-vits-svc) or [CIVITAI](https://civitai.com/?query=so-vits-svc).
+- Models other than for 4.0v1 or this repository are not supported.
+- GPU inference requires at least 4 GB of VRAM. If it does not work, try CPU inference as it is fast enough. [^r-inference]
+
+[^r-inference]: [#469](https://github.com/voicepaw/so-vits-svc-fork/issues/469)
 
 #### Notes
 
@@ -148,12 +154,14 @@ svc infer source.wav
 
 #### Before training
 
+- Need at least 4GB of VRAM. [^r-training]
 - If your dataset has BGM, please remove the BGM using software such as [Ultimate Vocal Remover](https://ultimatevocalremover.com/). `3_HP-Vocal-UVR.pth` or `UVR-MDX-NET Main` is recommended. [^1]
 - If your dataset is a long audio file with a single speaker, use `svc pre-split` to split the dataset into multiple files (using `librosa`).
 - If your dataset is a long audio file with multiple speakers, use `svc pre-sd` to split the dataset into multiple files (using `pyannote.audio`). Further manual classification may be necessary due to accuracy issues. If speakers speak with a variety of speech styles, set --min-speakers larger than the actual number of speakers. Due to unresolved dependencies, please install `pyannote.audio` manually: `pip install pyannote-audio`.
 - To manually classify audio files, `svc pre-classify` is available. Up and down arrow keys can be used to change the playback speed.
 
 [^1]: https://ytpmv.info/how-to-use-uvr/
+[^r-training]: [#456](https://github.com/voicepaw/so-vits-svc-fork/issues/456)
 
 #### Cloud
 
