@@ -139,16 +139,15 @@ svc vc
 svc infer source.wav
 ```
 
-- Pretrained models are available on [Hugging Face](https://huggingface.co/models?search=so-vits-svc) or [CIVITAI](https://civitai.com/?query=so-vits-svc).
-- Models other than for 4.0v1 or this repository are not supported.
-- GPU inference requires at least 4 GB of VRAM. If it does not work, try CPU inference as it is fast enough. [^r-inference]
-
-[^r-inference]: [#469](https://github.com/voicepaw/so-vits-svc-fork/issues/469)
+Pretrained models are available on [Hugging Face](https://huggingface.co/models?search=so-vits-svc) or [CIVITAI](https://civitai.com/?query=so-vits-svc).
 
 #### Notes
 
 - If using WSL, please note that WSL requires additional setup to handle audio and the GUI will not work without finding an audio device.
 - In real-time inference, if there is noise on the inputs, the HuBERT model will react to those as well. Consider using realtime noise reduction applications such as [RTX Voice](https://www.nvidia.com/en-us/geforce/guides/nvidia-rtx-voice-setup-guide/) in this case.
+- Models other than for 4.0v1 or this repository are not supported.
+- GPU inference requires at least 4 GB of VRAM. If it does not work, try CPU inference as it is fast enough. [^r-inference]
+- [^r-inference]: [#469](https://github.com/voicepaw/so-vits-svc-fork/issues/469)
 
 ### Training
 
