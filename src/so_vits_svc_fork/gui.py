@@ -482,7 +482,7 @@ def main():
                 sg.Combo(
                     key="presets",
                     values=list(load_presets().keys()),
-                    size=(20, 1),
+                    size=(40, 1),
                     enable_events=True,
                 ),
                 sg.Button("Delete preset", key="delete_preset"),
@@ -490,7 +490,7 @@ def main():
             [
                 sg.Text("Preset name"),
                 sg.Stretch(),
-                sg.InputText(key="preset_name", size=(20, 1)),
+                sg.InputText(key="preset_name", size=(26, 1)),
                 sg.Button("Add current settings as a preset", key="add_preset"),
             ],
         ],
