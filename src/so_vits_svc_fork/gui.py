@@ -615,8 +615,8 @@ def main():
                 update_speaker()
             elif event == "input_path":
                 # Don't change the output path if it's already set
-                if values["output_path"]:
-                    continue
+                # if values["output_path"]:
+                #     continue
                 # Set a sensible default output path
                 window.Element("output_path").Update(str(get_output_path(input_path)))
             elif event == "infer":
