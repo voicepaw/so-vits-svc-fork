@@ -24,6 +24,8 @@ from transformers import HubertModel
 
 from so_vits_svc_fork.hparams import HParams
 
+from .logger import is_notebook
+
 LOG = getLogger(__name__)
 HUBERT_SAMPLING_RATE = 16000
 
@@ -328,6 +330,8 @@ def clean_checkpoints(
         for to_delete in to_delete_list:
             if to_delete.exists():
                 LOG.info(f"Removing {to_delete}")
+                if is_notebook():
+                    to_delete.write_text('')
                 to_delete.unlink()
 
 
