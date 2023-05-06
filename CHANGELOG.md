@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.14.0 (2023-05-06)
+### Feature
+* **gui:** Add batch inference, enhance gui, add custom theme ([#582](https://github.com/voicepaw/so-vits-svc-fork/issues/582)) ([`3ce110b`](https://github.com/voicepaw/so-vits-svc-fork/commit/3ce110be72aa2c614f24249ee26f00cba03f16a8))
+
 ## v3.13.3 (2023-05-06)
 ### Fix
 * **utils:** Complete removal of ckpts in colab ([#581](https://github.com/voicepaw/so-vits-svc-fork/issues/581)) ([`e8964c6`](https://github.com/voicepaw/so-vits-svc-fork/commit/e8964c604bba31a9a8fa0a27bb5ea72a49a5fa5b))
