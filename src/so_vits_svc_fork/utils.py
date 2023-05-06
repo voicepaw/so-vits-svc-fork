@@ -28,6 +28,7 @@ from .logger import is_notebook
 
 LOG = getLogger(__name__)
 HUBERT_SAMPLING_RATE = 16000
+IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
 
 
 def get_optimal_device(index: int = 0) -> torch.device:
