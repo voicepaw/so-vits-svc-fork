@@ -159,7 +159,24 @@ def after_inference(window: sg.Window, path: Path, auto_play: bool, output_path:
 def main():
     LOG.info(f"version: {__version__}")
 
-    sg.theme("Dark")
+    # sg.theme("Dark")
+    sg.theme_add_new(
+        "Very Dark",
+        {
+            "BACKGROUND": "#111111",
+            "TEXT": "#FFFFFF",
+            "INPUT": "#444444",
+            "TEXT_INPUT": "#FFFFFF",
+            "SCROLL": "#333333",
+            "BUTTON": ("white", "#112233"),
+            "PROGRESS": ("#111111", "#333333"),
+            "BORDER": 2,
+            "SLIDER_DEPTH": 2,
+            "PROGRESS_DEPTH": 2,
+        },
+    )
+    sg.theme("Very Dark")
+
     model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
 
     frame_contents = {
