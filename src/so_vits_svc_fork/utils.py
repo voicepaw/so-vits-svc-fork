@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import subprocess
 import warnings
@@ -26,6 +27,7 @@ from so_vits_svc_fork.hparams import HParams
 
 LOG = getLogger(__name__)
 HUBERT_SAMPLING_RATE = 16000
+IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
 
 
 def get_optimal_device(index: int = 0) -> torch.device:
@@ -328,6 +330,8 @@ def clean_checkpoints(
         for to_delete in to_delete_list:
             if to_delete.exists():
                 LOG.info(f"Removing {to_delete}")
+                if IS_COLAB:
+                    to_delete.write_text("")
                 to_delete.unlink()
 
 
