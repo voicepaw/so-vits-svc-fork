@@ -73,13 +73,27 @@ def get_output_path(input_path: Path) -> Path:
     return output_path
 
 
-def get_supported_file_types() -> tuple[tuple[str], ...]:
-    return tuple(
+def get_supported_file_types() -> tuple[tuple[str, str], ...]:
+    res = tuple(
         [
-            ((extension, f".{extension.lower()}"))
+            (extension, f".{extension.lower()}")
             for extension in sf.available_formats().keys()
         ]
     )
+
+    # Sort by popularity
+    common_file_types = ["WAV", "MP3", "FLAC", "OGG", "M4A", "WMA"]
+    res = sorted(
+        res,
+        key=lambda x: common_file_types.index(x[0])
+        if x[0] in common_file_types
+        else len(common_file_types),
+    )
+    return res
+
+
+def get_supported_file_types_concat() -> tuple[tuple[str, str], ...]:
+    return (("Audio", " ".join(sf.available_formats().keys())),)
 
 
 def validate_output_file_type(output_path: Path) -> bool:
@@ -145,7 +159,24 @@ def after_inference(window: sg.Window, path: Path, auto_play: bool, output_path:
 def main():
     LOG.info(f"version: {__version__}")
 
-    sg.theme("Dark")
+    # sg.theme("Dark")
+    sg.theme_add_new(
+        "Very Dark",
+        {
+            "BACKGROUND": "#111111",
+            "TEXT": "#FFFFFF",
+            "INPUT": "#444444",
+            "TEXT_INPUT": "#FFFFFF",
+            "SCROLL": "#333333",
+            "BUTTON": ("white", "#112233"),
+            "PROGRESS": ("#111111", "#333333"),
+            "BORDER": 2,
+            "SLIDER_DEPTH": 2,
+            "PROGRESS_DEPTH": 2,
+        },
+    )
+    sg.theme("Very Dark")
+
     model_candidates = list(sorted(Path("./logs/44k/").glob("G_*.pth")))
 
     frame_contents = {
@@ -165,7 +196,10 @@ def main():
                     if Path("./logs/44k/").exists()
                     else Path(".").absolute().as_posix(),
                     key="model_path_browse",
-                    file_types=(("PyTorch", "*.pth"),),
+                    file_types=(
+                        ("PyTorch", "G_*.pth G_*.pt"),
+                        ("Pytorch", "*.pth *.pt"),
+                    ),
                 ),
             ],
             [
@@ -201,7 +235,7 @@ def main():
                     if Path("./logs/44k/").exists()
                     else ".",
                     key="cluster_model_path_browse",
-                    file_types=(("PyTorch", "*.pt"),),
+                    file_types=(("PyTorch", "*.pt"), ("Pickle", "*.pt *.pth *.pkl")),
                 ),
             ],
         ],
@@ -312,7 +346,17 @@ def main():
                 sg.Text("Input audio path"),
                 sg.Push(),
                 sg.InputText(key="input_path", enable_events=True),
-                sg.FileBrowse(initial_folder=".", key="input_path_browse"),
+                sg.FileBrowse(
+                    initial_folder=".",
+                    key="input_path_browse",
+                    file_types=get_supported_file_types_concat(),
+                ),
+                sg.FolderBrowse(
+                    button_text="Browse(Folder)",
+                    initial_folder=".",
+                    key="input_path_folder_browse",
+                    target="input_path",
+                ),
                 sg.Button("Play", key="play_input"),
             ],
             [
@@ -438,7 +482,7 @@ def main():
                 sg.Combo(
                     key="presets",
                     values=list(load_presets().keys()),
-                    size=(20, 1),
+                    size=(40, 1),
                     enable_events=True,
                 ),
                 sg.Button("Delete preset", key="delete_preset"),
@@ -446,7 +490,7 @@ def main():
             [
                 sg.Text("Preset name"),
                 sg.Stretch(),
-                sg.InputText(key="preset_name", size=(20, 1)),
+                sg.InputText(key="preset_name", size=(26, 1)),
                 sg.Button("Add current settings as a preset", key="add_preset"),
             ],
         ],
@@ -498,8 +542,15 @@ def main():
     layout = [[column1, column2]]
     # layout = [[sg.Column(layout, vertical_alignment="top", scrollable=True, expand_x=True, expand_y=True)]]
     window = sg.Window(
-        f"{__name__.split('.')[0]}", layout, grab_anywhere=True, finalize=True
-    )  # , use_custom_titlebar=True)
+        f"{__name__.split('.')[0].replace('_', '-')} v{__version__}",
+        layout,
+        grab_anywhere=True,
+        finalize=True,
+        # Below disables taskbar, which may be not useful for some users
+        # use_custom_titlebar=True, no_titlebar=False
+        # Keep on top
+        # keep_on_top=True
+    )
     # for n in ["input_device", "output_device"]:
     #     window[n].Widget.configure(justify="right")
     event, values = window.read(timeout=0.01)
@@ -620,11 +671,19 @@ def main():
                 # Set a sensible default output path
                 window.Element("output_path").Update(str(get_output_path(input_path)))
             elif event == "infer":
-                if not input_path.exists() or not input_path.is_file():
+                if "Default VC" in values["presets"]:
+                    window["presets"].update(
+                        set_to_index=list(load_presets().keys()).index("Default File")
+                    )
+                    apply_preset("Default File")
+                if values["input_path"] == "":
+                    LOG.warning("Input path is empty.")
+                    continue
+                if not input_path.exists():
                     LOG.warning(f"Input path {input_path} does not exist.")
                     continue
-                if not validate_output_file_type(output_path):
-                    continue
+                # if not validate_output_file_type(output_path):
+                #     continue
 
                 try:
                     from so_vits_svc_fork.inference.main import infer
@@ -639,6 +698,7 @@ def main():
                             output_path=output_path,
                             input_path=input_path,
                             config_path=Path(values["config_path"]),
+                            recursive=True,
                             # svc config
                             speaker=values["speaker"],
                             cluster_model_path=Path(values["cluster_model_path"])
