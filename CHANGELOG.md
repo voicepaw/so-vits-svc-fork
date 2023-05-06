@@ -2,6 +2,14 @@
 
 <!--next-version-placeholder-->
 
+## v3.13.2 (2023-05-06)
+### Fix
+* **gui:** Always refresh output path if input path changed ([#578](https://github.com/voicepaw/so-vits-svc-fork/issues/578)) ([`f79de0c`](https://github.com/voicepaw/so-vits-svc-fork/commit/f79de0c81b6e748f8aa87ab94895c738f1808fcf))
+
+### Documentation
+* **readme:** Fix minor issues in README.md ([#566](https://github.com/voicepaw/so-vits-svc-fork/issues/566)) ([`139ed18`](https://github.com/voicepaw/so-vits-svc-fork/commit/139ed182a39a779d8cbdcefc8022a0ed7ff604cd))
+* **readme:** Add notes about minimum requirements ([#564](https://github.com/voicepaw/so-vits-svc-fork/issues/564)) ([`ae9aece`](https://github.com/voicepaw/so-vits-svc-fork/commit/ae9aece9529145ed76aec24febdc77c07522a110))
+
 ## v3.13.1 (2023-05-04)
 ### Fix
 * **logger:** Remove FileHandler to avoid PermissionError ([#557](https://github.com/voicepaw/so-vits-svc-fork/issues/557)) ([`38e0c4e`](https://github.com/voicepaw/so-vits-svc-fork/commit/38e0c4ed471c4520571a1585d868e325ea1a57e3))
