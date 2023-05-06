@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import os
 import subprocess
 import warnings
 from itertools import groupby
