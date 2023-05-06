@@ -24,7 +24,6 @@ from transformers import HubertModel
 
 from so_vits_svc_fork.hparams import HParams
 
-
 LOG = getLogger(__name__)
 HUBERT_SAMPLING_RATE = 16000
 IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
