@@ -331,7 +331,7 @@ def clean_checkpoints(
         for to_delete in to_delete_list:
             if to_delete.exists():
                 LOG.info(f"Removing {to_delete}")
-                if is_notebook():
+                if IS_COLAB:
                     to_delete.write_text("")
                 to_delete.unlink()
 
