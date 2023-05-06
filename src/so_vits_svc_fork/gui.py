@@ -627,7 +627,14 @@ def main():
                 # Set a sensible default output path
                 window.Element("output_path").Update(str(get_output_path(input_path)))
             elif event == "infer":
-                if not input_path.exists() or not input_path.is_file():
+                if "Default VC" in values["presets"]:
+                    window["presets"].update(
+                        set_to_index=list(load_presets().keys()).index("Default File")
+                    )
+                    apply_preset("Default File")
+                if values["input_path"] == "":
+                    LOG.warning("Input path is empty.")
+                    continue
                     LOG.warning(f"Input path {input_path} does not exist.")
                     continue
                 if not validate_output_file_type(output_path):
