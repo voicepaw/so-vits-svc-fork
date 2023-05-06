@@ -73,13 +73,27 @@ def get_output_path(input_path: Path) -> Path:
     return output_path
 
 
-def get_supported_file_types() -> tuple[tuple[str], ...]:
-    return tuple(
+def get_supported_file_types() -> tuple[tuple[str, str], ...]:
+    res = tuple(
         [
-            ((extension, f".{extension.lower()}"))
+            (extension, f".{extension.lower()}")
             for extension in sf.available_formats().keys()
         ]
     )
+
+    # Sort by popularity
+    common_file_types = ["WAV", "MP3", "FLAC", "OGG", "M4A", "WMA"]
+    res = sorted(
+        res,
+        key=lambda x: common_file_types.index(x[0])
+        if x[0] in common_file_types
+        else len(common_file_types),
+    )
+    return res
+
+
+def get_supported_file_types_concat() -> tuple[tuple[str, str], ...]:
+    return (("Audio", " ".join(sf.available_formats().keys())),)
 
 
 def validate_output_file_type(output_path: Path) -> bool:
@@ -165,7 +179,10 @@ def main():
                     if Path("./logs/44k/").exists()
                     else Path(".").absolute().as_posix(),
                     key="model_path_browse",
-                    file_types=(("PyTorch", "*.pth"),),
+                    file_types=(
+                        ("PyTorch", "G_*.pth G_*.pt"),
+                        ("Pytorch", "*.pth *.pt"),
+                    ),
                 ),
             ],
             [
@@ -201,7 +218,7 @@ def main():
                     if Path("./logs/44k/").exists()
                     else ".",
                     key="cluster_model_path_browse",
-                    file_types=(("PyTorch", "*.pt"),),
+                    file_types=(("PyTorch", "*.pt"), ("Pickle", "*.pt *.pth *.pkl")),
                 ),
             ],
         ],
@@ -312,7 +329,17 @@ def main():
                 sg.Text("Input audio path"),
                 sg.Push(),
                 sg.InputText(key="input_path", enable_events=True),
-                sg.FileBrowse(initial_folder=".", key="input_path_browse"),
+                sg.FileBrowse(
+                    initial_folder=".",
+                    key="input_path_browse",
+                    file_types=get_supported_file_types_concat(),
+                ),
+                sg.FolderBrowse(
+                    button_text="Browse(Folder)",
+                    initial_folder=".",
+                    key="input_path_folder_browse",
+                    target="input_path",
+                ),
                 sg.Button("Play", key="play_input"),
             ],
             [
@@ -635,10 +662,11 @@ def main():
                 if values["input_path"] == "":
                     LOG.warning("Input path is empty.")
                     continue
+                if not input_path.exists():
                     LOG.warning(f"Input path {input_path} does not exist.")
                     continue
-                if not validate_output_file_type(output_path):
-                    continue
+                # if not validate_output_file_type(output_path):
+                #     continue
 
                 try:
                     from so_vits_svc_fork.inference.main import infer
@@ -653,6 +681,7 @@ def main():
                             output_path=output_path,
                             input_path=input_path,
                             config_path=Path(values["config_path"]),
+                            recursive=True,
                             # svc config
                             speaker=values["speaker"],
                             cluster_model_path=Path(values["cluster_model_path"])

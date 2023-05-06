@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from logging import getLogger
 from pathlib import Path
-from typing import Literal
+from typing import Literal, Sequence
 
 import librosa
 import numpy as np
 import soundfile
 import torch
 from cm_time import timer
+from tqdm import tqdm
 
 from so_vits_svc_fork.inference.core import RealtimeVC, RealtimeVC2, Svc
 from so_vits_svc_fork.utils import get_optimal_device
@@ -19,10 +20,11 @@ LOG = getLogger(__name__)
 def infer(
     *,
     # paths
-    input_path: Path | str,
-    output_path: Path | str,
+    input_path: Path | str | Sequence[Path | str],
+    output_path: Path | str | Sequence[Path | str],
     model_path: Path | str,
     config_path: Path | str,
+    recursive: bool = False,
     # svc config
     speaker: int | str,
     cluster_model_path: Path | str | None = None,
@@ -39,10 +41,36 @@ def infer(
     max_chunk_seconds: float = 40,
     device: str | torch.device = get_optimal_device(),
 ):
+    if isinstance(input_path, (str, Path)):
+        input_path = [input_path]
+    if isinstance(output_path, (str, Path)):
+        output_path = [output_path]
+    if len(input_path) != len(output_path):
+        raise ValueError(
+            f"input_path and output_path must have same length, but got {len(input_path)} and {len(output_path)}"
+        )
+
     model_path = Path(model_path)
-    output_path = Path(output_path)
-    input_path = Path(input_path)
     config_path = Path(config_path)
+    output_path = [Path(p) for p in output_path]
+    input_path = [Path(p) for p in input_path]
+    output_paths = []
+    input_paths = []
+
+    for input_path, output_path in zip(input_path, output_path):
+        if input_path.is_dir():
+            if not recursive:
+                raise ValueError(
+                    f"input_path is a directory, but recursive is False: {input_path}"
+                )
+            input_paths.extend(list(input_path.rglob("*.*")))
+            output_paths.extend(
+                [output_path / p.relative_to(input_path) for p in input_paths]
+            )
+            continue
+        input_paths.append(input_path)
+        output_paths.append(output_path)
+
     cluster_model_path = Path(cluster_model_path) if cluster_model_path else None
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
@@ -53,23 +81,35 @@ def infer(
         device=device,
     )
 
-    audio, _ = librosa.load(input_path, sr=svc_model.target_sample)
-    audio = svc_model.infer_silence(
-        audio.astype(np.float32),
-        speaker=speaker,
-        transpose=transpose,
-        auto_predict_f0=auto_predict_f0,
-        cluster_infer_ratio=cluster_infer_ratio,
-        noise_scale=noise_scale,
-        f0_method=f0_method,
-        db_thresh=db_thresh,
-        pad_seconds=pad_seconds,
-        chunk_seconds=chunk_seconds,
-        absolute_thresh=absolute_thresh,
-        max_chunk_seconds=max_chunk_seconds,
-    )
-
-    soundfile.write(output_path, audio, svc_model.target_sample)
+    try:
+        pbar = tqdm(list(zip(input_paths, output_paths)), disable=len(input_paths) == 1)
+        for input_path, output_path in pbar:
+            pbar.set_description(f"{input_path}")
+            try:
+                audio, _ = librosa.load(input_path, sr=svc_model.target_sample)
+            except Exception as e:
+                LOG.error(f"Failed to load {input_path}")
+                LOG.exception(e)
+                continue
+            output_path.parent.mkdir(parents=True, exist_ok=True)
+            audio = svc_model.infer_silence(
+                audio.astype(np.float32),
+                speaker=speaker,
+                transpose=transpose,
+                auto_predict_f0=auto_predict_f0,
+                cluster_infer_ratio=cluster_infer_ratio,
+                noise_scale=noise_scale,
+                f0_method=f0_method,
+                db_thresh=db_thresh,
+                pad_seconds=pad_seconds,
+                chunk_seconds=chunk_seconds,
+                absolute_thresh=absolute_thresh,
+                max_chunk_seconds=max_chunk_seconds,
+            )
+            soundfile.write(output_path, audio, svc_model.target_sample)
+    finally:
+        del svc_model
+        torch.cuda.empty_cache()
 
 
 def realtime(
@@ -215,14 +255,18 @@ def realtime(
         if rtf > 1:
             LOG.warning("RTF is too high, consider increasing block_seconds")
 
-    with sd.Stream(
-        device=(input_device, output_device),
-        channels=1,
-        callback=callback,
-        samplerate=svc_model.target_sample,
-        blocksize=int(block_seconds * svc_model.target_sample),
-        latency="low",
-    ) as stream:
-        LOG.info(f"Latency: {stream.latency}")
-        while True:
-            sd.sleep(1000)
+    try:
+        with sd.Stream(
+            device=(input_device, output_device),
+            channels=1,
+            callback=callback,
+            samplerate=svc_model.target_sample,
+            blocksize=int(block_seconds * svc_model.target_sample),
+            latency="low",
+        ) as stream:
+            LOG.info(f"Latency: {stream.latency}")
+            while True:
+                sd.sleep(1000)
+    finally:
+        # del model, svc_model
+        torch.cuda.empty_cache()
