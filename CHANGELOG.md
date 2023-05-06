@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v3.13.3 (2023-05-06)
+### Fix
+* **utils:** Complete removal of ckpts in colab ([#581](https://github.com/voicepaw/so-vits-svc-fork/issues/581)) ([`e8964c6`](https://github.com/voicepaw/so-vits-svc-fork/commit/e8964c604bba31a9a8fa0a27bb5ea72a49a5fa5b))
+
+### Documentation
+* Add Meldoner as a contributor for ideas, and code ([#583](https://github.com/voicepaw/so-vits-svc-fork/issues/583)) ([`880fea8`](https://github.com/voicepaw/so-vits-svc-fork/commit/880fea84696938b6636332d8c5d88664adae4004))
+
 ## v3.13.2 (2023-05-06)
 ### Fix
 * **gui:** Always refresh output path if input path changed ([#578](https://github.com/voicepaw/so-vits-svc-fork/issues/578)) ([`f79de0c`](https://github.com/voicepaw/so-vits-svc-fork/commit/f79de0c81b6e748f8aa87ab94895c738f1808fcf))
