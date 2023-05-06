@@ -3,8 +3,8 @@
 echo You can rerun this script to update the installation.
 
 echo Moving to AppData\Roaming\so-vits-svc-fork...
-mkdir %APPDATA%\so-vits-svc-fork >nul 2>&1
-cd %APPDATA%\so-vits-svc-fork
+mkdir "%APPDATA%\so-vits-svc-fork" >nul 2>&1
+cd "%APPDATA%\so-vits-svc-fork"
 
 echo Checking for Python 3.10...
 
