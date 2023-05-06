@@ -498,8 +498,15 @@ def main():
     layout = [[column1, column2]]
     # layout = [[sg.Column(layout, vertical_alignment="top", scrollable=True, expand_x=True, expand_y=True)]]
     window = sg.Window(
-        f"{__name__.split('.')[0]}", layout, grab_anywhere=True, finalize=True
-    )  # , use_custom_titlebar=True)
+        f"{__name__.split('.')[0].replace('_', '-')} v{__version__}",
+        layout,
+        grab_anywhere=True,
+        finalize=True,
+        # Below disables taskbar, which may be not useful for some users
+        # use_custom_titlebar=True, no_titlebar=False
+        # Keep on top
+        # keep_on_top=True
+    )
     # for n in ["input_device", "output_device"]:
     #     window[n].Widget.configure(justify="right")
     event, values = window.read(timeout=0.01)
