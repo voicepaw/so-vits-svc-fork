@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.14.1 (2023-05-07)
+### Fix
+* **__main__:** Replace pyinputplus with normal input ([#587](https://github.com/voicepaw/so-vits-svc-fork/issues/587)) ([`2b507da`](https://github.com/voicepaw/so-vits-svc-fork/commit/2b507da7da68f6baf00e5b0437d2d08e2d4f1246))
+
 ## v3.14.0 (2023-05-06)
 ### Feature
 * **gui:** Add batch inference, enhance gui, add custom theme ([#582](https://github.com/voicepaw/so-vits-svc-fork/issues/582)) ([`3ce110b`](https://github.com/voicepaw/so-vits-svc-fork/commit/3ce110be72aa2c614f24249ee26f00cba03f16a8))
