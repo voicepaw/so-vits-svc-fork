@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Literal
 
 import click
-import pyinputplus as pyip
 import torch
 
 from so_vits_svc_fork import __version__
@@ -784,7 +783,8 @@ def clean():
     import shutil
 
     folders = ["dataset", "filelists", "logs"]
-    if pyip.inputYesNo(f"Are you sure you want to delete files in {folders}?") == "yes":
+    # if pyip.inputYesNo(f"Are you sure you want to delete files in {folders}?") == "yes":
+    if input("Are you sure you want to delete files in {folders}?") in ["yes", "y"]:
         for folder in folders:
             if Path(folder).exists():
                 shutil.rmtree(folder)
