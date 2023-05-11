@@ -308,7 +308,7 @@ def main():
                 sg.Text("Pad seconds"),
                 sg.Push(),
                 sg.Slider(
-                    range=(0.0, 1.0),
+                    range=(0.01, 1.0),
                     orientation="h",
                     key="pad_seconds",
                     resolution=0.01,
@@ -318,7 +318,7 @@ def main():
                 sg.Text("Chunk seconds"),
                 sg.Push(),
                 sg.Slider(
-                    range=(0.0, 3.0),
+                    range=(0.01, 3.0),
                     orientation="h",
                     key="chunk_seconds",
                     resolution=0.01,
