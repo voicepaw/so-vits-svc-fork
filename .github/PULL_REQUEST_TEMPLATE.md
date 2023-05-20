@@ -38,9 +38,9 @@ copilot:all
 - [ ] Code is up-to-date with the `main` branch
 - [ ] This pull request follows [Contributing.md](https://github.com/34j/so-vits-svc-fork/blob/main/CONTRIBUTING.md)
 - [ ] This pull request links relevant issues as `Fixes #0000`
-- [ ] `pre-commit run -a` passes with this change
-- [ ] `poetry run pytest` passes with this change
-- [ ] There are new or updated unit tests validating the change
+- [ ] `pre-commit run -a` passes with this change or ci passes
+- [ ] `poetry run pytest` passes with this change or ci passes
+- [ ] (There are new or updated unit tests validating the change)
 - [ ] Documentation has been updated to reflect this change
 - [ ] The new commits follow conventions outlined in the [conventional commit spec](https://www.conventionalcommits.org/en/v1.0.0/)
 
