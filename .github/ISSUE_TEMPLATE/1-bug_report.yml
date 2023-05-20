@@ -8,32 +8,52 @@ body:
       label: Describe the bug
       description: A clear and concise description of what the bug is.
       placeholder: Describe the bug
+    validations:
+      required: true
   - type: textarea
     id: reproduce
     attributes:
       label: To Reproduce
       description: Steps to reproduce the behavior.
       placeholder: To Reproduce
+    validations:
+      required: true
   - type: textarea
     id: context
     attributes:
       label: Additional context
       description: Add any other context about the problem here.
       placeholder: Additional context
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Version of the project.
+      placeholder: Version
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      description: Platform where the bug was found.
+      placeholder: "Example: Windows 11 / macOS 12.0.1 / Ubuntu 20.04"
+    validations:
+      required: true
   - type: checkboxes
     id: terms
     attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our
-        [Code of Conduct](https://github.com/34j/so-vits-svc-fork/blob/main/CODE_OF_CONDUCT.md).
-      options:
-        - label: I agree to follow this project's Code of Conduct.
-          required: true
-  - type: checkboxes
-    id: no-duplicate
+      - label: Code of Conduct
+        description: By submitting this issue, you agree to follow our
+          [Code of Conduct](https://github.com/34j/so-vits-svc-fork/blob/main/CODE_OF_CONDUCT.md).
+        options:
+          - label: I agree to follow this project's Code of Conduct.
+            required: true
+      - label: No Duplicate
+        description: Please check [existing issues](https://github.com/34j/so-vits-svc-fork/issues) to avoid duplicates.
+        options:
+          - label: I have checked existing issues to avoid duplicates.
+            required: true
+  - type: markdown
     attributes:
-      label: No Duplicate
-      description: Please check [existing issues](https://github.com/34j/so-vits-svc-fork/issues) to avoid duplicates.
-      options:
-        - label: I have checked existing issues to avoid duplicates.
-          required: true
+      value: 👋 Have a great day and thank you for the bug report!

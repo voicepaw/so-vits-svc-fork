@@ -7,13 +7,17 @@ body:
     attributes:
       label: Is your feature request related to a problem? Please describe.
       description: A clear and concise description of what the problem is.
-      placeholder: I'm always frustrated when [...]
+      value: I'm always frustrated when
+    validations:
+      required: true
   - type: textarea
     id: solution
     attributes:
       label: Describe alternatives you've considered
       description: A clear and concise description of any alternative solutions or features you've considered.
       placeholder: Describe alternatives you've considered
+    validations:
+      required: true
   - type: textarea
     id: context
     attributes:
@@ -29,3 +33,18 @@ body:
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
+  - type: checkboxes
+    id: willing
+    attributes:
+      label: Are you willing to resolve this issue by submitting a Pull Request?
+      description: Remember that first-time contributors are welcome! 🙌
+      options:
+        - label: Yes, I have the time, and I know how to start.
+        - label: Yes, I have the time, but I don't know how to start. I would need guidance.
+        - label: No, I don't have the time, although I believe I could do it if I had the time...
+        - label: No, I don't have the time and I wouldn't even know how to start.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: 👋 Have a great day and thank you for the feature request!
