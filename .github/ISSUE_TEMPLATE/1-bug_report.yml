@@ -1,0 +1,36 @@
+name: Bug report
+description: Create a report to help us improve
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Describe the bug
+      description: A clear and concise description of what the bug is.
+      placeholder: Describe the bug
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: To Reproduce
+      description: Steps to reproduce the behavior.
+      placeholder: To Reproduce
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add any other context about the problem here.
+      placeholder: Additional context
+  - type: checkboxes
+    id: terms
+    attributes:
+      - label: Code of Conduct
+        description: By submitting this issue, you agree to follow our
+          [Code of Conduct](https://github.com/34j/so-vits-svc-fork/blob/main/CODE_OF_CONDUCT.md).
+        options:
+          - label: I agree to follow this project's Code of Conduct.
+            required: true
+      - label: No Duplicate
+        description: Please check [existing issues](https://github.com/34j/so-vits-svc-fork/issues) to avoid duplicates.
+        options:
+          - label: I have checked existing issues to avoid duplicates.
+            required: true
