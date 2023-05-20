@@ -130,12 +130,12 @@ def train(
     )
 
 
-
 @cli.command()
 def gui():
     """Opens GUI
     for conversion and realtime inference"""
     from .gui import main
+
     main()
 
 
@@ -776,7 +776,7 @@ def pre_classify(
 ) -> None:
     """Classify multiple audio files into multiple files"""
     from so_vits_svc_fork.preprocessing.preprocess_classify import preprocess_classify
-    
+
     if output_dir is None:
         output_dir = input_dir
     preprocess_classify(
