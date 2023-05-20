@@ -43,17 +43,17 @@ body:
   - type: checkboxes
     id: terms
     attributes:
-      - label: Code of Conduct
-        description: By submitting this issue, you agree to follow our
-          [Code of Conduct](https://github.com/34j/so-vits-svc-fork/blob/main/CODE_OF_CONDUCT.md).
-        options:
-          - label: I agree to follow this project's Code of Conduct.
-            required: true
-      - label: No Duplicate
-        description: Please check [existing issues](https://github.com/34j/so-vits-svc-fork/issues) to avoid duplicates.
-        options:
-          - label: I have checked existing issues to avoid duplicates.
-            required: true
-  - type: markdown
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our
+        [Code of Conduct](https://github.com/34j/so-vits-svc-fork/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct.
+          required: true
+  - type: checkboxes
+    id: no-duplicate
     attributes:
-      value: 👋 Have a great day and thank you for the bug report!
+      label: No Duplicate
+      description: Please check [existing issues](https://github.com/34j/so-vits-svc-fork/issues) to avoid duplicates.
+      options:
+        - label: I have checked existing issues to avoid duplicates.
+          required: true
