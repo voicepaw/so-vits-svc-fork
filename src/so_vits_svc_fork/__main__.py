@@ -131,6 +131,15 @@ def train(
 
 
 @cli.command()
+def gui():
+    """Opens GUI
+    for conversion and realtime inference"""
+    from .gui import main
+
+    main()
+
+
+@cli.command()
 @click.argument(
     "input-path",
     type=click.Path(exists=True),
