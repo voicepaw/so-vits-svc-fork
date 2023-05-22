@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v3.15.0 (2023-05-22)
+### Feature
+* **main/cli:** Add gui command for module root entrypoint ([#653](https://github.com/voicepaw/so-vits-svc-fork/issues/653)) ([`3940a4c`](https://github.com/voicepaw/so-vits-svc-fork/commit/3940a4c0f51943dc3caec0832850f110b0f27961))
+
 ## v3.14.1 (2023-05-07)
 ### Fix
 * **__main__:** Replace pyinputplus with normal input ([#587](https://github.com/voicepaw/so-vits-svc-fork/issues/587)) ([`2b507da`](https://github.com/voicepaw/so-vits-svc-fork/commit/2b507da7da68f6baf00e5b0437d2d08e2d4f1246))
