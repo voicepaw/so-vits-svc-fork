@@ -68,7 +68,11 @@
     "type_": "ms-istft",
     "gen_istft_n_fft": 16,
     "gen_istft_hop_size": 4,
-    "subbands": 4
+    "subbands": 4,
+    "pretrained": {
+      "D_0.pth": "https://huggingface.co/datasets/ms903/sovits4.0-768vec-layer12/resolve/main/sovits_768l12_pre_large_320k/clean_D_320000.pth",
+      "G_0.pth": "https://huggingface.co/datasets/ms903/sovits4.0-768vec-layer12/resolve/main/sovits_768l12_pre_large_320k/clean_G_320000.pth"
+    }
   },
   "spk": {}
 }

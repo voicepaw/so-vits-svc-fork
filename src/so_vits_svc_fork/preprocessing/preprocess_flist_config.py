@@ -5,8 +5,8 @@ import os
 from copy import deepcopy
 from logging import getLogger
 from pathlib import Path
-from random import shuffle
 
+import numpy as np
 from librosa import get_duration
 from tqdm import tqdm
 
@@ -32,6 +32,7 @@ def preprocess_config(
     test = []
     spk_dict = {}
     spk_id = 0
+    random = np.random.RandomState(1234)
     for speaker in os.listdir(input_dir):
         spk_dict[speaker] = spk_id
         spk_id += 1
@@ -41,7 +42,7 @@ def preprocess_config(
                 LOG.warning(f"skip {path} because it is too short.")
                 continue
             paths.append(path)
-        shuffle(paths)
+        random.shuffle(paths)
         if len(paths) <= 4:
             raise ValueError(
                 f"too few files in {input_dir / speaker} (expected at least 5)."

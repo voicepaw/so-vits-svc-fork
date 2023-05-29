@@ -113,9 +113,31 @@ from joblib import Parallel, delayed
 
 
 def ensure_pretrained_model(
-    folder_path: Path | str, type_: str, **tqdm_kwargs: Any
+    folder_path: Path | str, type_: str | dict[str, str], **tqdm_kwargs: Any
 ) -> tuple[Path, ...] | None:
     folder_path = Path(folder_path)
+
+    # new code
+    if not isinstance(type_, str):
+        try:
+            Parallel(n_jobs=len(type_))(
+                [
+                    delayed(download_file)(
+                        url,
+                        folder_path / filename,
+                        position=i,
+                        skip_if_exists=True,
+                        **tqdm_kwargs,
+                    )
+                    for i, (filename, url) in enumerate(type_.items())
+                ]
+            )
+            return tuple(folder_path / filename for filename in type_.values())
+        except Exception as e:
+            LOG.error(f"Failed to download {type_}")
+            LOG.exception(e)
+
+    # old code
     models_candidates = PRETRAINED_MODEL_URLS.get(type_, None)
     if models_candidates is None:
         LOG.warning(f"Unknown pretrained model type: {type_}")
@@ -133,8 +155,8 @@ def ensure_pretrained_model(
             )
             return tuple(paths)
         except Exception as e:
+            LOG.error(f"Failed to download {model_urls}")
             LOG.exception(e)
-    return
 
 
 class HubertModelWithFinalProj(HubertModel):
