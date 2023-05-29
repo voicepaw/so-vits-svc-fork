@@ -10,6 +10,7 @@ from typing import Any
 import lightning.pytorch as pl
 import torch
 from lightning.pytorch.accelerators import MPSAccelerator, TPUAccelerator
+from lightning.pytorch.callbacks import DeviceStatsMonitor
 from lightning.pytorch.loggers import TensorBoardLogger
 from lightning.pytorch.strategies.ddp import DDPStrategy
 from lightning.pytorch.tuner import Tuner
@@ -73,7 +74,16 @@ def train(
     model_path = Path(model_path)
 
     hparams = utils.get_backup_hparams(config_path, model_path)
-    utils.ensure_pretrained_model(model_path, hparams.model.get("type_", "hifi-gan"))
+    utils.ensure_pretrained_model(
+        model_path,
+        hparams.model.get(
+            "pretrained",
+            {
+                "D_0.pth": "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
+                "G_0.pth": "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth",
+            },
+        ),
+    )
 
     datamodule = VCDataModule(hparams)
     strategy = (
@@ -100,7 +110,8 @@ def train(
         if hparams.train.get("bf16_run", False)
         else 32,
         strategy=strategy,
-        callbacks=[pl.callbacks.RichProgressBar()] if not is_notebook() else None,
+        callbacks=([pl.callbacks.RichProgressBar()] if not is_notebook() else [])
+        + [DeviceStatsMonitor()],
         benchmark=True,
         enable_checkpointing=False,
     )

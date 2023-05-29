@@ -59,7 +59,11 @@
     "use_spectral_norm": false,
     "gin_channels": 256,
     "ssl_dim": 256,
-    "n_speakers": 200
+    "n_speakers": 200,
+    "pretrained": {
+      "D_0.pth": "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/D_0.pth",
+      "G_0.pth": "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/G_0.pth"
+    }
   },
   "spk": {}
 }

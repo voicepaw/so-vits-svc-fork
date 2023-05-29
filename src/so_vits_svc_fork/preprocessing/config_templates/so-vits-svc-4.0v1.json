@@ -61,7 +61,11 @@
     "gin_channels": 256,
     "ssl_dim": 768,
     "n_speakers": 200,
-    "type_": "hifi-gan"
+    "type_": "hifi-gan",
+    "pretrained": {
+      "D_0.pth": "https://huggingface.co/datasets/ms903/sovits4.0-768vec-layer12/resolve/main/sovits_768l12_pre_large_320k/clean_D_320000.pth",
+      "G_0.pth": "https://huggingface.co/datasets/ms903/sovits4.0-768vec-layer12/resolve/main/sovits_768l12_pre_large_320k/clean_G_320000.pth"
+    }
   },
   "spk": {}
 }
