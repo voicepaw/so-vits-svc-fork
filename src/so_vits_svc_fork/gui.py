@@ -578,9 +578,12 @@ def main():
     # window["main_column"].Scrollable = True
 
     # make slider height smaller
-    for v in window.element_list():
-        if isinstance(v, sg.Slider):
-            v.Widget.configure(sliderrelief="flat", width=10, sliderlength=20)
+    try:
+        for v in window.element_list():
+            if isinstance(v, sg.Slider):
+                v.Widget.configure(sliderrelief="flat", width=10, sliderlength=20)
+    except Exception as e:
+        LOG.exception(e)
 
     # for n in ["input_device", "output_device"]:
     #     window[n].Widget.configure(justify="right")
