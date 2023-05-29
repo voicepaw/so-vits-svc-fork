@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import multiprocessing
+import os
 from copy import copy
 from logging import getLogger
 from pathlib import Path
@@ -503,6 +504,28 @@ def main():
         frame.expand_x = True
         frames[name] = [frame]
 
+    bottoms = [
+        [
+            sg.Checkbox(
+                key="use_gpu",
+                default=get_optimal_device() != torch.device("cpu"),
+                text="Use GPU"
+                + (
+                    " (not available; if your device has GPU, make sure you installed PyTorch with CUDA support)"
+                    if get_optimal_device() == torch.device("cpu")
+                    else ""
+                ),
+                disabled=get_optimal_device() == torch.device("cpu"),
+            )
+        ],
+        [
+            sg.Button("Infer", key="infer"),
+            sg.Button("(Re)Start Voice Changer", key="start_vc"),
+            sg.Button("Stop Voice Changer", key="stop_vc"),
+            sg.Push(),
+            # sg.Button("ONNX Export", key="onnx_export"),
+        ],
+    ]
     column1 = sg.Column(
         [
             frames["Paths"],
@@ -515,42 +538,53 @@ def main():
             frames["File"],
             frames["Realtime"],
             frames["Presets"],
-            [
-                sg.Checkbox(
-                    key="use_gpu",
-                    default=get_optimal_device() != torch.device("cpu"),
-                    text="Use GPU"
-                    + (
-                        " (not available; if your device has GPU, make sure you installed PyTorch with CUDA support)"
-                        if get_optimal_device() == torch.device("cpu")
-                        else ""
-                    ),
-                    disabled=get_optimal_device() == torch.device("cpu"),
-                )
-            ],
-            [
-                sg.Button("Infer", key="infer"),
-                sg.Button("(Re)Start Voice Changer", key="start_vc"),
-                sg.Button("Stop Voice Changer", key="stop_vc"),
-                sg.Push(),
-                # sg.Button("ONNX Export", key="onnx_export"),
-            ],
         ]
+        + bottoms
     )
-
     # columns
     layout = [[column1, column2]]
-    # layout = [[sg.Column(layout, vertical_alignment="top", scrollable=True, expand_x=True, expand_y=True)]]
+    # get screen size
+    screen_width, screen_height = sg.Window.get_screen_size()
+    if screen_height < 720:
+        layout = [
+            [
+                sg.Column(
+                    layout,
+                    vertical_alignment="top",
+                    scrollable=False,
+                    expand_x=True,
+                    expand_y=True,
+                    vertical_scroll_only=True,
+                    key="main_column",
+                )
+            ]
+        ]
     window = sg.Window(
         f"{__name__.split('.')[0].replace('_', '-')} v{__version__}",
         layout,
         grab_anywhere=True,
         finalize=True,
+        scaling=1,
+        font=("Yu Gothic UI", 11) if os.name == "nt" else None,
+        # resizable=True,
+        # size=(1280, 720),
         # Below disables taskbar, which may be not useful for some users
         # use_custom_titlebar=True, no_titlebar=False
         # Keep on top
         # keep_on_top=True
     )
+
+    # event, values = window.read(timeout=0.01)
+    # window["main_column"].Scrollable = True
+
+    # make slider height smaller
+    try:
+        for v in window.element_list():
+            if isinstance(v, sg.Slider):
+                v.Widget.configure(sliderrelief="flat", width=10, sliderlength=20)
+    except Exception as e:
+        LOG.exception(e)
+
     # for n in ["input_device", "output_device"]:
     #     window[n].Widget.configure(justify="right")
     event, values = window.read(timeout=0.01)
