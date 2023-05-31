@@ -169,15 +169,39 @@ class HubertModelWithFinalProj(HubertModel):
         self.final_proj = nn.Linear(config.hidden_size, config.classifier_proj_size)
 
 
+def remove_weight_norm_if_exists(module, name: str = "weight"):
+    r"""Removes the weight normalization reparameterization from a module.
+
+    Args:
+        module (Module): containing module
+        name (str, optional): name of weight parameter
+
+    Example:
+        >>> m = weight_norm(nn.Linear(20, 40))
+        >>> remove_weight_norm(m)
+    """
+    from torch.nn.utils.weight_norm import WeightNorm
+
+    for k, hook in module._forward_pre_hooks.items():
+        if isinstance(hook, WeightNorm) and hook.name == name:
+            hook.remove(module)
+            del module._forward_pre_hooks[k]
+            return module
+
+
 def get_hubert_model(
     device: str | torch.device, final_proj: bool = True
 ) -> HubertModel:
     if final_proj:
-        return HubertModelWithFinalProj.from_pretrained(
-            "lengyue233/content-vec-best"
-        ).to(device)
+        model = HubertModelWithFinalProj.from_pretrained("lengyue233/content-vec-best")
     else:
-        return HubertModel.from_pretrained("lengyue233/content-vec-best").to(device)
+        model = HubertModel.from_pretrained("lengyue233/content-vec-best")
+    # Hubert is always used in inference mode, we can safely remove weight-norms
+    for m in model.modules():
+        if isinstance(m, (nn.Conv2d, nn.Conv1d)):
+            remove_weight_norm_if_exists(m)
+
+    return model.to(device)
 
 
 def get_content(
