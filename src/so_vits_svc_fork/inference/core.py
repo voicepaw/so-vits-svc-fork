@@ -235,7 +235,7 @@ class Svc:
                 )[0, 0].data.float()
             audio_duration = audio.shape[-1] / self.target_sample
             LOG.info(
-                f"Inferece time: {t.elapsed:.2f}s, RTF: {t.elapsed / audio_duration:.2f}"
+                f"Inference time: {t.elapsed:.2f}s, RTF: {t.elapsed / audio_duration:.2f}"
             )
         torch.cuda.empty_cache()
         return audio, audio.shape[-1]
