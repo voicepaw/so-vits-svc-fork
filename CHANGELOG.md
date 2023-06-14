@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v4.0.2 (2023-06-14)
+### Fix
+* **inference:** Fix typo in core.py ([#738](https://github.com/voicepaw/so-vits-svc-fork/issues/738)) ([`6a87d32`](https://github.com/voicepaw/so-vits-svc-fork/commit/6a87d323ec7716f09062e4846c31e58758a27e33))
+
 ## v4.0.1 (2023-05-29)
 ### Fix
 * **gui:** Fix window scaling ([#716](https://github.com/voicepaw/so-vits-svc-fork/issues/716)) ([`9cd720c`](https://github.com/voicepaw/so-vits-svc-fork/commit/9cd720c60d7baa6a945610f674820e14c4833917))
