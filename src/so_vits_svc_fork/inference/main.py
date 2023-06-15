@@ -86,7 +86,7 @@ def infer(
         for input_path, output_path in pbar:
             pbar.set_description(f"{input_path}")
             try:
-                audio, _ = librosa.load(input_path, sr=svc_model.target_sample)
+                audio, _ = librosa.load(str(input_path), sr=svc_model.target_sample)
             except Exception as e:
                 LOG.error(f"Failed to load {input_path}")
                 LOG.exception(e)
@@ -106,7 +106,7 @@ def infer(
                 absolute_thresh=absolute_thresh,
                 max_chunk_seconds=max_chunk_seconds,
             )
-            soundfile.write(output_path, audio, svc_model.target_sample)
+            soundfile.write(str(output_path), audio, svc_model.target_sample)
     finally:
         del svc_model
         torch.cuda.empty_cache()
