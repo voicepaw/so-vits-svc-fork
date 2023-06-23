@@ -875,8 +875,10 @@ def onnx(
 @click.option(
     "-m/-nm", "--minibatch/--no-minibatch", default=True, help="use minibatch k-means"
 )
+@click.option("-b", "--batch-size", type=int, default=4096, help="batch size for minibatch kmeans")
+@click.option("-p/-np", "--partial-fit", default=False, help="use partial fit (only use with -m)")
 def train_cluster(
-    input_dir: Path, output_path: Path, n_clusters: int, minibatch: bool
+    input_dir: Path, output_path: Path, n_clusters: int, minibatch: bool, batch_size: int, partial_fit: bool
 ) -> None:
     """Train k-means clustering"""
     from .cluster.train_cluster import main
@@ -887,6 +889,8 @@ def train_cluster(
         n_clusters=n_clusters,
         verbose=True,
         use_minibatch=minibatch,
+        batch_size=batch_size,
+        partial_fit=partial_fit,
     )
 
 
