@@ -1,10 +1,10 @@
 from __future__ import annotations
 
+import math
 from logging import getLogger
 from pathlib import Path
 from typing import Any
 
-import math
 import numpy as np
 import torch
 from cm_time import timer
@@ -52,9 +52,9 @@ def train_cluster(
                     n_init="auto",
                 ).fit(features)
             else:
-                kmeans = KMeans(n_clusters=n_clusters, verbose=verbose, n_init="auto").fit(
-                    features
-                )
+                kmeans = KMeans(
+                    n_clusters=n_clusters, verbose=verbose, n_init="auto"
+                ).fit(features)
         LOG.info(f"Clustering took {t.elapsed:.2f} seconds")
 
         x = {
@@ -69,7 +69,7 @@ def train_cluster(
         if len(paths) == 0:
             raise ValueError(f"No features found in {input_dir}")
         LOG.info(f"Found {len(paths)} features in {input_dir}")
-        n_batches = math.ceil(len(paths)/batch_size)
+        n_batches = math.ceil(len(paths) / batch_size)
         LOG.info(f"Splitting into {n_batches} batches")
         with timer() as t:
             kmeans = MiniBatchKMeans(
@@ -80,14 +80,17 @@ def train_cluster(
                 n_init="auto",
             )
             for i in range(0, len(paths), batch_size):
-                LOG.info(f"Processing batch {i//batch_size+1}/{n_batches} for speaker {input_dir.stem}")
+                LOG.info(
+                    f"Processing batch {i//batch_size+1}/{n_batches} for speaker {input_dir.stem}"
+                )
                 features = []
                 for path in paths[i : i + batch_size]:
                     with path.open("rb") as f:
                         features.append(
-                            torch.load(f, weights_only=True)[
-                                "content"
-                            ].squeeze(0).numpy().T
+                            torch.load(f, weights_only=True)["content"]
+                            .squeeze(0)
+                            .numpy()
+                            .T
                         )
                 features = np.concatenate(features, axis=0).astype(np.float32)
                 kmeans.partial_fit(features)
@@ -99,6 +102,7 @@ def train_cluster(
             "cluster_centers_": kmeans.cluster_centers_,
         }
         return x
+
 
 def main(
     input_dir: Path | str,
@@ -112,7 +116,9 @@ def main(
     input_dir = Path(input_dir)
     output_path = Path(output_path)
 
-    assert use_minibatch or not partial_fit, "partial_fit requires use_minibatch, exiting"
+    assert (
+        use_minibatch or not partial_fit
+    ), "partial_fit requires use_minibatch, exiting"
 
     def train_cluster_(input_path: Path, **kwargs: Any) -> tuple[str, dict]:
         return input_path.stem, train_cluster(input_path, **kwargs)

@@ -39,7 +39,10 @@ def _process_one(
             sub_end = min(sub_start + int(sr * max_length), end)
             audio_cut = audio[sub_start:sub_end]
             sf.write(
-                (output_dir / f"{input_path.stem}_{sub_start / sr:.3f}_{sub_end / sr:.3f}.wav"),
+                (
+                    output_dir
+                    / f"{input_path.stem}_{sub_start / sr:.3f}_{sub_end / sr:.3f}.wav"
+                ),
                 audio_cut,
                 sr,
             )

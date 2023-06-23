@@ -718,7 +718,13 @@ def pre_sd(
     default=-1,
     help="number of jobs (optimal value may depend on your RAM capacity and audio duration per file)",
 )
-@click.option("-l", "--max-length", type=float, default=10, help="max length of each split in seconds")
+@click.option(
+    "-l",
+    "--max-length",
+    type=float,
+    default=10,
+    help="max length of each split in seconds",
+)
 @click.option("-d", "--top-db", type=float, default=30, help="top db")
 @click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
 @click.option(
@@ -878,10 +884,19 @@ def onnx(
 @click.option(
     "-m/-nm", "--minibatch/--no-minibatch", default=True, help="use minibatch k-means"
 )
-@click.option("-b", "--batch-size", type=int, default=4096, help="batch size for minibatch kmeans")
-@click.option("-p/-np", "--partial-fit", default=False, help="use partial fit (only use with -m)")
+@click.option(
+    "-b", "--batch-size", type=int, default=4096, help="batch size for minibatch kmeans"
+)
+@click.option(
+    "-p/-np", "--partial-fit", default=False, help="use partial fit (only use with -m)"
+)
 def train_cluster(
-    input_dir: Path, output_path: Path, n_clusters: int, minibatch: bool, batch_size: int, partial_fit: bool
+    input_dir: Path,
+    output_path: Path,
+    n_clusters: int,
+    minibatch: bool,
+    batch_size: int,
+    partial_fit: bool,
 ) -> None:
     """Train k-means clustering"""
     from .cluster.train_cluster import main
