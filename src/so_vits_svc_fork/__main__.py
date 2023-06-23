@@ -718,6 +718,7 @@ def pre_sd(
     default=-1,
     help="number of jobs (optimal value may depend on your RAM capacity and audio duration per file)",
 )
+@click.option("-l", "--max-length", type=float, default=10, help="max length of each split in seconds")
 @click.option("-d", "--top-db", type=float, default=30, help="top db")
 @click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
 @click.option(
@@ -727,6 +728,7 @@ def pre_sd(
 def pre_split(
     input_dir: Path | str,
     output_dir: Path | str,
+    max_length: float,
     top_db: int,
     frame_seconds: float,
     hop_seconds: float,
@@ -739,6 +741,7 @@ def pre_split(
     preprocess_split(
         input_dir=input_dir,
         output_dir=output_dir,
+        max_length=max_length,
         top_db=top_db,
         frame_seconds=frame_seconds,
         hop_seconds=hop_seconds,
