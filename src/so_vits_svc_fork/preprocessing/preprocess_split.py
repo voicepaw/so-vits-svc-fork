@@ -17,6 +17,7 @@ def _process_one(
     output_dir: Path,
     sr: int,
     *,
+    max_length: float = 10.0,
     top_db: int = 30,
     frame_seconds: float = 0.5,
     hop_seconds: float = 0.1,
@@ -34,12 +35,17 @@ def _process_one(
     )
     output_dir.mkdir(parents=True, exist_ok=True)
     for start, end in tqdm(intervals, desc=f"Writing {input_path}"):
-        audio_cut = audio[start:end]
-        sf.write(
-            (output_dir / f"{input_path.stem}_{start / sr:.3f}_{end / sr:.3f}.wav"),
-            audio_cut,
-            sr,
-        )
+        for sub_start in range(start, end, int(sr * max_length)):
+            sub_end = min(sub_start + int(sr * max_length), end)
+            audio_cut = audio[sub_start:sub_end]
+            sf.write(
+                (
+                    output_dir
+                    / f"{input_path.stem}_{sub_start / sr:.3f}_{sub_end / sr:.3f}.wav"
+                ),
+                audio_cut,
+                sr,
+            )
 
 
 def preprocess_split(
@@ -47,6 +53,7 @@ def preprocess_split(
     output_dir: Path | str,
     sr: int,
     *,
+    max_length: float = 10.0,
     top_db: int = 30,
     frame_seconds: float = 0.5,
     hop_seconds: float = 0.1,
@@ -62,6 +69,7 @@ def preprocess_split(
                 input_path,
                 output_dir / input_path.relative_to(input_dir).parent,
                 sr,
+                max_length=max_length,
                 top_db=top_db,
                 frame_seconds=frame_seconds,
                 hop_seconds=hop_seconds,
