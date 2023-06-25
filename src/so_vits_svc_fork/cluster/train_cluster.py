@@ -116,9 +116,8 @@ def main(
     input_dir = Path(input_dir)
     output_path = Path(output_path)
 
-    assert (
-        use_minibatch or not partial_fit
-    ), "partial_fit requires use_minibatch, exiting"
+    if not (use_minibatch or not partial_fit):
+        raise ValueError("partial_fit requires use_minibatch")
 
     def train_cluster_(input_path: Path, **kwargs: Any) -> tuple[str, dict]:
         return input_path.stem, train_cluster(input_path, **kwargs)
