@@ -365,8 +365,19 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Ph0rk0z",
+      "name": "Forkoz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/59298527?v=4",
+      "profile": "https://github.com/Ph0rk0z",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }
