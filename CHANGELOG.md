@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v4.0.3 (2023-06-25)
+
+### Fix
+
+* **inference:** Pass str instead of Path in sf.load() and sf.write() ([#769](https://github.com/voicepaw/so-vits-svc-fork/issues/769)) ([`561cbfe`](https://github.com/voicepaw/so-vits-svc-fork/commit/561cbfe64927371ea68c0be70b4bc5007f6514b4))
+
+### Documentation
+
+* Add Star3Lord as a contributor for bug, and code ([#790](https://github.com/voicepaw/so-vits-svc-fork/issues/790)) ([`b3e2cfe`](https://github.com/voicepaw/so-vits-svc-fork/commit/b3e2cfe1294e7b64f76cd34c5b527a080ede2e87))
+
 ## v4.0.2 (2023-06-14)
 ### Fix
 * **inference:** Fix typo in core.py ([#738](https://github.com/voicepaw/so-vits-svc-fork/issues/738)) ([`6a87d32`](https://github.com/voicepaw/so-vits-svc-fork/commit/6a87d323ec7716f09062e4846c31e58758a27e33))
