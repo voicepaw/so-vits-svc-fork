@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.0 (2023-06-25)
+
+### Feature
+
+* **cluster,preprocess_split:** Add batched loading to clustering & max length per clip to split ([#786](https://github.com/voicepaw/so-vits-svc-fork/issues/786)) ([`4179ec9`](https://github.com/voicepaw/so-vits-svc-fork/commit/4179ec9e1d1ac20cffc9e66f522b5f865828f7fe))
+
+### Documentation
+
+* Add Zerui18 as a contributor for code, and ideas ([#794](https://github.com/voicepaw/so-vits-svc-fork/issues/794)) ([`4e74fc4`](https://github.com/voicepaw/so-vits-svc-fork/commit/4e74fc4f2f9165a48d75565ae5d0910b6b77dbaf))
+* Add Ph0rk0z as a contributor for bug, and code ([#793](https://github.com/voicepaw/so-vits-svc-fork/issues/793)) ([`8dc25c7`](https://github.com/voicepaw/so-vits-svc-fork/commit/8dc25c793a8a92985ac589b31cc863768a9ba6a7))
+
 ## v4.0.3 (2023-06-25)
 
 ### Fix
