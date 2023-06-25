@@ -365,8 +365,19 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "Star3Lord",
+      "name": "Star3Lord",
+      "avatar_url": "https://avatars.githubusercontent.com/u/57606931?v=4",
+      "profile": "https://github.com/Star3Lord",
+      "contributions": [
+        "bug",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
-  "skipCi": true
+  "skipCi": true,
+  "commitType": "docs"
 }
