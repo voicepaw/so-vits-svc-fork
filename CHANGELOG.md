@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.1 (2023-07-02)
+
+### Fix
+
+* **inference:** Remove weight norm on inference so metal backend will work without CPU fallback ([#783](https://github.com/voicepaw/so-vits-svc-fork/issues/783)) ([`39ea0bc`](https://github.com/voicepaw/so-vits-svc-fork/commit/39ea0bc57f39fdbbcf07c92fab310474d95d1d39))
+
 ## v4.1.0 (2023-06-25)
 
 ### Feature
