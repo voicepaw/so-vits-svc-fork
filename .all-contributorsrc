@@ -395,6 +395,17 @@
         "code",
         "ideas"
       ]
+    },
+    {
+      "login": "shenberg",
+      "name": "Roee Shenberg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/653972?v=4",
+      "profile": "https://www.meimadix.com",
+      "contributions": [
+        "userTesting",
+        "ideas",
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
