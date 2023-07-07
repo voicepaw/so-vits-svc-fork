@@ -3006,19 +3006,19 @@ test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner"]
 
 [[package]]
 name = "pipdeptree"
-version = "2.9.3"
+version = "2.9.4"
 description = "Command line utility to show dependency tree of packages."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pipdeptree-2.9.3-py3-none-any.whl", hash = "sha256:b4c56f455c9fd0aa7c281dc9b3ddff8bd8918f6bb8ca5aa50cec1c2764d64c86"},
-    {file = "pipdeptree-2.9.3.tar.gz", hash = "sha256:d0049795a78c600bce97663a4d0ae3ebc212f7ccc2f1bd3efef910b7e8bf4591"},
+    {file = "pipdeptree-2.9.4-py3-none-any.whl", hash = "sha256:9ad8c995cf771beb6408f7a627b0ec96896b81b904b609fa78fe52015c7fb1e1"},
+    {file = "pipdeptree-2.9.4.tar.gz", hash = "sha256:e2ee93944e7cdf7107a461fb71738042aed8fd7950a254c7ee6bf6ec3f97aae9"},
 ]
 
 [package.extras]
 graphviz = ["graphviz (>=0.20.1)"]
-test = ["covdefaults (>=2.3)", "diff-cover (>=7.5)", "pip (>=23.1.2)", "pytest (>=7.3.1)", "pytest-cov (>=4.1)", "pytest-mock (>=3.10)", "virtualenv (>=20.23,<21)"]
+test = ["covdefaults (>=2.3)", "diff-cover (>=7.6)", "pip (>=23.1.2)", "pytest (>=7.4)", "pytest-cov (>=4.1)", "pytest-mock (>=3.11.1)", "virtualenv (>=20.23.1,<21)"]
 
 [[package]]
 name = "pkginfo"
