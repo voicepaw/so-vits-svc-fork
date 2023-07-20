@@ -3710,20 +3710,13 @@ files = [
 
 [[package]]
 name = "pyworld"
-version = "0.3.3"
+version = "0.3.4"
 description = "PyWorld: a Python wrapper for WORLD vocoder"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyworld-0.3.3-cp310-cp310-win_amd64.whl", hash = "sha256:729a675a7d2d0cde6bf9a02f39c059f0341e1ed1735e739a8c4cedf5043ff374"},
-    {file = "pyworld-0.3.3-cp36-cp36m-win32.whl", hash = "sha256:31ae535614a74706269e1994f1a8c74be9d347201717fcba67de334b11d0845e"},
-    {file = "pyworld-0.3.3-cp36-cp36m-win_amd64.whl", hash = "sha256:b89df0a7175cab83193cfba73a2790073dc673ac0685d8cfcaec579aba530507"},
-    {file = "pyworld-0.3.3-cp37-cp37m-win32.whl", hash = "sha256:de42cc127402cd07025798fd89abf2fb32d304cca139feecd08b9b6206b5fb2f"},
-    {file = "pyworld-0.3.3-cp37-cp37m-win_amd64.whl", hash = "sha256:be5409b8f93eb8b478507191928d116898f874b3a981714391b71c06dd72bc38"},
-    {file = "pyworld-0.3.3-cp38-cp38-win_amd64.whl", hash = "sha256:ebdced4728c690c0e71823da39e8fee094212e9933e95ddbaaa85b4a72d56fa1"},
-    {file = "pyworld-0.3.3-cp39-cp39-win_amd64.whl", hash = "sha256:850da60e4c045d5c805c85035c781546ab10e22e990f0d1aa8a09ca8cf5cca47"},
-    {file = "pyworld-0.3.3.tar.gz", hash = "sha256:a3a81755983dfa2299a9e2947752582ddcc84a5c277b04f4595ce4406372d1e5"},
+    {file = "pyworld-0.3.4.tar.gz", hash = "sha256:106c70ee7a7d8c9ba488d8022f2033706929a40f0264256b8e87da5aab98303a"},
 ]
 
 [package.dependencies]
@@ -3731,7 +3724,7 @@ cython = ">=0.24"
 numpy = "*"
 
 [package.extras]
-sdist = ["cython", "numpy"]
+sdist = ["cython (>=0.24)", "numpy"]
 test = ["nose"]
 
 [[package]]
