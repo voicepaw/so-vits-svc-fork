@@ -1835,14 +1835,14 @@ tests = ["contextlib2", "matplotlib (>=3.3.0)", "pytest", "pytest-cov", "pytest-
 
 [[package]]
 name = "lightning"
-version = "2.0.5"
+version = "2.0.6"
 description = "The Deep Learning framework to train, deploy, and ship AI products Lightning fast."
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "lightning-2.0.5-py3-none-any.whl", hash = "sha256:965d692597ddf73364c74c99db58e11cf144f0e9a3052ec1b0474b4829c17c85"},
-    {file = "lightning-2.0.5.tar.gz", hash = "sha256:77df233129b29c11df7b5e071e24e29420d5efbdbbac9cb6fb4602b7b5afce8a"},
+    {file = "lightning-2.0.6-py3-none-any.whl", hash = "sha256:283fb8fd143fa30da1b2cadff4c38509a9b5b88518d0bcc69bab6d76a730865f"},
+    {file = "lightning-2.0.6.tar.gz", hash = "sha256:bff959f65eed2f626dd65e7b2cfd0d3ddcd0c4ca19ffc8f5f49a4ba4494ca528"},
 ]
 
 [package.dependencies]
@@ -1865,7 +1865,7 @@ lightning-utilities = ">=0.7.0,<2.0"
 numpy = ">=1.17.2,<3.0"
 packaging = ">=17.1,<25.0"
 psutil = "<7.0"
-pydantic = ">=1.7.4,<2.0.0"
+pydantic = ">=1.7.4,<2.1.0"
 python-multipart = ">=0.0.5,<2.0"
 pytorch-lightning = "*"
 PyYAML = ">=5.4,<8.0"
