@@ -51,7 +51,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: snok/install-poetry@v1.3.3
+      - uses: snok/install-poetry@v1.3.4
       - name: Install Dependencies
         run: poetry install
         shell: bash
