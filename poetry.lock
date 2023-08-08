@@ -4870,21 +4870,21 @@ text = ["nltk (>=3.6)", "regex (>=2021.9.24)", "tqdm (>=4.41.0)"]
 
 [[package]]
 name = "tqdm"
-version = "4.65.0"
+version = "4.65.1"
 description = "Fast, Extensible Progress Meter"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "tqdm-4.65.0-py3-none-any.whl", hash = "sha256:c4f53a17fe37e132815abceec022631be8ffe1b9381c2e6e30aa70edc99e9671"},
-    {file = "tqdm-4.65.0.tar.gz", hash = "sha256:1871fb68a86b8fb3b59ca4cdd3dcccbc7e6d613eeed31f4c332531977b89beb5"},
+    {file = "tqdm-4.65.1-py3-none-any.whl", hash = "sha256:16181c62ad2c6f8f6f29876e66322faad1c7fd3cc70aa9cc25ff63e50d1da031"},
+    {file = "tqdm-4.65.1.tar.gz", hash = "sha256:2cb0075cc5269f8edac40bdeb757cc36ab5b6648caf014822b67e1a49fba141d"},
 ]
 
 [package.dependencies]
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [package.extras]
-dev = ["py-make (>=0.1.0)", "twine", "wheel"]
+dev = ["pytest (>=6)", "pytest-cov", "pytest-timeout", "pytest-xdist"]
 notebook = ["ipywidgets (>=6)"]
 slack = ["slack-sdk"]
 telegram = ["requests"]
