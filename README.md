@@ -134,6 +134,7 @@ Please update this package regularly to get the latest features and bug fixes.
 
 ```shell
 pip install -U so-vits-svc-fork
+# pipx upgrade so-vits-svc-fork
 ```
 
 ## Usage
