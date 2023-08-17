@@ -50,7 +50,7 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 ## Installation
 
-### One click easy installation
+### Option 1. One click easy installation
 
 <a href="https://github.com/34j/so-vits-svc-fork/releases/download/v1.3.2/install.bat" download>
   <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
@@ -58,7 +58,32 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 This BAT file will automatically perform the steps described below.
 
-### Manual installation
+### Option 2. Manual installation (using pipx, experimental)
+
+#### 1. Installing pipx
+
+Windows (development version required due to [pypa/pipx#940](https://github.com/pypa/pipx/issues/940)):
+
+```shell
+py -3 -m pip install --user git+https://github.com/pypa/pipx.git
+py -3 -m pipx ensurepath
+```
+
+Linux/MacOS:
+
+```shell
+python -m pip install --user pipx
+python -m pipx ensurepath
+```
+
+#### 2. Installing so-vits-svc-fork
+
+```shell
+pipx install so-vits-svc-fork --python=3.10
+pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
+```
+
+### Option 3. Manual installation
 
 <details>
   <summary>Creating a virtual environment</summary>
@@ -92,7 +117,7 @@ Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 python -m pip install -U pip setuptools wheel
-pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
 pip install -U so-vits-svc-fork
 ```
 
@@ -100,7 +125,7 @@ pip install -U so-vits-svc-fork
   <summary>Notes</summary>
 
 - If no GPU is available or using MacOS, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118`. MPS is probably supported.
-- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu118` with `--index-url https://download.pytorch.org/whl/rocm5.4.2`. AMD GPUs are not supported on Windows ([#120](https://github.com/34j/so-vits-svc-fork/issues/120)).
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu118` with `--index-url https://download.pytorch.org/whl/nightly/rocm5.6`. AMD GPUs are not supported on Windows ([#120](https://github.com/34j/so-vits-svc-fork/issues/120)).
   </details>
 
 ### Update
@@ -109,6 +134,7 @@ Please update this package regularly to get the latest features and bug fixes.
 
 ```shell
 pip install -U so-vits-svc-fork
+# pipx upgrade so-vits-svc-fork
 ```
 
 ## Usage
