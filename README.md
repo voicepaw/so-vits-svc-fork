@@ -50,7 +50,7 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 ## Installation
 
-### One click easy installation
+### Option 1. One click easy installation
 
 <a href="https://github.com/34j/so-vits-svc-fork/releases/download/v1.3.2/install.bat" download>
   <img src="https://img.shields.io/badge/.bat-download-blue?style=flat-square&logo=windows" alt="Download .bat">
@@ -58,9 +58,9 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 This BAT file will automatically perform the steps described below.
 
-### Manual installation (using pipx, experimental)
+### Option 2. Manual installation (using pipx, experimental)
 
-#### Installing pipx
+#### 1. Installing pipx
 
 Windows (development version required due to [pypa/pipx#940](https://github.com/pypa/pipx/issues/940)):
 
@@ -76,12 +76,14 @@ python -m pip install --user pipx
 python -m pipx ensurepath
 ```
 
+#### 2. Installing so-vits-svc-fork
+
 ```shell
 pipx install so-vits-svc-fork --python=3.10
 pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
 ```
 
-### Manual installation
+### Option 3. Manual installation
 
 <details>
   <summary>Creating a virtual environment</summary>
