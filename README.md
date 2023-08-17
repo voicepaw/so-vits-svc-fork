@@ -58,6 +58,29 @@ A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with 
 
 This BAT file will automatically perform the steps described below.
 
+### Manual installation (using pipx, experimental)
+
+#### Installing pipx
+
+Windows (development version required due to [pypa/pipx#940](https://github.com/pypa/pipx/issues/940)):
+
+```shell
+py -3 -m pip install --user git+https://github.com/pypa/pipx.git
+py -3 -m pipx ensurepath
+```
+
+Linux/MacOS:
+
+```shell
+python -m pip install --user pipx
+python -m pipx ensurepath
+```
+
+```shell
+pipx install so-vits-svc-fork --python=3.10
+pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
+```
+
 ### Manual installation
 
 <details>
