@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.2 (2023-08-28)
+
+### Fix
+
+* **deps:** Update dependency transformers to v4.32.1 ([#916](https://github.com/voicepaw/so-vits-svc-fork/issues/916)) ([`da7a72f`](https://github.com/voicepaw/so-vits-svc-fork/commit/da7a72ff0b11231793e48ac5fcb38a1b022fa26b))
+
+### Documentation
+
+* **readme:** Add instructions for pipx installation, update torch urls ([#899](https://github.com/voicepaw/so-vits-svc-fork/issues/899)) ([`0b02c49`](https://github.com/voicepaw/so-vits-svc-fork/commit/0b02c49edb5701becfe141645f0e3fc00c241944))
+* Add shenberg as a contributor for userTesting, ideas, and code ([#810](https://github.com/voicepaw/so-vits-svc-fork/issues/810)) ([`319ddf3`](https://github.com/voicepaw/so-vits-svc-fork/commit/319ddf35e2f7e915bbf786fa785ec2734f4b0c00))
+
 ## v4.1.1 (2023-07-02)
 
 ### Fix
