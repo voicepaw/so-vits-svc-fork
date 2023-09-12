@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.7 (2023-09-12)
+
+### Fix
+
+* **deps:** Update dependency matplotlib to v3.7.3 ([#940](https://github.com/voicepaw/so-vits-svc-fork/issues/940)) ([`302d5a7`](https://github.com/voicepaw/so-vits-svc-fork/commit/302d5a7dd0f0578d9f126c898b1c871f22987742))
+
 ## v4.1.6 (2023-09-06)
 
 ### Fix
