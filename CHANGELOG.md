@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.10 (2023-09-17)
+
+### Fix
+
+* **deps:** Update dependency rich to v13.5.3 ([#949](https://github.com/voicepaw/so-vits-svc-fork/issues/949)) ([`e692e8c`](https://github.com/voicepaw/so-vits-svc-fork/commit/e692e8cd81dc648edcd60503a52274a8b9738dab))
+
 ## v4.1.9 (2023-09-16)
 
 ### Fix
