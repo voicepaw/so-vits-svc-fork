@@ -73,6 +73,6 @@ repos:
   #     - id: bandit
   #       args: [-x, tests]
   - repo: https://github.com/srstevenson/nb-clean
-    rev: "2.4.0"
+    rev: "3.0.1"
     hooks:
       - id: nb-clean
