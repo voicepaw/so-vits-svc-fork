@@ -31,7 +31,7 @@ svcf-gui = "so_vits_svc_fork.gui:main"
 "Changelog" = "https://github.com/34j/so-vits-svc-fork/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.11"
+python = ">=3.11,<3.12"
 librosa = "*"
 numpy = "^1.23"
 pyworld = "*"
