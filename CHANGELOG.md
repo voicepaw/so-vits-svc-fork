@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.11 (2023-09-23)
+
+### Fix
+
+* **deps:** Update python to >=3.11,<3.12 ([#952](https://github.com/voicepaw/so-vits-svc-fork/issues/952)) ([`a5455b9`](https://github.com/voicepaw/so-vits-svc-fork/commit/a5455b92f7228fc01d51cdbfb7da6e9241c7fcca))
+
+### Documentation
+
+* **readme:** Replace "34j" with "voicepaw" ([#960](https://github.com/voicepaw/so-vits-svc-fork/issues/960)) ([`c1e6c0c`](https://github.com/voicepaw/so-vits-svc-fork/commit/c1e6c0c0c61d4a99eb1a19e8ca0f619d9a07146a))
+
 ## v4.1.10 (2023-09-17)
 
 ### Fix
