@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.12 (2023-10-13)
+
+### Fix
+
+* **deps:** Update dependency fastapi to v0.103.2 ([#972](https://github.com/voicepaw/so-vits-svc-fork/issues/972)) ([`02cea64`](https://github.com/voicepaw/so-vits-svc-fork/commit/02cea643631e2c39265c7f4f58e40cea18e707e6))
+
 ## v4.1.11 (2023-09-23)
 
 ### Fix
