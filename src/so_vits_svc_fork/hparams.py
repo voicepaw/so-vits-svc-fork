@@ -6,7 +6,7 @@ from typing import Any
 class HParams:
     def __init__(self, **kwargs: Any) -> None:
         for k, v in kwargs.items():
-            if type(v) == dict:
+            if type(v) == dict:  # noqa
                 v = HParams(**v)
             self[k] = v
 
