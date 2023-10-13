@@ -4819,18 +4819,18 @@ torch = "2.0.0"
 
 [[package]]
 name = "torchcrepe"
-version = "0.0.21"
+version = "0.0.22"
 description = "Pytorch implementation of CREPE pitch tracker"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "torchcrepe-0.0.21-py3-none-any.whl", hash = "sha256:df4d0d297e4b03a468f0ea0a70dba8c10707cea25e454a5c9ccef42960ccc157"},
-    {file = "torchcrepe-0.0.21.tar.gz", hash = "sha256:74950b924825521b9cfeaf306bfb8e9200463e4cd7e241cd0d38651e0c90cda7"},
+    {file = "torchcrepe-0.0.22-py3-none-any.whl", hash = "sha256:5279c76c202cd7968e7d9a7ee2a5af9451b1a4338ed8e4ad385e357ad355fcff"},
+    {file = "torchcrepe-0.0.22.tar.gz", hash = "sha256:80afa152af0fce02c6d13071996b8c5aa3ded7110ef600b41150f267d54d10a2"},
 ]
 
 [package.dependencies]
-librosa = "0.9.1"
+librosa = ">=0.9.1"
 resampy = "*"
 scipy = "*"
 torch = "*"
