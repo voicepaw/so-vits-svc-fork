@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.13 (2023-10-13)
+
+### Fix
+
+* **deps:** Update dependency librosa to v0.10.1 ([#974](https://github.com/voicepaw/so-vits-svc-fork/issues/974)) ([`3ae20b7`](https://github.com/voicepaw/so-vits-svc-fork/commit/3ae20b7cbcc2fbfc72a2c8cb73a653bb7ee863a1))
+* **deps:** Update dependency torchcrepe to v0.0.22 ([#973](https://github.com/voicepaw/so-vits-svc-fork/issues/973)) ([`ad7b2bf`](https://github.com/voicepaw/so-vits-svc-fork/commit/ad7b2bfa23e9e669b46976b796fb58d6b4829ce3))
+
 ## v4.1.12 (2023-10-13)
 
 ### Fix
