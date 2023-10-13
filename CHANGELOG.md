@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.14 (2023-10-13)
+
+### Fix
+
+* **deps:** Update dependency lightning to v2.1.0 ([#975](https://github.com/voicepaw/so-vits-svc-fork/issues/975)) ([`4637f69`](https://github.com/voicepaw/so-vits-svc-fork/commit/4637f693ea994c5180ec7a517bea6e5ddd8445aa))
+* **deps:** Update dependency transformers to v4.34.0 ([#977](https://github.com/voicepaw/so-vits-svc-fork/issues/977)) ([`6bb2555`](https://github.com/voicepaw/so-vits-svc-fork/commit/6bb2555ace79487a4252a23ba7915a5b3676629e))
+
 ## v4.1.13 (2023-10-13)
 
 ### Fix
