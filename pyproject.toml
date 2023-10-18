@@ -55,7 +55,7 @@ pysimplegui = ">=4.6"
 pebble = ">=5.0"
 torchcrepe = ">=0.0.17"
 lightning = "^2.0.1"
-fastapi = "==0.103.2"
+fastapi = "==0.104.0"
 transformers = "^4.28.1"
 matplotlib = "^3.7.1"
 
