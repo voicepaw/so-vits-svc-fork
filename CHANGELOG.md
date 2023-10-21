@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.18 (2023-10-21)
+
+### Fix
+
+* **deps:** Update dependency onnxsim to v0.4.34 ([#990](https://github.com/voicepaw/so-vits-svc-fork/issues/990)) ([`3d2d4af`](https://github.com/voicepaw/so-vits-svc-fork/commit/3d2d4af65221ded497e3e805dfb48792ab20640f))
+
 ## v4.1.17 (2023-10-19)
 
 ### Fix
