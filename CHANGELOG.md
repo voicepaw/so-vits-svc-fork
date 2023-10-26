@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.20 (2023-10-26)
+
+### Fix
+
+* **deps:** Update python to >=3.8,<3.13 ([#998](https://github.com/voicepaw/so-vits-svc-fork/issues/998)) ([`031712a`](https://github.com/voicepaw/so-vits-svc-fork/commit/031712a70177f20610f8fefd20f49036dfe15721))
+
 ## v4.1.19 (2023-10-21)
 
 ### Fix
