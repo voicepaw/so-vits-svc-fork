@@ -34,7 +34,7 @@ def _process_one(
     )
     if pipeline is None:
         raise ValueError("Failed to load pipeline")
-
+    pipeline = pipeline.to(torch.device("cuda"))
     LOG.info(f"Processing {input_path}. This may take a while...")
     diarization = pipeline(
         input_path, min_speakers=min_speakers, max_speakers=max_speakers
