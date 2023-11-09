@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.25 (2023-11-09)
+
+### Fix
+
+* **pre-sd:** Make Pyanote.audio use GPU ([`c9d49ca`](https://github.com/voicepaw/so-vits-svc-fork/commit/c9d49ca8a903e1bf6e8a6ac9c6a8365077bedad4))
+
 ## v4.1.24 (2023-11-08)
 
 ### Fix
