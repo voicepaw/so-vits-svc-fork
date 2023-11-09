@@ -306,6 +306,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/653972?v=4",
       "profile": "https://www.meimadix.com",
       "contributions": ["userTesting", "ideas", "code"]
+    },
+    {
+      "login": "ShinyJustyZ",
+      "name": "Justas",
+      "avatar_url": "https://avatars.githubusercontent.com/u/65282440?v=4",
+      "profile": "https://github.com/ShinyJustyZ",
+      "contributions": ["bug", "code"]
     }
   ],
   "contributorsPerLine": 7,
