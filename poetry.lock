@@ -2755,19 +2755,19 @@ test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner"]
 
 [[package]]
 name = "pipdeptree"
-version = "2.13.0"
+version = "2.13.1"
 description = "Command line utility to show dependency tree of packages."
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pipdeptree-2.13.0-py3-none-any.whl", hash = "sha256:70c582224a41f20c4b69be7aaeeed40b59d3f247a93b4d6891b3d772c9befc94"},
-    {file = "pipdeptree-2.13.0.tar.gz", hash = "sha256:ff71a48abd0b1ab810c23734b47de6ebd93270857d6665e21ed5ef6136fcba6e"},
+    {file = "pipdeptree-2.13.1-py3-none-any.whl", hash = "sha256:760fa0d93f424637445a9e7ca797bf64f283e824cbeadc61f761e12b722bb004"},
+    {file = "pipdeptree-2.13.1.tar.gz", hash = "sha256:1e1acdb2ddc2abdca1718f27ca8dc21622c896a00b8980ec3d42c2208a841a10"},
 ]
 
 [package.extras]
 graphviz = ["graphviz (>=0.20.1)"]
-test = ["covdefaults (>=2.3)", "diff-cover (>=7.7)", "pip (>=23.2)", "pytest (>=7.4)", "pytest-cov (>=4.1)", "pytest-mock (>=3.11.1)", "virtualenv (>=20.24,<21)"]
+test = ["covdefaults (>=2.3)", "diff-cover (>=7.7)", "pip (>=23.2.1)", "pytest (>=7.4)", "pytest-cov (>=4.1)", "pytest-mock (>=3.11.1)", "virtualenv (>=20.24.3,<21)"]
 
 [[package]]
 name = "pkginfo"
