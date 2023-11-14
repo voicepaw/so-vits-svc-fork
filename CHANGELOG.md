@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.26 (2023-11-14)
+
+### Fix
+
+* **deps:** Update dependency transformers to v4.35.1 ([#1019](https://github.com/voicepaw/so-vits-svc-fork/issues/1019)) ([`fa503ce`](https://github.com/voicepaw/so-vits-svc-fork/commit/fa503ce412d6afcd859375255fb128b33a648465))
+
+### Documentation
+
+* Add ShinyJustyZ as a contributor for bug, and code ([#1013](https://github.com/voicepaw/so-vits-svc-fork/issues/1013)) ([`acd6a8e`](https://github.com/voicepaw/so-vits-svc-fork/commit/acd6a8e4733ad1dbe94f118599aafa87f23ce89f))
+
 ## v4.1.25 (2023-11-09)
 
 ### Fix
