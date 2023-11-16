@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.30 (2023-11-16)
+
+### Fix
+
+* **deps:** Update dependency torch to v2.1.1 ([#594](https://github.com/voicepaw/so-vits-svc-fork/issues/594)) ([`1911035`](https://github.com/voicepaw/so-vits-svc-fork/commit/19110358c12306b087af11837b43baf7d626e500))
+
 ## v4.1.29 (2023-11-16)
 
 ### Fix
