@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.32 (2023-11-21)
+
+### Fix
+
+* **deps:** Update dependency pebble to v5.0.4 ([#1027](https://github.com/voicepaw/so-vits-svc-fork/issues/1027)) ([`a8dc5d7`](https://github.com/voicepaw/so-vits-svc-fork/commit/a8dc5d7f88f0117291ba90fce23e3b1eebc52902))
+
 ## v4.1.31 (2023-11-18)
 
 ### Fix
