@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.33 (2024-01-02)
+
+### Fix
+
+* **deps:** Update dependency lightning to v2.1.3 ([#1048](https://github.com/voicepaw/so-vits-svc-fork/issues/1048)) ([`47b15e6`](https://github.com/voicepaw/so-vits-svc-fork/commit/47b15e6ba439239ea5459f01321e7a8d2c681ae4))
+
 ## v4.1.32 (2023-11-21)
 
 ### Fix
