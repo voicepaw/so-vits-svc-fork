@@ -1,4 +1,4 @@
-__version__ = "4.1.36"
+__version__ = "4.1.37"
 
 from .logger import init_logger
 
