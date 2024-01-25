@@ -313,6 +313,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/65282440?v=4",
       "profile": "https://github.com/ShinyJustyZ",
       "contributions": ["bug", "code"]
+    },
+    {
+      "login": "Onako2",
+      "name": "Onako2",
+      "avatar_url": "https://avatars.githubusercontent.com/u/79749977?v=4",
+      "profile": "https://onako2.github.io/",
+      "contributions": ["doc"]
     }
   ],
   "contributorsPerLine": 7,
