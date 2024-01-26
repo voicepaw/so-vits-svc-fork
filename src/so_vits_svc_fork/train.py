@@ -104,11 +104,11 @@ def train(
         val_check_interval=hparams.train.eval_interval,
         max_epochs=hparams.train.epochs,
         check_val_every_n_epoch=None,
-        precision="16-mixed"
-        if hparams.train.fp16_run
-        else "bf16-mixed"
-        if hparams.train.get("bf16_run", False)
-        else 32,
+        precision=(
+            "16-mixed"
+            if hparams.train.fp16_run
+            else "bf16-mixed" if hparams.train.get("bf16_run", False) else 32
+        ),
         strategy=strategy,
         callbacks=([pl.callbacks.RichProgressBar()] if not is_notebook() else [])
         + [DeviceStatsMonitor()],
