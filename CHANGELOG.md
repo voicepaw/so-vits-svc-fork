@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.41 (2024-01-29)
+
+### Fix
+
+* **deps:** Update dependency transformers to v4.37.2 ([#1074](https://github.com/voicepaw/so-vits-svc-fork/issues/1074)) ([`69c59b8`](https://github.com/voicepaw/so-vits-svc-fork/commit/69c59b8180cd489f30b5f13bc037c9928e1e65ba))
+
+### Documentation
+
+* Add Onako2 as a contributor for doc ([#1068](https://github.com/voicepaw/so-vits-svc-fork/issues/1068)) ([`b204663`](https://github.com/voicepaw/so-vits-svc-fork/commit/b204663d36a1bf1ed5a2af23866824ed9c5dce43))
+
 ## v4.1.40 (2024-01-24)
 
 ### Fix
