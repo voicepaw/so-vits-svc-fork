@@ -2,6 +2,30 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.45 (2024-02-05)
+
+### Fix
+
+* **deps:** Update dependency fastapi to v0.109.2 ([#1083](https://github.com/voicepaw/so-vits-svc-fork/issues/1083)) ([`c570f8e`](https://github.com/voicepaw/so-vits-svc-fork/commit/c570f8e37b7c1b9ab0faada3c4f7f37a7e8fe896))
+
+## v4.1.44 (2024-02-03)
+
+### Fix
+
+* **deps:** Update dependency fastapi to v0.109.1 ([#1081](https://github.com/voicepaw/so-vits-svc-fork/issues/1081)) ([`6ee83d5`](https://github.com/voicepaw/so-vits-svc-fork/commit/6ee83d5931c2e2f5f3658ce96a83bec53e6e1d73))
+
+## v4.1.43 (2024-02-02)
+
+### Fix
+
+* **deps:** Update dependency lightning to v2.1.4 ([#1080](https://github.com/voicepaw/so-vits-svc-fork/issues/1080)) ([`33334fd`](https://github.com/voicepaw/so-vits-svc-fork/commit/33334fd9a0e112a811b5ad90cedc0e1929f10e89))
+
+## v4.1.42 (2024-01-30)
+
+### Fix
+
+* **deps:** Update dependency torch to v2.2.0 ([#1075](https://github.com/voicepaw/so-vits-svc-fork/issues/1075)) ([`8750059`](https://github.com/voicepaw/so-vits-svc-fork/commit/875005917101170e755b4dca7fe223436fb3e41e))
+
 ## v4.1.41 (2024-01-29)
 
 ### Fix
