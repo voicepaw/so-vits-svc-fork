@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.47 (2024-02-10)
+
+### Fix
+
+* **deps:** Update dependency tqdm to v4.66.2 ([#1088](https://github.com/voicepaw/so-vits-svc-fork/issues/1088)) ([`4516483`](https://github.com/voicepaw/so-vits-svc-fork/commit/451648353d5d473dfa058d75ce4953db67422506))
+
 ## v4.1.46 (2024-02-08)
 
 ### Fix
