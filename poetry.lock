@@ -2539,14 +2539,14 @@ rich = "*"
 
 [[package]]
 name = "packaging"
-version = "23.0"
+version = "23.2"
 description = "Core utilities for Python packages"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "packaging-23.0-py3-none-any.whl", hash = "sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2"},
-    {file = "packaging-23.0.tar.gz", hash = "sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97"},
+    {file = "packaging-23.2-py3-none-any.whl", hash = "sha256:8c491190033a9af7e1d931d0b5dacc2ef47509b34dd0de67ed209b5203fc88c7"},
+    {file = "packaging-23.2.tar.gz", hash = "sha256:048fb0e9405036518eaaf48a55953c750c11e1a1b68e0dd1a9d62ed0c092cfc5"},
 ]
 
 [[package]]
@@ -2751,14 +2751,14 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "poetry"
-version = "1.8.0"
+version = "1.8.1"
 description = "Python dependency management and packaging made easy."
 category = "dev"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "poetry-1.8.0-py3-none-any.whl", hash = "sha256:5c418265099b681e399a1521e72d98f407a015cade8ff37260b1359c1afd773c"},
-    {file = "poetry-1.8.0.tar.gz", hash = "sha256:27676b30e17c44b836cc002bf3cf8472f01fce886bddb4987caf14aeb4663165"},
+    {file = "poetry-1.8.1-py3-none-any.whl", hash = "sha256:cf133946661025822672422769567980f8e489ed5b6fc170d1025a4d6c9aac29"},
+    {file = "poetry-1.8.1.tar.gz", hash = "sha256:23519cc45eb3cf48e899145bc762425a141e3afd52ecc53ec443ca635122327f"},
 ]
 
 [package.dependencies]
@@ -2771,7 +2771,7 @@ fastjsonschema = ">=2.18.0,<3.0.0"
 importlib-metadata = {version = ">=4.4", markers = "python_version < \"3.10\""}
 installer = ">=0.7.0,<0.8.0"
 keyring = ">=24.0.0,<25.0.0"
-packaging = ">=20.5"
+packaging = ">=23.1"
 pexpect = ">=4.7.0,<5.0.0"
 pkginfo = ">=1.9.4,<2.0.0"
 platformdirs = ">=3.0.0,<5"
