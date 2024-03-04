@@ -2688,14 +2688,14 @@ test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner"]
 
 [[package]]
 name = "pipdeptree"
-version = "2.16.0"
+version = "2.16.1"
 description = "Command line utility to show dependency tree of packages."
 category = "dev"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pipdeptree-2.16.0-py3-none-any.whl", hash = "sha256:77b5f8a942eaea83599b76459ad8ff908e60065a3055e09d49dcab3eb0077f3c"},
-    {file = "pipdeptree-2.16.0.tar.gz", hash = "sha256:45b045a539a87dde690596f4293ac7af7c6a1cd0a3480b06de9d33046564d17b"},
+    {file = "pipdeptree-2.16.1-py3-none-any.whl", hash = "sha256:7131023df30220678b6a42c7372ce07453b39e0b3df935b129e832f0acf96b8a"},
+    {file = "pipdeptree-2.16.1.tar.gz", hash = "sha256:f1ca64ce4aff9373613711048b9c4e8106ad955dea0dd962b7974fa168d7650a"},
 ]
 
 [package.extras]
