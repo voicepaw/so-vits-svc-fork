@@ -131,10 +131,12 @@ def preprocess_hubert_f0(
         memory = get_total_gpu_memory("total")
         n_jobs = min(
             max(
-                memory
-                // (HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY)
-                if memory is not None
-                else 1,
+                (
+                    memory
+                    // (HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY)
+                    if memory is not None
+                    else 1
+                ),
                 1,
             ),
             cpu_count(),
