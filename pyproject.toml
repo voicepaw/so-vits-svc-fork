@@ -66,7 +66,7 @@ pytest-cov = "^4.0.0"
 poetry = "^1.4.2"
 pipdeptree = "^2.7.0"
 pip-licenses = "^4.3.1"
-black = "^23.3.0"
+black = "^24.0.0"
 
 [tool.poetry.group.docs]
 optional = true
