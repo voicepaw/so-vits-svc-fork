@@ -16,6 +16,11 @@ from pebble import ProcessFuture, ProcessPool
 from . import __version__
 from .utils import get_optimal_device
 
+import ctypes
+import platform
+if int(platform.release()) >= 8:
+        ctypes.windll.shcore.SetProcessDpiAwareness(True)
+
 GUI_DEFAULT_PRESETS_PATH = Path(__file__).parent / "default_gui_presets.json"
 GUI_PRESETS_PATH = Path("./user_gui_presets.json").absolute()
 
