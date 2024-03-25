@@ -2564,14 +2564,14 @@ files = [
 
 [[package]]
 name = "pebble"
-version = "5.0.6"
+version = "5.0.7"
 description = "Threading and multiprocessing eye-candy."
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "Pebble-5.0.6-py3-none-any.whl", hash = "sha256:c8a0659b215ff6dcc974516018fcd95c5c626d8bb9a6668dcfbf85880e6390dc"},
-    {file = "Pebble-5.0.6.tar.gz", hash = "sha256:e7f7ecfd0107ab7cec9f3bb411a856c4d7d552202d4e9a8b038e9a64ae31fd8c"},
+    {file = "Pebble-5.0.7-py3-none-any.whl", hash = "sha256:f1742f2a62e8544e722c7b387211fb1a06038ca8cda322e5d55c84c793fd8d7d"},
+    {file = "Pebble-5.0.7.tar.gz", hash = "sha256:2784c147766f06388cea784084b14bec93fdbaa793830f1983155aa330a2a6e4"},
 ]
 
 [[package]]
