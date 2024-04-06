@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.59 (2024-04-06)
+
+### Fix
+
+* **pqmf:** Fix broken  scipy imports in _pqmf.py ([#1139](https://github.com/voicepaw/so-vits-svc-fork/issues/1139)) ([`b7639ca`](https://github.com/voicepaw/so-vits-svc-fork/commit/b7639ca3a2b283f371a14ce176fe5d0e1d74581e))
+
 ## v4.1.58 (2024-03-25)
 
 ### Fix
