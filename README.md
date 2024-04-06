@@ -327,6 +327,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     </tr>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/4ll0w3v1l"><img src="https://avatars.githubusercontent.com/u/53517147?v=4?s=80" width="80px;" alt="4ll0w3v1l"/><br /><sub><b>4ll0w3v1l</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=4ll0w3v1l" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/SamuelSwartzberg"><img src="https://avatars.githubusercontent.com/u/16353439?v=4?s=80" width="80px;" alt="j5y0V6b"/><br /><sub><b>j5y0V6b</b></sub></a><br /><a href="#security-SamuelSwartzberg" title="Security">🛡️</a></td>
     </tr>
   </tbody>
 </table>
