@@ -341,6 +341,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/51972090?v=4",
       "profile": "https://github.com/marcellocirelli",
       "contributions": ["bug"]
+    },
+    {
+      "login": "Priyanshu-hawk",
+      "name": "Priyanshu Patel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/76026651?v=4",
+      "profile": "https://github.com/Priyanshu-hawk",
+      "contributions": ["code"]
     }
   ],
   "contributorsPerLine": 7,
