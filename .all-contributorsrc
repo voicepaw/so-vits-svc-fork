@@ -327,6 +327,13 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/53517147?v=4",
       "profile": "https://github.com/4ll0w3v1l",
       "contributions": ["code"]
+    },
+    {
+      "login": "SamuelSwartzberg",
+      "name": "j5y0V6b",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16353439?v=4",
+      "profile": "https://github.com/SamuelSwartzberg",
+      "contributions": ["security"]
     }
   ],
   "contributorsPerLine": 7,
