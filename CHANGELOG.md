@@ -2,6 +2,18 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.60 (2024-04-06)
+
+### Fix
+
+* **deps:** Disallow pysimplegui>=5, update deps, update PyTorch urls in README.md ([#1142](https://github.com/voicepaw/so-vits-svc-fork/issues/1142)) ([`c0c5376`](https://github.com/voicepaw/so-vits-svc-fork/commit/c0c537639c72455328f98d147c06bd8f86030399))
+
+### Documentation
+
+* **readme:** Add description of repository maintenance status ([#1143](https://github.com/voicepaw/so-vits-svc-fork/issues/1143)) ([`3f537b0`](https://github.com/voicepaw/so-vits-svc-fork/commit/3f537b0919c0e651297c190ede9eb3c03782f319))
+* Add SamuelSwartzberg as a contributor for security ([#1146](https://github.com/voicepaw/so-vits-svc-fork/issues/1146)) ([`cddb722`](https://github.com/voicepaw/so-vits-svc-fork/commit/cddb72236f00d00a566a27a0243b71abbd615c64))
+* Add 4ll0w3v1l as a contributor for code ([#1141](https://github.com/voicepaw/so-vits-svc-fork/issues/1141)) ([`df699c7`](https://github.com/voicepaw/so-vits-svc-fork/commit/df699c7284149f79238b783f530d058b2a272447))
+
 ## v4.1.59 (2024-04-06)
 
 ### Fix
