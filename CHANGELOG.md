@@ -2,6 +2,17 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.61 (2024-04-06)
+
+### Fix
+
+* **deps:** Update dependency fastapi to v0.110.1 ([#1144](https://github.com/voicepaw/so-vits-svc-fork/issues/1144)) ([`eab647c`](https://github.com/voicepaw/so-vits-svc-fork/commit/eab647c8e21b954aa082b8319f084ae080105180))
+
+### Documentation
+
+* Add Priyanshu-hawk as a contributor for code ([#1148](https://github.com/voicepaw/so-vits-svc-fork/issues/1148)) ([`d6888db`](https://github.com/voicepaw/so-vits-svc-fork/commit/d6888db4204f87b7075d41371edf08c050179912))
+* Add marcellocirelli as a contributor for bug ([#1147](https://github.com/voicepaw/so-vits-svc-fork/issues/1147)) ([`8795709`](https://github.com/voicepaw/so-vits-svc-fork/commit/879570933831cdee3f325c94fc5b4e3fd172990f))
+
 ## v4.1.60 (2024-04-06)
 
 ### Fix
