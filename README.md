@@ -34,6 +34,10 @@
 
 A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with **realtime support** and **greatly improved interface**. Based on branch `4.0` (v1) (or `4.1`) and the models are compatible.
 
+> Updates to this repository have been limited to maintenance since Spring 2023.
+> It is difficult to narrow the list of alternatives here, but please consider trying other projects if you are looking for a voice changer with even better performance (especially in terms of latency other than quality).
+> However, this project may be ideal for those who want to try out voice conversion for the moment (because it is easy to install).
+
 ## Features not available in the original repo
 
 - **Realtime voice conversion** (enhanced in v1.1.0)
@@ -80,7 +84,7 @@ python -m pipx ensurepath
 
 ```shell
 pipx install so-vits-svc-fork --python=3.10
-pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
+pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu121 # https://download.pytorch.org/whl/nightly/cu121
 ```
 
 ### Option 3. Manual installation
@@ -117,15 +121,15 @@ Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 python -m pip install -U pip setuptools wheel
-pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
+pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu121 # https://download.pytorch.org/whl/nightly/cu121
 pip install -U so-vits-svc-fork
 ```
 
 <details>
   <summary>Notes</summary>
 
-- If no GPU is available or using MacOS, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118`. MPS is probably supported.
-- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu118` with `--index-url https://download.pytorch.org/whl/nightly/rocm5.6`. AMD GPUs are not supported on Windows ([#120](https://github.com/voicepaw/so-vits-svc-fork/issues/120)).
+- If no GPU is available or using MacOS, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu121`. MPS is probably supported.
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu121` with `--index-url https://download.pytorch.org/whl/nightly/rocm5.7`. AMD GPUs are not supported on Windows ([#120](https://github.com/voicepaw/so-vits-svc-fork/issues/120)).
   </details>
 
 ### Update
@@ -324,6 +328,10 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://www.meimadix.com"><img src="https://avatars.githubusercontent.com/u/653972?v=4?s=80" width="80px;" alt="Roee Shenberg"/><br /><sub><b>Roee Shenberg</b></sub></a><br /><a href="#userTesting-shenberg" title="User Testing">📓</a> <a href="#ideas-shenberg" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=shenberg" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ShinyJustyZ"><img src="https://avatars.githubusercontent.com/u/65282440?v=4?s=80" width="80px;" alt="Justas"/><br /><sub><b>Justas</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3AShinyJustyZ" title="Bug reports">🐛</a> <a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=ShinyJustyZ" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://onako2.github.io/"><img src="https://avatars.githubusercontent.com/u/79749977?v=4?s=80" width="80px;" alt="Onako2"/><br /><sub><b>Onako2</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=Onako2" title="Documentation">📖</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/4ll0w3v1l"><img src="https://avatars.githubusercontent.com/u/53517147?v=4?s=80" width="80px;" alt="4ll0w3v1l"/><br /><sub><b>4ll0w3v1l</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=4ll0w3v1l" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/SamuelSwartzberg"><img src="https://avatars.githubusercontent.com/u/16353439?v=4?s=80" width="80px;" alt="j5y0V6b"/><br /><sub><b>j5y0V6b</b></sub></a><br /><a href="#security-SamuelSwartzberg" title="Security">🛡️</a></td>
     </tr>
   </tbody>
 </table>

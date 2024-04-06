@@ -2,6 +2,24 @@
 
 <!--next-version-placeholder-->
 
+## v4.1.59 (2024-04-06)
+
+### Fix
+
+* **pqmf:** Fix broken  scipy imports in _pqmf.py ([#1139](https://github.com/voicepaw/so-vits-svc-fork/issues/1139)) ([`b7639ca`](https://github.com/voicepaw/so-vits-svc-fork/commit/b7639ca3a2b283f371a14ce176fe5d0e1d74581e))
+
+## v4.1.58 (2024-03-25)
+
+### Fix
+
+* **deps:** Update dependency transformers to v4.39.1 ([#1132](https://github.com/voicepaw/so-vits-svc-fork/issues/1132)) ([`a274333`](https://github.com/voicepaw/so-vits-svc-fork/commit/a274333e764ea56aa099033de24279619b4f2210))
+
+## v4.1.57 (2024-03-25)
+
+### Fix
+
+* **deps:** Update dependency pebble to v5.0.7 ([#1130](https://github.com/voicepaw/so-vits-svc-fork/issues/1130)) ([`e14b62f`](https://github.com/voicepaw/so-vits-svc-fork/commit/e14b62f11f8ed245a05c663381b086e92f76f2c6))
+
 ## v4.1.56 (2024-03-05)
 
 ### Fix
