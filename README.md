@@ -325,6 +325,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ShinyJustyZ"><img src="https://avatars.githubusercontent.com/u/65282440?v=4?s=80" width="80px;" alt="Justas"/><br /><sub><b>Justas</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3AShinyJustyZ" title="Bug reports">🐛</a> <a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=ShinyJustyZ" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://onako2.github.io/"><img src="https://avatars.githubusercontent.com/u/79749977?v=4?s=80" width="80px;" alt="Onako2"/><br /><sub><b>Onako2</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=Onako2" title="Documentation">📖</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/marcellocirelli"><img src="https://avatars.githubusercontent.com/u/51972090?v=4?s=80" width="80px;" alt="marcellocirelli"/><br /><sub><b>marcellocirelli</b></sub></a><br /><a href="https://github.com/voicepaw/so-vits-svc-fork/issues?q=author%3Amarcellocirelli" title="Bug reports">🐛</a> <a href="https://github.com/voicepaw/so-vits-svc-fork/commits?author=marcellocirelli" title="Code">💻</a></td>
+    </tr>
   </tbody>
 </table>
 
