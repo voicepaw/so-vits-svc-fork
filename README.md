@@ -34,6 +34,10 @@
 
 A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with **realtime support** and **greatly improved interface**. Based on branch `4.0` (v1) (or `4.1`) and the models are compatible.
 
+> Updates to this repository have been limited to maintenance since Spring 2023.
+> It is difficult to narrow the list of alternatives here, but please consider trying other projects if you are looking for a voice changer with even better performance (especially in terms of latency other than quality).
+> However, this project may be ideal for those who want to try out voice conversion for the moment (because it is easy to install).
+
 ## Features not available in the original repo
 
 - **Realtime voice conversion** (enhanced in v1.1.0)
