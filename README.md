@@ -80,7 +80,7 @@ python -m pipx ensurepath
 
 ```shell
 pipx install so-vits-svc-fork --python=3.10
-pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
+pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu121 # https://download.pytorch.org/whl/nightly/cu121
 ```
 
 ### Option 3. Manual installation
@@ -117,15 +117,15 @@ Install this via pip (or your favourite package manager that uses pip):
 
 ```shell
 python -m pip install -U pip setuptools wheel
-pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118 # https://download.pytorch.org/whl/nightly/cu121
+pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu121 # https://download.pytorch.org/whl/nightly/cu121
 pip install -U so-vits-svc-fork
 ```
 
 <details>
   <summary>Notes</summary>
 
-- If no GPU is available or using MacOS, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu118`. MPS is probably supported.
-- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu118` with `--index-url https://download.pytorch.org/whl/nightly/rocm5.6`. AMD GPUs are not supported on Windows ([#120](https://github.com/voicepaw/so-vits-svc-fork/issues/120)).
+- If no GPU is available or using MacOS, simply remove `pip install -U torch torchaudio --index-url https://download.pytorch.org/whl/cu121`. MPS is probably supported.
+- If you are using an AMD GPU on Linux, replace `--index-url https://download.pytorch.org/whl/cu121` with `--index-url https://download.pytorch.org/whl/nightly/rocm5.7`. AMD GPUs are not supported on Windows ([#120](https://github.com/voicepaw/so-vits-svc-fork/issues/120)).
   </details>
 
 ### Update

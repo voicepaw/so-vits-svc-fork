@@ -51,7 +51,7 @@ rich = "*"
 tqdm-joblib = "*"
 tensorboardx = "*"
 cm-time = ">=0.1.2"
-pysimplegui = ">=4.6"
+pysimplegui = ">=4.6,<5" # never update this, advertising popup window will be shown
 pebble = ">=5.0"
 torchcrepe = ">=0.0.17"
 lightning = "^2.0.1"
@@ -63,10 +63,8 @@ matplotlib = "^3.7.1"
 pre-commit = ">=3"
 pytest = "^7.0"
 pytest-cov = "^4.0.0"
-poetry = "^1.4.2"
 pipdeptree = "^2.7.0"
 pip-licenses = "^4.3.1"
-black = "^23.3.0"
 
 [tool.poetry.group.docs]
 optional = true
