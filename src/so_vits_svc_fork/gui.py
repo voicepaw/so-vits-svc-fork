@@ -95,8 +95,8 @@ def get_supported_file_types() -> tuple[tuple[str, str], ...]:
 
 
 def get_supported_file_types_concat() -> tuple[tuple[str, str], ...]:
-    if platform.startswith('linux'): # fix for issue 602
-        return get_supported_file_types();
+    if platform.startswith("linux"):  # fix for issue 602
+        return get_supported_file_types()
     return (("Audio", " ".join(sf.available_formats().keys())),)
 
 
