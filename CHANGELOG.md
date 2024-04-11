@@ -2,6 +2,20 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.0 (2024-04-11)
+
+### Feature
+
+* **pre-sd:** Add leading zeros for 4-digit width of the output file name's numeric part #1154 ([#1155](https://github.com/voicepaw/so-vits-svc-fork/issues/1155)) ([`41b147f`](https://github.com/voicepaw/so-vits-svc-fork/commit/41b147f6c20873fc1cfeaae50d27b7b80d5fdeb6))
+
+### Fix
+
+* **pre-sd:** Set speaker-diarization version to 3.1 for pyannote.audio 3.1.1 compatibility ([#1157](https://github.com/voicepaw/so-vits-svc-fork/issues/1157)) ([`9bd3089`](https://github.com/voicepaw/so-vits-svc-fork/commit/9bd3089d87be0c4e7bd0fbed51c06c203ad55474))
+
+### Documentation
+
+* Add annagorshunova as a contributor for bug, and code ([#1158](https://github.com/voicepaw/so-vits-svc-fork/issues/1158)) ([`50f6d79`](https://github.com/voicepaw/so-vits-svc-fork/commit/50f6d79f81d443c3dea9a4de3c65dca6988080ac))
+
 ## v4.1.61 (2024-04-06)
 
 ### Fix
