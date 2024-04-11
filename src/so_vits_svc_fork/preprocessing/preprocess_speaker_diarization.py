@@ -52,7 +52,7 @@ def _process_one(
         speaker_count[speaker] += 1
         audio_cut = audio[int(segment.start * sr) : int(segment.end * sr)]
         sf.write(
-            (output_dir / f"{speaker}_{speaker_count[speaker]}.wav"),
+            (output_dir / f"{speaker}_{speaker_count[speaker]:04d}.wav"),
             audio_cut,
             sr,
         )
