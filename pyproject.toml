@@ -61,7 +61,7 @@ matplotlib = "^3.7.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"
-pytest = "^7.0"
+pytest = "^8.0.0"
 pytest-cov = "^4.0.0"
 pipdeptree = "^2.7.0"
 pip-licenses = "^4.3.1"
