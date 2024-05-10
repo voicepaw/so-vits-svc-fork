@@ -83,7 +83,7 @@ python -m pipx ensurepath
 #### 2. Installing so-vits-svc-fork
 
 ```shell
-pipx install so-vits-svc-fork --python=3.10
+pipx install so-vits-svc-fork --python=3.11
 pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url=https://download.pytorch.org/whl/cu121 # https://download.pytorch.org/whl/nightly/cu121
 ```
 
@@ -95,21 +95,21 @@ pipx inject so-vits-svc-fork torch torchaudio --pip-args="--upgrade" --index-url
 Windows:
 
 ```shell
-py -3.10 -m venv venv
+py -3.11 -m venv venv
 venv\Scripts\activate
 ```
 
 Linux/MacOS:
 
 ```shell
-python3.10 -m venv venv
+python3.11 -m venv venv
 source venv/bin/activate
 ```
 
 Anaconda:
 
 ```shell
-conda create -n so-vits-svc-fork python=3.10 pip
+conda create -n so-vits-svc-fork python=3.11 pip
 conda activate so-vits-svc-fork
 ```
 
