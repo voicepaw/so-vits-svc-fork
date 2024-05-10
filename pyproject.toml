@@ -58,6 +58,7 @@ lightning = "^2.0.1"
 fastapi = "==0.110.1"
 transformers = "^4.28.1"
 matplotlib = "^3.7.1"
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"
