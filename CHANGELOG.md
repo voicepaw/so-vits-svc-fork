@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.1 (2024-05-10)
+
+### Fix
+
+* **deps:** Support Python 3.12, end support for Python 3.8, explicitly specify click as a dependency, update deps ([#1165](https://github.com/voicepaw/so-vits-svc-fork/issues/1165)) ([`a7ceffa`](https://github.com/voicepaw/so-vits-svc-fork/commit/a7ceffa57566082f2a4ce9842be236505681d629))
+
 ## v4.2.0 (2024-04-11)
 
 ### Feature
