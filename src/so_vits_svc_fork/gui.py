@@ -350,7 +350,9 @@ def main():
                 sg.FileBrowse(
                     initial_folder=".",
                     key="input_path_browse",
-                    file_types=get_supported_file_types_concat(),
+                    file_types=get_supported_file_types_concat()
+                    if os.name == "nt"
+                    else get_supported_file_types(),
                 ),
                 sg.FolderBrowse(
                     button_text="Browse(Folder)",
