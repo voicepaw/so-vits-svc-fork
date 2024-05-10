@@ -6,7 +6,6 @@ import os
 from copy import copy
 from logging import getLogger
 from pathlib import Path
-from sys import platform
 
 import PySimpleGUI as sg
 import sounddevice as sd
@@ -95,8 +94,6 @@ def get_supported_file_types() -> tuple[tuple[str, str], ...]:
 
 
 def get_supported_file_types_concat() -> tuple[tuple[str, str], ...]:
-    if platform.startswith("linux"):  # fix for issue 602
-        return get_supported_file_types()
     return (("Audio", " ".join(sf.available_formats().keys())),)
 
 
@@ -353,7 +350,9 @@ def main():
                 sg.FileBrowse(
                     initial_folder=".",
                     key="input_path_browse",
-                    file_types=get_supported_file_types_concat(),
+                    file_types=get_supported_file_types_concat()
+                    if os.name == "nt"
+                    else get_supported_file_types(),
                 ),
                 sg.FolderBrowse(
                     button_text="Browse(Folder)",
