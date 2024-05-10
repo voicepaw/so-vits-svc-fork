@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.2 (2024-05-10)
+
+### Fix
+
+* **gui:** Fix format selection for the input audio in non-Windows ([#1159](https://github.com/voicepaw/so-vits-svc-fork/issues/1159)) ([`8168cb4`](https://github.com/voicepaw/so-vits-svc-fork/commit/8168cb404648c23e3ac5f3d2418bf38a606710e4))
+
 ## v4.2.1 (2024-05-10)
 
 ### Fix
