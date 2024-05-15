@@ -48,7 +48,7 @@ torch = "^2"
 torchaudio = "*"
 tensorboard = "*"
 rich = "*"
-tqdm-joblib = "^0.0.3"
+tqdm-joblib = "^0.0.4"
 tensorboardx = "*"
 cm-time = ">=0.1.2"
 pysimplegui = ">=4.6,<5" # never update this, advertising popup window will be shown
