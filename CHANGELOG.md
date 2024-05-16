@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.4 (2024-05-16)
+
+### Fix
+
+* **deps:** Update dependency tqdm-joblib to ^0.0.4 ([#1172](https://github.com/voicepaw/so-vits-svc-fork/issues/1172)) ([`06ea73c`](https://github.com/voicepaw/so-vits-svc-fork/commit/06ea73cd3a82cc058df5b5973aa6edf97d4d708e))
+
 ## v4.2.3 (2024-05-10)
 
 ### Fix
