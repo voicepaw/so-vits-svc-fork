@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.7 (2024-05-22)
+
+### Fix
+
+* **deps:** Update dependency requests to v2.32.2 ([#1178](https://github.com/voicepaw/so-vits-svc-fork/issues/1178)) ([`28e1be1`](https://github.com/voicepaw/so-vits-svc-fork/commit/28e1be1ef191badbe314cf232e932646fd6811d1))
+
 ## v4.2.6 (2024-05-18)
 
 ### Fix
