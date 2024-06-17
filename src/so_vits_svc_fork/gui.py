@@ -86,9 +86,11 @@ def get_supported_file_types() -> tuple[tuple[str, str], ...]:
     common_file_types = ["WAV", "MP3", "FLAC", "OGG", "M4A", "WMA"]
     res = sorted(
         res,
-        key=lambda x: common_file_types.index(x[0])
-        if x[0] in common_file_types
-        else len(common_file_types),
+        key=lambda x: (
+            common_file_types.index(x[0])
+            if x[0] in common_file_types
+            else len(common_file_types)
+        ),
     )
     return res
 
@@ -187,15 +189,19 @@ def main():
                 sg.Push(),
                 sg.InputText(
                     key="model_path",
-                    default_text=model_candidates[-1].absolute().as_posix()
-                    if model_candidates
-                    else "",
+                    default_text=(
+                        model_candidates[-1].absolute().as_posix()
+                        if model_candidates
+                        else ""
+                    ),
                     enable_events=True,
                 ),
                 sg.FileBrowse(
-                    initial_folder=Path("./logs/44k/").absolute
-                    if Path("./logs/44k/").exists()
-                    else Path(".").absolute().as_posix(),
+                    initial_folder=(
+                        Path("./logs/44k/").absolute
+                        if Path("./logs/44k/").exists()
+                        else Path(".").absolute().as_posix()
+                    ),
                     key="model_path_browse",
                     file_types=(
                         ("PyTorch", "G_*.pth G_*.pt"),
@@ -208,15 +214,19 @@ def main():
                 sg.Push(),
                 sg.InputText(
                     key="config_path",
-                    default_text=Path("./configs/44k/config.json").absolute().as_posix()
-                    if Path("./configs/44k/config.json").exists()
-                    else "",
+                    default_text=(
+                        Path("./configs/44k/config.json").absolute().as_posix()
+                        if Path("./configs/44k/config.json").exists()
+                        else ""
+                    ),
                     enable_events=True,
                 ),
                 sg.FileBrowse(
-                    initial_folder=Path("./configs/44k/").as_posix()
-                    if Path("./configs/44k/").exists()
-                    else Path(".").absolute().as_posix(),
+                    initial_folder=(
+                        Path("./configs/44k/").as_posix()
+                        if Path("./configs/44k/").exists()
+                        else Path(".").absolute().as_posix()
+                    ),
                     key="config_path_browse",
                     file_types=(("JSON", "*.json"),),
                 ),
@@ -226,15 +236,17 @@ def main():
                 sg.Push(),
                 sg.InputText(
                     key="cluster_model_path",
-                    default_text=Path("./logs/44k/kmeans.pt").absolute().as_posix()
-                    if Path("./logs/44k/kmeans.pt").exists()
-                    else "",
+                    default_text=(
+                        Path("./logs/44k/kmeans.pt").absolute().as_posix()
+                        if Path("./logs/44k/kmeans.pt").exists()
+                        else ""
+                    ),
                     enable_events=True,
                 ),
                 sg.FileBrowse(
-                    initial_folder="./logs/44k/"
-                    if Path("./logs/44k/").exists()
-                    else ".",
+                    initial_folder=(
+                        "./logs/44k/" if Path("./logs/44k/").exists() else "."
+                    ),
                     key="cluster_model_path_browse",
                     file_types=(("PyTorch", "*.pt"), ("Pickle", "*.pt *.pth *.pkl")),
                 ),
@@ -350,9 +362,11 @@ def main():
                 sg.FileBrowse(
                     initial_folder=".",
                     key="input_path_browse",
-                    file_types=get_supported_file_types_concat()
-                    if os.name == "nt"
-                    else get_supported_file_types(),
+                    file_types=(
+                        get_supported_file_types_concat()
+                        if os.name == "nt"
+                        else get_supported_file_types()
+                    ),
                 ),
                 sg.FolderBrowse(
                     button_text="Browse(Folder)",
@@ -737,9 +751,11 @@ def main():
                             recursive=True,
                             # svc config
                             speaker=values["speaker"],
-                            cluster_model_path=Path(values["cluster_model_path"])
-                            if values["cluster_model_path"]
-                            else None,
+                            cluster_model_path=(
+                                Path(values["cluster_model_path"])
+                                if values["cluster_model_path"]
+                                else None
+                            ),
                             transpose=values["transpose"],
                             auto_predict_f0=values["auto_predict_f0"],
                             cluster_infer_ratio=values["cluster_infer_ratio"],
@@ -751,9 +767,9 @@ def main():
                             chunk_seconds=values["chunk_seconds"],
                             absolute_thresh=values["absolute_thresh"],
                             max_chunk_seconds=values["max_chunk_seconds"],
-                            device="cpu"
-                            if not values["use_gpu"]
-                            else get_optimal_device(),
+                            device=(
+                                "cpu" if not values["use_gpu"] else get_optimal_device()
+                            ),
                         ),
                     )
                     infer_future.add_done_callback(
@@ -784,9 +800,11 @@ def main():
                         config_path=Path(values["config_path"]),
                         speaker=values["speaker"],
                         # svc config
-                        cluster_model_path=Path(values["cluster_model_path"])
-                        if values["cluster_model_path"]
-                        else None,
+                        cluster_model_path=(
+                            Path(values["cluster_model_path"])
+                            if values["cluster_model_path"]
+                            else None
+                        ),
                         transpose=values["transpose"],
                         auto_predict_f0=values["auto_predict_f0"],
                         cluster_infer_ratio=values["cluster_infer_ratio"],
