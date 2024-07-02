@@ -2,6 +2,16 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.11 (2024-07-02)
+
+### Fix
+
+* **deps:** Update dependency onnx to v1.16.1 ([#1186](https://github.com/voicepaw/so-vits-svc-fork/issues/1186)) ([`0d7ed17`](https://github.com/voicepaw/so-vits-svc-fork/commit/0d7ed171011bdcdf4ec701d1df53573ced09ddbf))
+
+### Documentation
+
+* Update docs ([#1195](https://github.com/voicepaw/so-vits-svc-fork/issues/1195)) ([`94b2412`](https://github.com/voicepaw/so-vits-svc-fork/commit/94b2412f95ee6cb194c37ae558c9ca03b23402db))
+
 ## v4.2.10 (2024-07-02)
 
 ### Fix
