@@ -51,7 +51,6 @@ rich = "*"
 tqdm-joblib = "^0.0.4"
 tensorboardx = "*"
 cm-time = ">=0.1.2"
-pysimplegui = ">=4.6,<5" # never update this, advertising popup window will be shown
 pebble = ">=5.0"
 torchcrepe = ">=0.0.17"
 lightning = "^2.0.1"
@@ -60,6 +59,7 @@ transformers = "^4.28.1"
 matplotlib = "^3.7.1"
 click = "^8.1.7"
 setuptools = "^69.5.1"
+pysimplegui-4-foss = "^4.60.4.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = ">=3"
