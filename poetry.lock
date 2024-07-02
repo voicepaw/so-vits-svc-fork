@@ -2702,14 +2702,13 @@ files = [
 diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
-name = "pysimplegui"
-version = "4.59.0"
-description = "Python GUIs for Humans. Launched in 2018. It's 2022 & PySimpleGUI is an ACTIVE & supported project. Super-simple to create custom GUI's. 325+ Demo programs & Cookbook for rapid start. Extensive documentation. Main docs at www.PySimpleGUI.org. Fun & your success are the focus. Examples using Machine Learning (GUI, OpenCV Integration), Rainmeter Style Desktop Widgets, Matplotlib + Pyplot, PIL support, add GUI to command line scripts, PDF & Image Viewers. Great for beginners & advanced GUI programmers."
+name = "pysimplegui-4-foss"
+version = "4.60.4.1"
+description = "THIS IS A MIRROR OF THE FINAL VERSION OF PYSIMPLEGUI4 THAT WAS FOSS. No further updates/support."
 optional = false
 python-versions = "*"
 files = [
-    {file = "PySimpleGUI-4.59.0-py3-none-any.whl", hash = "sha256:1642db0b2cbe59c50da40b86af51cda3abbda6ddcad40bd04c0a0550112b3d46"},
-    {file = "PySimpleGUI-4.59.0.tar.gz", hash = "sha256:196e81c0a437eac4893595f2ee69515b9841e608d351bd3c577dd7a913454f51"},
+    {file = "PySimpleGUI_4_foss-4.60.4.1-py3-none-any.whl", hash = "sha256:77656e9f40f4f9592fc64f73899303003f7346e1dcf7c3d0d7a0fd9b0f3cac43"},
 ]
 
 [[package]]
@@ -4212,4 +4211,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "4599d25ff7676d4aadf8c75a22c48195105ba5ae2ce610f5cc9ca75c7d42caa7"
+content-hash = "78f1e234d3f615d461649c09d7b2875629b058d7edfbd3be250bbd034f9d759e"
