@@ -58,7 +58,7 @@ fastapi = "==0.111.0"
 transformers = "^4.28.1"
 matplotlib = "^3.7.1"
 click = "^8.1.7"
-setuptools = "^69.5.1"
+setuptools = "^70.0.0"
 pysimplegui-4-foss = "^4.60.4.1"
 
 [tool.poetry.group.dev.dependencies]
