@@ -57,7 +57,7 @@ There are too many alternatives to list here but:
 - [yxlllc/DDSP\-SVC](https://github.com/yxlllc/DDSP-SVC) - new releases are issued occasionally. [yxlllc/ReFlow\-VAE\-SVC](https://github.com/yxlllc/ReFlow-VAE-SVC)
 - [coqui\-ai/TTS](https://github.com/coqui-ai/TTS) was for TTS but was partially modular. However, it is not maintained anymore, unfortunately.
 
-Elsewhere, several start-ups have improved and marketed voice changers, but I don't know if they do well.
+Elsewhere, several start-ups have improved and marketed voice changers (probably for profit).
 
 > Updates to this repository have been limited to maintenance since Spring 2023.
 > ~~It is difficult to narrow the list of alternatives here, but please consider trying other projects if you are looking for a voice changer with even better performance (especially in terms of latency other than quality).~~ > ~~However, this project may be ideal for those who want to try out voice conversion for the moment (because it is easy to install).~~
