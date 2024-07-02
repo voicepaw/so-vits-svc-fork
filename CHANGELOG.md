@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.10 (2024-07-02)
+
+### Fix
+
+* **deps:** Replace pysimplegui with pysimplegui-4-foss ([#1194](https://github.com/voicepaw/so-vits-svc-fork/issues/1194)) ([`34e2e77`](https://github.com/voicepaw/so-vits-svc-fork/commit/34e2e77a7f258e09f4661a96645a5f79d761cbed))
+
 ## v4.2.9 (2024-05-23)
 
 ### Fix
