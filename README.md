@@ -32,16 +32,40 @@
   <img src="https://img.shields.io/pypi/l/so-vits-svc-fork.svg?style=flat-square" alt="License">
 </p>
 
-A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with **realtime support** and **greatly improved interface**. Based on branch `4.0` (v1) (or `4.1`) and the models are compatible.
+A fork of [`so-vits-svc`](https://github.com/svc-develop-team/so-vits-svc) with **realtime support** and **greatly improved interface**. Based on branch `4.0` (v1) (or `4.1`) and the models are compatible. `4.1` models are not supported. Other models are also not supported.
+
+## No Longer Maintained
+
+### Reasons
+
+- Within a year, the technology has evolved enormously and there are many better alternatives
+- Was hoping to create a more Modular, easy-to-install repository, but didn't have the skills, time, money to do so
+- PySimpleGUI is no longer LGPL
+- Using Typer is getting more popular than directly using Click
+
+### Alternatives
+
+Always beware of the very few influencers who are **quite overly surprised** about any new project/technology. You need to take every social networking post with semi-doubt.
+
+The voice changer boom that occurred in 2023 has come to an end, and many developers, not just those in this repository, have been not very active for a while.
+
+There are too many alternatives to list here but:
+
+- RVC family: [IAHispano/Applio](https://github.com/IAHispano/Applio) (MIT), [fumiama's RVC](https://github.com/fumiama/Retrieval-based-Voice-Conversion-WebUI) (AGPL) and [original RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) (MIT)
+- [VCClient](https://github.com/w-okada/voice-changer) (MIT etc.) is quite actively maintained and offers web-based GUI for real-time conversion.
+- [fish-diffusion](https://github.com/fishaudio/fish-diffusion/commits/main/) tried to be quite modular but not quite actively maintained.
+- [yxlllc/DDSP\-SVC](https://github.com/yxlllc/DDSP-SVC) - new releases are issued occasionally. [yxlllc/ReFlow\-VAE\-SVC](https://github.com/yxlllc/ReFlow-VAE-SVC)
+- [coqui\-ai/TTS](https://github.com/coqui-ai/TTS) was for TTS but was partially modular. However, it is not maintained anymore, unfortunately.
+
+Elsewhere, several start-ups have improved and marketed voice changers (probably for profit).
 
 > Updates to this repository have been limited to maintenance since Spring 2023.
-> It is difficult to narrow the list of alternatives here, but please consider trying other projects if you are looking for a voice changer with even better performance (especially in terms of latency other than quality).
-> However, this project may be ideal for those who want to try out voice conversion for the moment (because it is easy to install).
+> ~~It is difficult to narrow the list of alternatives here, but please consider trying other projects if you are looking for a voice changer with even better performance (especially in terms of latency other than quality).~~ > ~~However, this project may be ideal for those who want to try out voice conversion for the moment (because it is easy to install).~~
 
 ## Features not available in the original repo
 
 - **Realtime voice conversion** (enhanced in v1.1.0)
-- Integrates [`QuickVC`](https://github.com/quickvc/QuickVC-VoiceConversion)
+- Partially integrates [`QuickVC`](https://github.com/quickvc/QuickVC-VoiceConversion)
 - Fixed misuse of [`ContentVec`](https://github.com/auspicious3000/contentvec) in the original repository.[^c]
 - More accurate pitch estimation using [`CREPE`](https://github.com/marl/crepe/).
 - GUI and unified CLI available
