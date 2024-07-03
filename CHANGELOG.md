@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.13 (2024-07-03)
+
+### Fix
+
+* **deps:** Update dependency sounddevice to v0.4.7 ([#1198](https://github.com/voicepaw/so-vits-svc-fork/issues/1198)) ([`4df53c2`](https://github.com/voicepaw/so-vits-svc-fork/commit/4df53c22579c9bfe236953bfe238dde0179cfaca))
+
 ## v4.2.12 (2024-07-03)
 
 ### Fix
