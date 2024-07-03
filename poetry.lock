@@ -4125,13 +4125,13 @@ torch = "2.3.1"
 
 [[package]]
 name = "torchcrepe"
-version = "0.0.22"
+version = "0.0.23"
 description = "Pytorch implementation of CREPE pitch tracker"
 optional = false
 python-versions = "*"
 files = [
-    {file = "torchcrepe-0.0.22-py3-none-any.whl", hash = "sha256:5279c76c202cd7968e7d9a7ee2a5af9451b1a4338ed8e4ad385e357ad355fcff"},
-    {file = "torchcrepe-0.0.22.tar.gz", hash = "sha256:80afa152af0fce02c6d13071996b8c5aa3ded7110ef600b41150f267d54d10a2"},
+    {file = "torchcrepe-0.0.23-py3-none-any.whl", hash = "sha256:6e104465b89e763ba7fd0d1b228162783ed4b5a6c5735772baca286c20d7ae2c"},
+    {file = "torchcrepe-0.0.23.tar.gz", hash = "sha256:8f7e75638a5ab3fbb9cfc1704c173adbcb61de73dbdadcf428b3d93b54dfe57f"},
 ]
 
 [package.dependencies]
@@ -4139,6 +4139,7 @@ librosa = ">=0.9.1"
 resampy = "*"
 scipy = "*"
 torch = "*"
+torchaudio = "*"
 tqdm = "*"
 
 [[package]]
