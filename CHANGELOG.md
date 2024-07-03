@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.15 (2024-07-03)
+
+### Fix
+
+* **deps:** Update dependency torchcrepe to v0.0.23 ([#1200](https://github.com/voicepaw/so-vits-svc-fork/issues/1200)) ([`2d76d82`](https://github.com/voicepaw/so-vits-svc-fork/commit/2d76d82df14afc3ec6b89770997f267237f98d53))
+
 ## v4.2.14 (2024-07-03)
 
 ### Fix
