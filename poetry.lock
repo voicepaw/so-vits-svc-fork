@@ -1476,13 +1476,13 @@ tests = ["matplotlib (>=3.3.0)", "packaging (>=20.0)", "pytest", "pytest-cov", "
 
 [[package]]
 name = "lightning"
-version = "2.3.1"
+version = "2.3.2"
 description = "The Deep Learning framework to train, deploy, and ship AI products Lightning fast."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "lightning-2.3.1-py3-none-any.whl", hash = "sha256:9325b79b52db79e86bd337ef6cd5763e37cfb93e26677199e529694e65b38d57"},
-    {file = "lightning-2.3.1.tar.gz", hash = "sha256:29cf87270a1779984d3614f7f748af57e3695396a25e814119840894505c334c"},
+    {file = "lightning-2.3.2-py3-none-any.whl", hash = "sha256:543e035389fa18bc3309ed508116f316ff738149d91b9ae4cea8e1ca1b85df7a"},
+    {file = "lightning-2.3.2.tar.gz", hash = "sha256:6d02862e7e8c9e6903c06314296d0950e677f7e67ad615c3262fe7c73d95f4b8"},
 ]
 
 [package.dependencies]
