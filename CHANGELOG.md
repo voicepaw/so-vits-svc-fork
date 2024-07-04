@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.16 (2024-07-04)
+
+### Fix
+
+* **deps:** Update dependency scipy to v1.14.0 ([#1185](https://github.com/voicepaw/so-vits-svc-fork/issues/1185)) ([`45a1167`](https://github.com/voicepaw/so-vits-svc-fork/commit/45a1167f9d09a822e9dca2b497bed08edca6e919))
+
 ## v4.2.15 (2024-07-03)
 
 ### Fix
