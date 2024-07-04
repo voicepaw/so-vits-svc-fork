@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.20 (2024-07-04)
+
+### Fix
+
+* **deps:** Update dependency tensorboard to v2.17.0 ([#1208](https://github.com/voicepaw/so-vits-svc-fork/issues/1208)) ([`e5f3c13`](https://github.com/voicepaw/so-vits-svc-fork/commit/e5f3c1354dcda41c1fa3e518d0d5bc204800f03c))
+
 ## v4.2.19 (2024-07-04)
 
 ### Fix
