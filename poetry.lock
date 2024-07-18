@@ -2467,20 +2467,21 @@ files = [
 
 [[package]]
 name = "pip-licenses"
-version = "4.4.0"
+version = "4.5.1"
 description = "Dump the software license list of Python packages installed with pip."
 optional = false
 python-versions = "~=3.8"
 files = [
-    {file = "pip-licenses-4.4.0.tar.gz", hash = "sha256:996817118375445243a34faafe23c06f6b2d250247c4046571b5a6722d45be69"},
-    {file = "pip_licenses-4.4.0-py3-none-any.whl", hash = "sha256:dbad2ac5a25f574cabe2716f2f031a0c5fa359bed9b3ef615301f4e546893b46"},
+    {file = "pip-licenses-4.5.1.tar.gz", hash = "sha256:fad5f56fbaa56b8e414434e36c32394a9412ff10ddf2cef92b51951bdf193869"},
+    {file = "pip_licenses-4.5.1-py3-none-any.whl", hash = "sha256:7c982bc6837f47d32d4016b43d9174c0ce723b450710a2111a3ebbb910f152b7"},
 ]
 
 [package.dependencies]
 prettytable = ">=2.3.0"
+tomli = ">=2"
 
 [package.extras]
-test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner"]
+test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner", "tomli-w"]
 
 [[package]]
 name = "pipdeptree"
