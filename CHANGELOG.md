@@ -2,6 +2,12 @@
 
 <!--next-version-placeholder-->
 
+## v4.2.26 (2024-07-29)
+
+### Fix
+
+* **deps:** Update dependency transformers to v4.43.3 ([#1226](https://github.com/voicepaw/so-vits-svc-fork/issues/1226)) ([`bd9262f`](https://github.com/voicepaw/so-vits-svc-fork/commit/bd9262f546eb9aaa8d9f9641f2d1faa361cf8ea8))
+
 ## v4.2.25 (2024-07-29)
 
 ### Fix
