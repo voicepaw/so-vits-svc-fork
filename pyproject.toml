@@ -66,7 +66,7 @@ pre-commit = ">=3"
 pytest = "^8.0.0"
 pytest-cov = "^4.0.0"
 pipdeptree = "^2.7.0"
-pip-licenses = "^4.3.1"
+pip-licenses = "^5.0.0"
 
 [tool.poetry.group.docs]
 optional = true

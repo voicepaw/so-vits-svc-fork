@@ -2436,13 +2436,13 @@ files = [
 
 [[package]]
 name = "pip-licenses"
-version = "4.5.1"
+version = "5.0.0"
 description = "Dump the software license list of Python packages installed with pip."
 optional = false
-python-versions = "~=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "pip-licenses-4.5.1.tar.gz", hash = "sha256:fad5f56fbaa56b8e414434e36c32394a9412ff10ddf2cef92b51951bdf193869"},
-    {file = "pip_licenses-4.5.1-py3-none-any.whl", hash = "sha256:7c982bc6837f47d32d4016b43d9174c0ce723b450710a2111a3ebbb910f152b7"},
+    {file = "pip_licenses-5.0.0-py3-none-any.whl", hash = "sha256:82c83666753efb86d1af1c405c8ab273413eb10d6689c218df2f09acf40e477d"},
+    {file = "pip_licenses-5.0.0.tar.gz", hash = "sha256:0633a1f9aab58e5a6216931b0e1d5cdded8bcc2709ff563674eb0e2ff9e77e8e"},
 ]
 
 [package.dependencies]
@@ -2450,7 +2450,7 @@ prettytable = ">=2.3.0"
 tomli = ">=2"
 
 [package.extras]
-test = ["docutils", "mypy", "pytest-cov", "pytest-pycodestyle", "pytest-runner", "tomli-w"]
+dev = ["autopep8", "black", "docutils", "isort", "mypy", "pip-tools", "pypandoc", "pytest-cov", "pytest-pycodestyle", "pytest-runner", "tomli-w", "twine", "wheel"]
 
 [[package]]
 name = "pipdeptree"
@@ -4642,4 +4642,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.13"
-content-hash = "0cab732f66375a03a9ee2ef082d23b3854fc4e22d47653bbea47cc4293048970"
+content-hash = "74853ff6adaa3853dfc26f51a2aaaa205522eb7e292d666e45d083d1c3d2e04b"
