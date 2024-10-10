@@ -75,9 +75,9 @@ def infer(
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
-        cluster_model_path=cluster_model_path.as_posix()
-        if cluster_model_path
-        else None,
+        cluster_model_path=(
+            cluster_model_path.as_posix() if cluster_model_path else None
+        ),
         device=device,
     )
 
@@ -148,9 +148,9 @@ def realtime(
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
-        cluster_model_path=cluster_model_path.as_posix()
-        if cluster_model_path
-        else None,
+        cluster_model_path=(
+            cluster_model_path.as_posix() if cluster_model_path else None
+        ),
         device=device,
     )
 
