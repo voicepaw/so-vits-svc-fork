@@ -389,7 +389,6 @@ def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path
         return None
     return paths[-1]
 
-
 def plot_spectrogram_to_numpy(spectrogram: ndarray) -> ndarray:
     matplotlib.use("Agg")
     fig, ax = plt.subplots(figsize=(10, 2))
@@ -400,8 +399,10 @@ def plot_spectrogram_to_numpy(spectrogram: ndarray) -> ndarray:
     plt.tight_layout()
 
     fig.canvas.draw()
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep="")
-    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    # Use np.frombuffer instead of np.fromstring
+    buf = fig.canvas.tostring_argb()
+    data = np.frombuffer(buf, dtype=np.uint8)
+    data = data.reshape(fig.canvas.get_width_height()[::-1] + (4,)) # ARGB has 4 channels
     plt.close()
     return data
 
@@ -451,8 +452,10 @@ def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
     plt.tight_layout()
 
     fig.canvas.draw()
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep="")
-    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    # Use np.frombuffer instead of np.fromstring
+    buf = fig.canvas.tostring_argb()
+    data = np.frombuffer(buf, dtype=np.uint8)
+    data = data.reshape(fig.canvas.get_width_height()[::-1] + (4,)) # ARGB has 4 channels
     plt.close()
     return data
 
