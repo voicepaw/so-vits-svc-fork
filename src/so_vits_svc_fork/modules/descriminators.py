@@ -123,9 +123,7 @@ class MultiPeriodDiscriminator(torch.nn.Module):
         periods = [2, 3, 5, 7, 11]
 
         discs = [DiscriminatorS(use_spectral_norm=use_spectral_norm)]
-        discs = discs + [
-            DiscriminatorP(i, use_spectral_norm=use_spectral_norm) for i in periods
-        ]
+        discs = discs + [DiscriminatorP(i, use_spectral_norm=use_spectral_norm) for i in periods]
         self.discriminators = nn.ModuleList(discs)
 
     def forward(self, y, y_hat):
@@ -154,9 +152,7 @@ class MultiScaleDiscriminator(torch.nn.Module):
                 DiscriminatorS(),
             ]
         )
-        self.meanpools = nn.ModuleList(
-            [AvgPool1d(4, 2, padding=2), AvgPool1d(4, 2, padding=2)]
-        )
+        self.meanpools = nn.ModuleList([AvgPool1d(4, 2, padding=2), AvgPool1d(4, 2, padding=2)])
 
     def forward(self, y, y_hat):
         y_d_rs = []

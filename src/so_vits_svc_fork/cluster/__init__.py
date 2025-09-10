@@ -9,9 +9,7 @@ from sklearn.cluster import KMeans
 
 def get_cluster_model(ckpt_path: Path | str):
     with Path(ckpt_path).open("rb") as f:
-        checkpoint = torch.load(
-            f, map_location="cpu"
-        )  # Danger of arbitrary code execution
+        checkpoint = torch.load(f, map_location="cpu")  # Danger of arbitrary code execution
     kmeans_dict = {}
     for spk, ckpt in checkpoint.items():
         km = KMeans(ckpt["n_features_in_"])

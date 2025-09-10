@@ -29,19 +29,13 @@ def train_cluster(
         features = []
         for path in input_dir.rglob("*.data.pt"):
             with path.open("rb") as f:
-                features.append(
-                    torch.load(f, weights_only=True)["content"].squeeze(0).numpy().T
-                )
+                features.append(torch.load(f, weights_only=True)["content"].squeeze(0).numpy().T)
         if not features:
             raise ValueError(f"No features found in {input_dir}")
         features = np.concatenate(features, axis=0).astype(np.float32)
         if features.shape[0] < n_clusters:
-            raise ValueError(
-                "Too few HuBERT features to cluster. Consider using a smaller number of clusters."
-            )
-        LOG.info(
-            f"shape: {features.shape}, size: {features.nbytes/1024**2:.2f} MB, dtype: {features.dtype}"
-        )
+            raise ValueError("Too few HuBERT features to cluster. Consider using a smaller number of clusters.")
+        LOG.info(f"shape: {features.shape}, size: {features.nbytes / 1024**2:.2f} MB, dtype: {features.dtype}")
         with timer() as t:
             if use_minibatch:
                 kmeans = MiniBatchKMeans(
@@ -52,9 +46,7 @@ def train_cluster(
                     n_init="auto",
                 ).fit(features)
             else:
-                kmeans = KMeans(
-                    n_clusters=n_clusters, verbose=verbose, n_init="auto"
-                ).fit(features)
+                kmeans = KMeans(n_clusters=n_clusters, verbose=verbose, n_init="auto").fit(features)
         LOG.info(f"Clustering took {t.elapsed:.2f} seconds")
 
         x = {
@@ -80,18 +72,11 @@ def train_cluster(
                 n_init="auto",
             )
             for i in range(0, len(paths), batch_size):
-                LOG.info(
-                    f"Processing batch {i//batch_size+1}/{n_batches} for speaker {input_dir.stem}"
-                )
+                LOG.info(f"Processing batch {i // batch_size + 1}/{n_batches} for speaker {input_dir.stem}")
                 features = []
                 for path in paths[i : i + batch_size]:
                     with path.open("rb") as f:
-                        features.append(
-                            torch.load(f, weights_only=True)["content"]
-                            .squeeze(0)
-                            .numpy()
-                            .T
-                        )
+                        features.append(torch.load(f, weights_only=True)["content"].squeeze(0).numpy().T)
                 features = np.concatenate(features, axis=0).astype(np.float32)
                 kmeans.partial_fit(features)
         LOG.info(f"Clustering took {t.elapsed:.2f} seconds")

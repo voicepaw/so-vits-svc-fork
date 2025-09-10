@@ -33,9 +33,7 @@ class iSTFT_Generator(torch.nn.Module):
 
         self.num_kernels = len(resblock_kernel_sizes)
         self.num_upsamples = len(upsample_rates)
-        self.conv_pre = weight_norm(
-            Conv1d(initial_channel, upsample_initial_channel, 7, 1, padding=3)
-        )
+        self.conv_pre = weight_norm(Conv1d(initial_channel, upsample_initial_channel, 7, 1, padding=3))
         resblock = modules.ResBlock1 if resblock == "1" else modules.ResBlock2
 
         self.ups = nn.ModuleList()
@@ -55,9 +53,7 @@ class iSTFT_Generator(torch.nn.Module):
         self.resblocks = nn.ModuleList()
         for i in range(len(self.ups)):
             ch = upsample_initial_channel // (2 ** (i + 1))
-            for j, (k, d) in enumerate(
-                zip(resblock_kernel_sizes, resblock_dilation_sizes)
-            ):
+            for j, (k, d) in enumerate(zip(resblock_kernel_sizes, resblock_dilation_sizes)):
                 self.resblocks.append(resblock(ch, k, d))
 
         self.post_n_fft = self.gen_istft_n_fft
@@ -121,9 +117,7 @@ class Multiband_iSTFT_Generator(torch.nn.Module):
         self.subbands = subbands
         self.num_kernels = len(resblock_kernel_sizes)
         self.num_upsamples = len(upsample_rates)
-        self.conv_pre = weight_norm(
-            Conv1d(initial_channel, upsample_initial_channel, 7, 1, padding=3)
-        )
+        self.conv_pre = weight_norm(Conv1d(initial_channel, upsample_initial_channel, 7, 1, padding=3))
         resblock = modules.ResBlock1 if resblock == "1" else modules.ResBlock2
 
         self.ups = nn.ModuleList()
@@ -143,9 +137,7 @@ class Multiband_iSTFT_Generator(torch.nn.Module):
         self.resblocks = nn.ModuleList()
         for i in range(len(self.ups)):
             ch = upsample_initial_channel // (2 ** (i + 1))
-            for j, (k, d) in enumerate(
-                zip(resblock_kernel_sizes, resblock_dilation_sizes)
-            ):
+            for j, (k, d) in enumerate(zip(resblock_kernel_sizes, resblock_dilation_sizes)):
                 self.resblocks.append(resblock(ch, k, d))
 
         self.post_n_fft = gen_istft_n_fft
@@ -153,9 +145,7 @@ class Multiband_iSTFT_Generator(torch.nn.Module):
         self.reflection_pad = torch.nn.ReflectionPad1d((1, 0))
         self.reshape_pixelshuffle = []
 
-        self.subband_conv_post = weight_norm(
-            Conv1d(ch, self.subbands * (self.post_n_fft + 2), 7, 1, padding=3)
-        )
+        self.subband_conv_post = weight_norm(Conv1d(ch, self.subbands * (self.post_n_fft + 2), 7, 1, padding=3))
 
         self.subband_conv_post.apply(init_weights)
 
@@ -187,9 +177,7 @@ class Multiband_iSTFT_Generator(torch.nn.Module):
         x = F.leaky_relu(x)
         x = self.reflection_pad(x)
         x = self.subband_conv_post(x)
-        x = torch.reshape(
-            x, (x.shape[0], self.subbands, x.shape[1] // self.subbands, x.shape[-1])
-        )
+        x = torch.reshape(x, (x.shape[0], self.subbands, x.shape[1] // self.subbands, x.shape[-1]))
 
         spec = torch.exp(x[:, :, : self.post_n_fft // 2 + 1, :])
         phase = math.pi * torch.sin(x[:, :, self.post_n_fft // 2 + 1 :, :])
@@ -212,9 +200,7 @@ class Multiband_iSTFT_Generator(torch.nn.Module):
                 ),
             ),
         )
-        y_mb_hat = torch.reshape(
-            y_mb_hat, (x.shape[0], self.subbands, 1, y_mb_hat.shape[-1])
-        )
+        y_mb_hat = torch.reshape(y_mb_hat, (x.shape[0], self.subbands, 1, y_mb_hat.shape[-1]))
         y_mb_hat = y_mb_hat.squeeze(-2)
 
         y_g_hat = pqmf.synthesis(y_mb_hat)
@@ -249,9 +235,7 @@ class Multistream_iSTFT_Generator(torch.nn.Module):
         self.subbands = subbands
         self.num_kernels = len(resblock_kernel_sizes)
         self.num_upsamples = len(upsample_rates)
-        self.conv_pre = weight_norm(
-            Conv1d(initial_channel, upsample_initial_channel, 7, 1, padding=3)
-        )
+        self.conv_pre = weight_norm(Conv1d(initial_channel, upsample_initial_channel, 7, 1, padding=3))
         resblock = modules.ResBlock1 if resblock == "1" else modules.ResBlock2
 
         self.ups = nn.ModuleList()
@@ -271,9 +255,7 @@ class Multistream_iSTFT_Generator(torch.nn.Module):
         self.resblocks = nn.ModuleList()
         for i in range(len(self.ups)):
             ch = upsample_initial_channel // (2 ** (i + 1))
-            for j, (k, d) in enumerate(
-                zip(resblock_kernel_sizes, resblock_dilation_sizes)
-            ):
+            for j, (k, d) in enumerate(zip(resblock_kernel_sizes, resblock_dilation_sizes)):
                 self.resblocks.append(resblock(ch, k, d))
 
         self.post_n_fft = gen_istft_n_fft
@@ -281,26 +263,18 @@ class Multistream_iSTFT_Generator(torch.nn.Module):
         self.reflection_pad = torch.nn.ReflectionPad1d((1, 0))
         self.reshape_pixelshuffle = []
 
-        self.subband_conv_post = weight_norm(
-            Conv1d(ch, self.subbands * (self.post_n_fft + 2), 7, 1, padding=3)
-        )
+        self.subband_conv_post = weight_norm(Conv1d(ch, self.subbands * (self.post_n_fft + 2), 7, 1, padding=3))
 
         self.subband_conv_post.apply(init_weights)
 
         self.gen_istft_n_fft = gen_istft_n_fft
         self.gen_istft_hop_size = gen_istft_hop_size
 
-        updown_filter = torch.zeros(
-            (self.subbands, self.subbands, self.subbands)
-        ).float()
+        updown_filter = torch.zeros((self.subbands, self.subbands, self.subbands)).float()
         for k in range(self.subbands):
             updown_filter[k, k, 0] = 1.0
         self.register_buffer("updown_filter", updown_filter)
-        self.multistream_conv_post = weight_norm(
-            Conv1d(
-                self.subbands, 1, kernel_size=63, bias=False, padding=get_padding(63, 1)
-            )
-        )
+        self.multistream_conv_post = weight_norm(Conv1d(self.subbands, 1, kernel_size=63, bias=False, padding=get_padding(63, 1)))
         self.multistream_conv_post.apply(init_weights)
 
     def forward(self, x, g=None):
@@ -328,9 +302,7 @@ class Multistream_iSTFT_Generator(torch.nn.Module):
         x = F.leaky_relu(x)
         x = self.reflection_pad(x)
         x = self.subband_conv_post(x)
-        x = torch.reshape(
-            x, (x.shape[0], self.subbands, x.shape[1] // self.subbands, x.shape[-1])
-        )
+        x = torch.reshape(x, (x.shape[0], self.subbands, x.shape[1] // self.subbands, x.shape[-1]))
 
         spec = torch.exp(x[:, :, : self.post_n_fft // 2 + 1, :])
         phase = math.pi * torch.sin(x[:, :, self.post_n_fft // 2 + 1 :, :])
@@ -353,9 +325,7 @@ class Multistream_iSTFT_Generator(torch.nn.Module):
                 ),
             ),
         )
-        y_mb_hat = torch.reshape(
-            y_mb_hat, (x.shape[0], self.subbands, 1, y_mb_hat.shape[-1])
-        )
+        y_mb_hat = torch.reshape(y_mb_hat, (x.shape[0], self.subbands, 1, y_mb_hat.shape[-1]))
         y_mb_hat = y_mb_hat.squeeze(-2)
 
         y_mb_hat = F.conv_transpose1d(

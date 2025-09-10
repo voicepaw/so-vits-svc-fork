@@ -29,24 +29,18 @@ def _process_one(
     except Exception as e:
         LOG.warning(f"Failed to read {input_path}: {e}")
         return
-    pipeline = Pipeline.from_pretrained(
-        "pyannote/speaker-diarization-3.1", use_auth_token=huggingface_token
-    )
+    pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token=huggingface_token)
     if pipeline is None:
         raise ValueError("Failed to load pipeline")
     pipeline = pipeline.to(torch.device("cuda"))
     LOG.info(f"Processing {input_path}. This may take a while...")
-    diarization = pipeline(
-        input_path, min_speakers=min_speakers, max_speakers=max_speakers
-    )
+    diarization = pipeline(input_path, min_speakers=min_speakers, max_speakers=max_speakers)
 
     LOG.info(f"Found {len(diarization)} tracks, writing to {output_dir}")
     speaker_count = defaultdict(int)
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    for segment, track, speaker in tqdm(
-        list(diarization.itertracks(yield_label=True)), desc=f"Writing {input_path}"
-    ):
+    for segment, track, speaker in tqdm(list(diarization.itertracks(yield_label=True)), desc=f"Writing {input_path}"):
         if segment.end - segment.start < 1:
             continue
         speaker_count[speaker] += 1

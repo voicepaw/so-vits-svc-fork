@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Iterable
 from logging import getLogger
 from pathlib import Path
-from typing import Iterable
 
 import librosa
 import soundfile
@@ -37,7 +37,8 @@ def _get_unique_filename(path: Path, existing_paths: Iterable[Path]) -> Path:
 
 
 def is_relative_to(path: Path, *other):
-    """Return True if the path is relative to another path or False.
+    """
+    Return True if the path is relative to another path or False.
     Python 3.9+ has Path.is_relative_to() method, but we need to support Python 3.8.
     """
     try:
@@ -57,7 +58,6 @@ def _preprocess_one(
     hop_seconds: float,
 ) -> None:
     """Preprocess one audio file."""
-
     try:
         audio, sr = librosa.load(input_path, sr=sr, mono=True)
 
@@ -109,14 +109,12 @@ def preprocess_resample(
         raise ValueError(f"No audio files found in {input_dir}")
     for in_path in in_paths:
         in_path_relative = in_path.relative_to(input_dir)
-        if not in_path.is_absolute() and is_relative_to(
-            in_path, Path("dataset_raw") / "44k"
-        ):
+        if not in_path.is_absolute() and is_relative_to(in_path, Path("dataset_raw") / "44k"):
             new_in_path_relative = in_path_relative.relative_to("44k")
             warnings.warn(
                 f"Recommended folder structure has changed since v1.0.0. "
                 "Please move your dataset directly under dataset_raw folder. "
-                f"Recoginzed {in_path_relative} as {new_in_path_relative}"
+                f"Recognized {in_path_relative} as {new_in_path_relative}"
             )
             in_path_relative = new_in_path_relative
 

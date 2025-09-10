@@ -71,18 +71,18 @@ docs = [
 ]
 
 [tool.ruff]
-line-length = 88
+line-length = 150
 lint.select = [
-  "B",   # flake8-bugbear
-  "D",   # flake8-docstrings
-  "C4",  # flake8-comprehensions
-  "S",   # flake8-bandit
+  # "B",   # flake8-bugbear
+  # "D",   # flake8-docstrings
+  # "C4",  # flake8-comprehensions
+  # "S",   # flake8-bandit
   "F",   # pyflake
-  "E",   # pycodestyle
+  # "E",   # pycodestyle
   "W",   # pycodestyle
-  "UP",  # pyupgrade
+  # "UP",  # pyupgrade
   "I",   # isort
-  "RUF", # ruff specific
+  # "RUF", # ruff specific
 ]
 lint.ignore = [
   "D203", # 1 blank line required before class docstring

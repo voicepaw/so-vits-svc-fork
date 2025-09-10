@@ -13,9 +13,7 @@ from tqdm.rich import tqdm
 LOG = getLogger(__name__)
 
 
-def preprocess_classify(
-    input_dir: Path | str, output_dir: Path | str, create_new: bool = True
-) -> None:
+def preprocess_classify(input_dir: Path | str, output_dir: Path | str, create_new: bool = True) -> None:
     # paths
     input_dir_ = Path(input_dir)
     output_dir_ = Path(output_dir)
@@ -78,8 +76,7 @@ def preprocess_classify(
         else:
             if len(folder_candidates) > 1:
                 LOG.warning(
-                    f"Multiple folders ({[x.name for x in folder_candidates]}) start with {key}. "
-                    f"Using first one ({folder_candidates[0].name})."
+                    f"Multiple folders ({[x.name for x in folder_candidates]}) start with {key}. Using first one ({folder_candidates[0].name})."
                 )
             folder = folder_candidates[0]
         folder.mkdir(exist_ok=True)

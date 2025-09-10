@@ -5,10 +5,11 @@ import os
 import re
 import subprocess
 import warnings
+from collections.abc import Sequence
 from itertools import groupby
 from logging import getLogger
 from pathlib import Path
-from typing import Any, Literal, Sequence
+from typing import Any, Literal
 
 import matplotlib
 import matplotlib.pylab as plt
@@ -37,7 +38,7 @@ def get_optimal_device(index: int = 0) -> torch.device:
         return torch.device("mps")
     else:
         try:
-            import torch_xla.core.xla_model as xm  # noqa
+            import torch_xla.core.xla_model as xm
 
             if xm.xrt_world_size() > 0:
                 return torch.device("xla")
@@ -98,23 +99,15 @@ PRETRAINED_MODEL_URLS = {
         ],
     ],
     "contentvec": [
-        [
-            "https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/checkpoint_best_legacy_500.pt"
-        ],
-        [
-            "https://huggingface.co/Himawari00/so-vits-svc4.0-pretrain-models/resolve/main/checkpoint_best_legacy_500.pt"
-        ],
-        [
-            "http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"
-        ],
+        ["https://huggingface.co/therealvul/so-vits-svc-4.0-init/resolve/main/checkpoint_best_legacy_500.pt"],
+        ["https://huggingface.co/Himawari00/so-vits-svc4.0-pretrain-models/resolve/main/checkpoint_best_legacy_500.pt"],
+        ["http://obs.cstcloud.cn/share/obs/sankagenkeshi/checkpoint_best_legacy_500.pt"],
     ],
 }
 from joblib import Parallel, delayed
 
 
-def ensure_pretrained_model(
-    folder_path: Path | str, type_: str | dict[str, str], **tqdm_kwargs: Any
-) -> tuple[Path, ...] | None:
+def ensure_pretrained_model(folder_path: Path | str, type_: str | dict[str, str], **tqdm_kwargs: Any) -> tuple[Path, ...] | None:
     folder_path = Path(folder_path)
 
     # new code
@@ -147,9 +140,7 @@ def ensure_pretrained_model(
         try:
             Parallel(n_jobs=len(paths))(
                 [
-                    delayed(download_file)(
-                        url, path, position=i, skip_if_exists=True, **tqdm_kwargs
-                    )
+                    delayed(download_file)(url, path, position=i, skip_if_exists=True, **tqdm_kwargs)
                     for i, (url, path) in enumerate(zip(model_urls, paths))
                 ]
             )
@@ -170,7 +161,8 @@ class HubertModelWithFinalProj(HubertModel):
 
 
 def remove_weight_norm_if_exists(module, name: str = "weight"):
-    r"""Removes the weight normalization reparameterization from a module.
+    r"""
+    Removes the weight normalization reparameterization from a module.
 
     Args:
         module (Module): containing module
@@ -179,6 +171,7 @@ def remove_weight_norm_if_exists(module, name: str = "weight"):
     Example:
         >>> m = weight_norm(nn.Linear(20, 40))
         >>> remove_weight_norm(m)
+
     """
     from torch.nn.utils.weight_norm import WeightNorm
 
@@ -189,9 +182,7 @@ def remove_weight_norm_if_exists(module, name: str = "weight"):
             return module
 
 
-def get_hubert_model(
-    device: str | torch.device, final_proj: bool = True
-) -> HubertModel:
+def get_hubert_model(device: str | torch.device, final_proj: bool = True) -> HubertModel:
     if final_proj:
         model = HubertModelWithFinalProj.from_pretrained("lengyue233/content-vec-best")
     else:
@@ -213,11 +204,7 @@ def get_content(
 ) -> torch.Tensor:
     audio = torch.as_tensor(audio)
     if sr != HUBERT_SAMPLING_RATE:
-        audio = (
-            torchaudio.transforms.Resample(sr, HUBERT_SAMPLING_RATE)
-            .to(audio.device)(audio)
-            .to(device)
-        )
+        audio = torchaudio.transforms.Resample(sr, HUBERT_SAMPLING_RATE).to(audio.device)(audio).to(device)
     if audio.ndim == 1:
         audio = audio.unsqueeze(0)
     with torch.no_grad(), timer() as t:
@@ -231,9 +218,7 @@ def get_content(
             c = cmodel(audio)["last_hidden_state"]
         c = c.transpose(1, 2)
     wav_len = audio.shape[-1] / HUBERT_SAMPLING_RATE
-    LOG.info(
-        f"HuBERT inference time  : {t.elapsed:.3f}s, RTF: {t.elapsed / wav_len:.3f}"
-    )
+    LOG.info(f"HuBERT inference time  : {t.elapsed:.3f}s, RTF: {t.elapsed / wav_len:.3f}")
     return c
 
 
@@ -241,9 +226,9 @@ def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> Non
     not_in_to = list(filter(lambda x: x not in to_, from_.keys()))
     not_in_from = list(filter(lambda x: x not in from_, to_.keys()))
     if not_in_to:
-        warnings.warn(f"Keys not found in model state dict:" f"{not_in_to}")
+        warnings.warn(f"Keys not found in model state dict:{not_in_to}")
     if not_in_from:
-        warnings.warn(f"Keys not found in checkpoint state dict:" f"{not_in_from}")
+        warnings.warn(f"Keys not found in checkpoint state dict:{not_in_from}")
     shape_missmatch = []
     for k, v in from_.items():
         if k not in to_:
@@ -261,9 +246,7 @@ def _substitute_if_same_shape(to_: dict[str, Any], from_: dict[str, Any]) -> Non
         else:
             to_[k] = v
     if shape_missmatch:
-        warnings.warn(
-            f"Shape mismatch: {[f'{k}: {v1} -> {v2}' for k, v1, v2 in shape_missmatch]}"
-        )
+        warnings.warn(f"Shape mismatch: {[f'{k}: {v1} -> {v2}' for k, v1, v2 in shape_missmatch]}")
 
 
 def safe_load(model: torch.nn.Module, state_dict: dict[str, Any]) -> None:
@@ -282,9 +265,7 @@ def load_checkpoint(
         raise FileNotFoundError(f"File {checkpoint_path} not found")
     with Path(checkpoint_path).open("rb") as f:
         with warnings.catch_warnings():
-            warnings.filterwarnings(
-                "ignore", category=UserWarning, message="TypedStorage is deprecated"
-            )
+            warnings.filterwarnings("ignore", category=UserWarning, message="TypedStorage is deprecated")
             checkpoint_dict = torch.load(f, map_location="cpu", weights_only=True)
     iteration = checkpoint_dict["iteration"]
     learning_rate = checkpoint_dict["learning_rate"]
@@ -295,11 +276,7 @@ def load_checkpoint(
     else:
         safe_load(model, checkpoint_dict["model"])
     # safe load optim
-    if (
-        optimizer is not None
-        and not skip_optimizer
-        and checkpoint_dict["optimizer"] is not None
-    ):
+    if optimizer is not None and not skip_optimizer and checkpoint_dict["optimizer"] is not None:
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
             safe_load(optimizer, checkpoint_dict["optimizer"])
@@ -315,11 +292,7 @@ def save_checkpoint(
     iteration: int,
     checkpoint_path: Path | str,
 ) -> None:
-    LOG.info(
-        "Saving model and optimizer state at epoch {} to {}".format(
-            iteration, checkpoint_path
-        )
-    )
+    LOG.info(f"Saving model and optimizer state at epoch {iteration} to {checkpoint_path}")
     if hasattr(model, "module"):
         state_dict = model.module.state_dict()
     else:
@@ -336,16 +309,16 @@ def save_checkpoint(
         )
 
 
-def clean_checkpoints(
-    path_to_models: Path | str, n_ckpts_to_keep: int = 2, sort_by_time: bool = True
-) -> None:
-    """Freeing up space by deleting saved ckpts
+def clean_checkpoints(path_to_models: Path | str, n_ckpts_to_keep: int = 2, sort_by_time: bool = True) -> None:
+    """
+    Freeing up space by deleting saved ckpts
 
     Arguments:
     path_to_models    --  Path to the model directory
     n_ckpts_to_keep   --  Number of ckpts to keep, excluding G_0.pth and D_0.pth
     sort_by_time      --  True -> chronologically delete ckpts
                           False -> lexicographically delete ckpts
+
     """
     LOG.info("Cleaning old checkpoints...")
     path_to_models = Path(path_to_models)
@@ -357,11 +330,7 @@ def clean_checkpoints(
 
     models = list(
         filter(
-            lambda p: (
-                p.is_file()
-                and re.match(r"[GD]_\d+", p.stem)
-                and not p.stem.endswith("_0")
-            ),
+            lambda p: (p.is_file() and re.match(r"[GD]_\d+", p.stem) and not p.stem.endswith("_0")),
             path_to_models.glob("*.pth"),
         )
     )
@@ -384,7 +353,7 @@ def clean_checkpoints(
 def latest_checkpoint_path(dir_path: Path | str, regex: str = "G_*.pth") -> Path | None:
     dir_path = Path(dir_path)
     name_key = lambda p: int(re.match(r"._(\d+)\.pth", p.name).group(1))
-    paths = list(sorted(dir_path.glob(regex), key=name_key))
+    paths = sorted(dir_path.glob(regex), key=name_key)
     if len(paths) == 0:
         return None
     return paths[-1]
@@ -406,9 +375,7 @@ def plot_spectrogram_to_numpy(spectrogram: ndarray) -> ndarray:
     return data
 
 
-def get_backup_hparams(
-    config_path: Path, model_path: Path, init: bool = True
-) -> HParams:
+def get_backup_hparams(config_path: Path, model_path: Path, init: bool = True) -> HParams:
     model_path.mkdir(parents=True, exist_ok=True)
     config_save_path = model_path / "config.json"
     if init:
@@ -438,9 +405,7 @@ def repeat_expand_2d(content: torch.Tensor, target_len: int) -> torch.Tensor:
     if target_len < src_len:
         return content[:, :target_len]
     else:
-        return torch.nn.functional.interpolate(
-            content.unsqueeze(0), size=target_len, mode="nearest"
-        ).squeeze(0)
+        return torch.nn.functional.interpolate(content.unsqueeze(0), size=target_len, mode="nearest").squeeze(0)
 
 
 def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
@@ -460,11 +425,7 @@ def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
 def get_gpu_memory(type_: Literal["total", "free", "used"]) -> Sequence[int] | None:
     command = f"nvidia-smi --query-gpu=memory.{type_} --format=csv"
     try:
-        memory_free_info = (
-            subprocess.check_output(command.split())
-            .decode("ascii")
-            .split("\n")[:-1][1:]
-        )
+        memory_free_info = subprocess.check_output(command.split()).decode("ascii").split("\n")[:-1][1:]
         memory_free_values = [int(x.split()[0]) for i, x in enumerate(memory_free_info)]
         return memory_free_values
     except Exception:

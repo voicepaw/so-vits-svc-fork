@@ -27,9 +27,7 @@ class F0Decoder(nn.Module):
         self.spk_channels = spk_channels
 
         self.prenet = nn.Conv1d(hidden_channels, hidden_channels, 3, padding=1)
-        self.decoder = attentions.FFT(
-            hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout
-        )
+        self.decoder = attentions.FFT(hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout)
         self.proj = nn.Conv1d(hidden_channels, out_channels, 1)
         self.f0_prenet = nn.Conv1d(1, hidden_channels, 3, padding=1)
         self.cond = nn.Conv1d(spk_channels, hidden_channels, 1)

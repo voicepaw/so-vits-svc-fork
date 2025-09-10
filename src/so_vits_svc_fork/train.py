@@ -67,9 +67,7 @@ class VCDataModule(pl.LightningDataModule):
         )
 
 
-def train(
-    config_path: Path | str, model_path: Path | str, reset_optimizer: bool = False
-):
+def train(config_path: Path | str, model_path: Path | str, reset_optimizer: bool = False):
     config_path = Path(config_path)
     model_path = Path(model_path)
 
@@ -87,31 +85,20 @@ def train(
 
     datamodule = VCDataModule(hparams)
     strategy = (
-        (
-            "ddp_find_unused_parameters_true"
-            if os.name != "nt"
-            else DDPStrategy(find_unused_parameters=True, process_group_backend="gloo")
-        )
+        ("ddp_find_unused_parameters_true" if os.name != "nt" else DDPStrategy(find_unused_parameters=True, process_group_backend="gloo"))
         if torch.cuda.device_count() > 1
         else "auto"
     )
     LOG.info(f"Using strategy: {strategy}")
     trainer = pl.Trainer(
-        logger=TensorBoardLogger(
-            model_path, "lightning_logs", hparams.train.get("log_version", 0)
-        ),
+        logger=TensorBoardLogger(model_path, "lightning_logs", hparams.train.get("log_version", 0)),
         # profiler="simple",
         val_check_interval=hparams.train.eval_interval,
         max_epochs=hparams.train.epochs,
         check_val_every_n_epoch=None,
-        precision=(
-            "16-mixed"
-            if hparams.train.fp16_run
-            else "bf16-mixed" if hparams.train.get("bf16_run", False) else 32
-        ),
+        precision=("16-mixed" if hparams.train.fp16_run else "bf16-mixed" if hparams.train.get("bf16_run", False) else 32),
         strategy=strategy,
-        callbacks=([pl.callbacks.RichProgressBar()] if not is_notebook() else [])
-        + [DeviceStatsMonitor()],
+        callbacks=([pl.callbacks.RichProgressBar()] if not is_notebook() else []) + [DeviceStatsMonitor()],
         benchmark=True,
         enable_checkpointing=False,
     )
@@ -176,12 +163,8 @@ class VitsLightning(pl.LightningModule):
             betas=self.hparams.train.betas,
             eps=self.hparams.train.eps,
         )
-        self.scheduler_g = torch.optim.lr_scheduler.ExponentialLR(
-            self.optim_g, gamma=self.hparams.train.lr_decay
-        )
-        self.scheduler_d = torch.optim.lr_scheduler.ExponentialLR(
-            self.optim_d, gamma=self.hparams.train.lr_decay
-        )
+        self.scheduler_g = torch.optim.lr_scheduler.ExponentialLR(self.optim_g, gamma=self.hparams.train.lr_decay)
+        self.scheduler_d = torch.optim.lr_scheduler.ExponentialLR(self.optim_d, gamma=self.hparams.train.lr_decay)
         self.optimizers_count = 2
         self.load(reset_optimizer)
         self.tuning = False
@@ -272,11 +255,7 @@ class VitsLightning(pl.LightningModule):
             return
 
         # only save checkpoints if we are on the main device
-        if (
-            hasattr(self.device, "index")
-            and self.device.index != None
-            and self.device.index != 0
-        ):
+        if hasattr(self.device, "index") and self.device.index != None and self.device.index != 0:
             return
 
         # `on_train_end` will be the actual epoch, not a -1, so we have to call it with `adjust = 0`
@@ -288,16 +267,14 @@ class VitsLightning(pl.LightningModule):
             self.optim_g,
             self.learning_rate,
             current_epoch,
-            Path(self.hparams.model_dir)
-            / f"G_{total_batch_idx if self.hparams.train.get('ckpt_name_by_step', False) else current_epoch}.pth",
+            Path(self.hparams.model_dir) / f"G_{total_batch_idx if self.hparams.train.get('ckpt_name_by_step', False) else current_epoch}.pth",
         )
         utils.save_checkpoint(
             self.net_d,
             self.optim_d,
             self.learning_rate,
             current_epoch,
-            Path(self.hparams.model_dir)
-            / f"D_{total_batch_idx if self.hparams.train.get('ckpt_name_by_step', False) else current_epoch}.pth",
+            Path(self.hparams.model_dir) / f"D_{total_batch_idx if self.hparams.train.get('ckpt_name_by_step', False) else current_epoch}.pth",
         )
         keep_ckpts = self.hparams.train.get("keep_ckpts", 0)
         if keep_ckpts > 0:
@@ -315,25 +292,15 @@ class VitsLightning(pl.LightningModule):
 
     def set_global_step(self, global_step: int):
         LOG.info(f"Setting global step to {global_step}")
-        self.trainer.fit_loop.epoch_loop.manual_optimization.optim_step_progress.total.completed = (
-            global_step
-        )
-        self.trainer.fit_loop.epoch_loop.automatic_optimization.optim_progress.optimizer.step.total.completed = (
-            global_step
-        )
+        self.trainer.fit_loop.epoch_loop.manual_optimization.optim_step_progress.total.completed = global_step
+        self.trainer.fit_loop.epoch_loop.automatic_optimization.optim_progress.optimizer.step.total.completed = global_step
         assert self.global_step == global_step, f"{self.global_step} != {global_step}"
 
     def set_total_batch_idx(self, total_batch_idx: int):
         LOG.info(f"Setting total batch idx to {total_batch_idx}")
-        self.trainer.fit_loop.epoch_loop.batch_progress.total.ready = (
-            total_batch_idx + 1
-        )
-        self.trainer.fit_loop.epoch_loop.batch_progress.total.completed = (
-            total_batch_idx
-        )
-        assert (
-            self.total_batch_idx == total_batch_idx + 1
-        ), f"{self.total_batch_idx} != {total_batch_idx + 1}"
+        self.trainer.fit_loop.epoch_loop.batch_progress.total.ready = total_batch_idx + 1
+        self.trainer.fit_loop.epoch_loop.batch_progress.total.completed = total_batch_idx
+        assert self.total_batch_idx == total_batch_idx + 1, f"{self.total_batch_idx} != {total_batch_idx + 1}"
 
     @property
     def total_batch_idx(self) -> int:
@@ -367,9 +334,7 @@ class VitsLightning(pl.LightningModule):
     def configure_optimizers(self):
         return [self.optim_g, self.optim_d], [self.scheduler_g, self.scheduler_d]
 
-    def log_image_dict(
-        self, image_dict: dict[str, Any], dataformats: str = "HWC"
-    ) -> None:
+    def log_image_dict(self, image_dict: dict[str, Any], dataformats: str = "HWC") -> None:
         if not isinstance(self.logger, TensorBoardLogger):
             warnings.warn("Image logging is only supported with TensorBoardLogger.")
             return
@@ -446,9 +411,7 @@ class VitsLightning(pl.LightningModule):
 
         with autocast(enabled=False):
             loss_mel = F.l1_loss(y_mel, y_hat_mel) * self.hparams.train.c_mel
-            loss_kl = (
-                kl_loss(z_p, logs_q, m_p, logs_p, z_mask) * self.hparams.train.c_kl
-            )
+            loss_kl = kl_loss(z_p, logs_q, m_p, logs_p, z_mask) * self.hparams.train.c_kl
             loss_fm = feature_loss(fmap_r, fmap_g)
             loss_gen, losses_gen = generator_loss(y_d_hat_g)
             loss_lf0 = F.mse_loss(pred_lf0, lf0)
@@ -480,15 +443,9 @@ class VitsLightning(pl.LightningModule):
         if self.total_batch_idx % self.hparams.train.log_interval == 0:
             self.log_image_dict(
                 {
-                    "slice/mel_org": utils.plot_spectrogram_to_numpy(
-                        y_mel[0].data.cpu().float().numpy()
-                    ),
-                    "slice/mel_gen": utils.plot_spectrogram_to_numpy(
-                        y_hat_mel[0].data.cpu().float().numpy()
-                    ),
-                    "all/mel": utils.plot_spectrogram_to_numpy(
-                        mel[0].data.cpu().float().numpy()
-                    ),
+                    "slice/mel_org": utils.plot_spectrogram_to_numpy(y_mel[0].data.cpu().float().numpy()),
+                    "slice/mel_gen": utils.plot_spectrogram_to_numpy(y_hat_mel[0].data.cpu().float().numpy()),
+                    "all/mel": utils.plot_spectrogram_to_numpy(mel[0].data.cpu().float().numpy()),
                     "all/lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
                         lf0[0, 0, :].cpu().float().numpy(),
                         pred_lf0[0, 0, :].detach().cpu().float().numpy(),
@@ -501,15 +458,11 @@ class VitsLightning(pl.LightningModule):
             )
 
         accumulate_grad_batches = self.hparams.train.get("accumulate_grad_batches", 1)
-        should_update = (
-            batch_idx + 1
-        ) % accumulate_grad_batches == 0 or self.trainer.is_last_batch
+        should_update = (batch_idx + 1) % accumulate_grad_batches == 0 or self.trainer.is_last_batch
         # optimizer
         self.manual_backward(loss_gen_all / accumulate_grad_batches)
         if should_update:
-            self.log_(
-                "grad_norm_g", commons.clip_grad_value_(self.net_g.parameters(), None)
-            )
+            self.log_("grad_norm_g", commons.clip_grad_value_(self.net_g.parameters(), None))
             optim_g.step()
             optim_g.zero_grad()
         self.untoggle_optimizer(optim_g)
@@ -521,9 +474,7 @@ class VitsLightning(pl.LightningModule):
 
         # discriminator loss
         with autocast(enabled=False):
-            loss_disc, losses_disc_r, losses_disc_g = discriminator_loss(
-                y_d_hat_r, y_d_hat_g
-            )
+            loss_disc, losses_disc_r, losses_disc_g = discriminator_loss(y_d_hat_r, y_d_hat_g)
             loss_disc_all = loss_disc
 
         # log loss
@@ -532,9 +483,7 @@ class VitsLightning(pl.LightningModule):
         # optimizer
         self.manual_backward(loss_disc_all / accumulate_grad_batches)
         if should_update:
-            self.log_(
-                "grad_norm_d", commons.clip_grad_value_(self.net_d.parameters(), None)
-            )
+            self.log_("grad_norm_d", commons.clip_grad_value_(self.net_d.parameters(), None))
             optim_d.step()
             optim_d.zero_grad()
         self.untoggle_optimizer(optim_d)
@@ -553,17 +502,11 @@ class VitsLightning(pl.LightningModule):
             c, f0, _, mel, y, g, _, uv = batch
             y_hat = self.net_g.infer(c, f0, uv, g=g)
             y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
-            self.log_audio_dict(
-                {f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]}
-            )
+            self.log_audio_dict({f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]})
             self.log_image_dict(
                 {
-                    "gen/mel": utils.plot_spectrogram_to_numpy(
-                        y_hat_mel[0].cpu().float().numpy()
-                    ),
-                    "gt/mel": utils.plot_spectrogram_to_numpy(
-                        mel[0].cpu().float().numpy()
-                    ),
+                    "gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().float().numpy()),
+                    "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().float().numpy()),
                 }
             )
 
