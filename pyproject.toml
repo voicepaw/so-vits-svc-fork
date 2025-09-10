@@ -4,7 +4,7 @@ requires = [ "setuptools" ]
 
 [project]
 name = "so-vits-svc-fork"
-version = "4.2.26"
+version = "4.2.27"
 description = "A fork of so-vits-svc."
 readme = "README.md"
 license = { text = "MIT" }
