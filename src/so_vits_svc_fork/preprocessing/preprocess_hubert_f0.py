@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from collections.abc import Iterable
 from logging import getLogger
 from pathlib import Path
 from random import shuffle
-from typing import Iterable, Literal
+from typing import Literal
 
 import librosa
 import numpy as np
@@ -46,9 +47,7 @@ def _process_one(
         return
 
     # Compute f0
-    f0 = so_vits_svc_fork.f0.compute_f0(
-        audio, sampling_rate=sr, hop_length=hps.data.hop_length, method=f0_method
-    )
+    f0 = so_vits_svc_fork.f0.compute_f0(audio, sampling_rate=sr, hop_length=hps.data.hop_length, method=f0_method)
     f0, uv = so_vits_svc_fork.f0.interpolate_f0(f0)
     f0 = torch.from_numpy(f0).float()
     uv = torch.from_numpy(uv).float()
@@ -85,9 +84,13 @@ def _process_one(
     spk_name = filepath.parent.name
     spk = hps.spk.__dict__[spk_name]
     spk = torch.tensor(spk).long()
-    assert (
-        spec.shape[1] == mel_spec.shape[1] == f0.shape[0] == uv.shape[0] == c.shape[1]
-    ), (spec.shape, mel_spec.shape, f0.shape, uv.shape, c.shape)
+    assert spec.shape[1] == mel_spec.shape[1] == f0.shape[0] == uv.shape[0] == c.shape[1], (
+        spec.shape,
+        mel_spec.shape,
+        f0.shape,
+        uv.shape,
+        c.shape,
+    )
     data = {
         "spec": spec,
         "mel_spec": mel_spec,
@@ -104,9 +107,7 @@ def _process_one(
 
 def _process_batch(filepaths: Iterable[Path], pbar_position: int, **kwargs):
     hps = kwargs["hps"]
-    content_model = utils.get_hubert_model(
-        get_optimal_device(), hps.data.get("contentvec_final_proj", True)
-    )
+    content_model = utils.get_hubert_model(get_optimal_device(), hps.data.get("contentvec_final_proj", True))
 
     for filepath in tqdm(filepaths, position=pbar_position):
         _process_one(
@@ -131,12 +132,7 @@ def preprocess_hubert_f0(
         memory = get_total_gpu_memory("total")
         n_jobs = min(
             max(
-                (
-                    memory
-                    // (HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY)
-                    if memory is not None
-                    else 1
-                ),
+                (memory // (HUBERT_MEMORY_CREPE if f0_method == "crepe" else HUBERT_MEMORY) if memory is not None else 1),
                 1,
             ),
             cpu_count(),

@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from pathlib import Path
 from random import Random
-from typing import Sequence
 
 import torch
 import torch.nn as nn
@@ -16,11 +16,7 @@ class TextAudioDataset(Dataset):
     def __init__(self, hps: HParams, is_validation: bool = False):
         self.datapaths = [
             Path(x).parent / (Path(x).name + ".data.pt")
-            for x in Path(
-                hps.data.validation_files if is_validation else hps.data.training_files
-            )
-            .read_text("utf-8")
-            .splitlines()
+            for x in Path(hps.data.validation_files if is_validation else hps.data.training_files).read_text("utf-8").splitlines()
         ]
         self.hps = hps
         self.random = Random(hps.train.seed)
@@ -54,19 +50,14 @@ class TextAudioDataset(Dataset):
 def _pad_stack(array: Sequence[torch.Tensor]) -> torch.Tensor:
     max_idx = torch.argmax(torch.tensor([x_.shape[-1] for x_ in array]))
     max_x = array[max_idx]
-    x_padded = [
-        F.pad(x_, (0, max_x.shape[-1] - x_.shape[-1]), mode="constant", value=0)
-        for x_ in array
-    ]
+    x_padded = [F.pad(x_, (0, max_x.shape[-1] - x_.shape[-1]), mode="constant", value=0) for x_ in array]
     return torch.stack(x_padded)
 
 
 class TextAudioCollate(nn.Module):
-    def forward(
-        self, batch: Sequence[dict[str, torch.Tensor]]
-    ) -> tuple[torch.Tensor, ...]:
+    def forward(self, batch: Sequence[dict[str, torch.Tensor]]) -> tuple[torch.Tensor, ...]:
         batch = [b for b in batch if b is not None]
-        batch = list(sorted(batch, key=lambda x: x["mel_spec"].shape[1], reverse=True))
+        batch = sorted(batch, key=lambda x: x["mel_spec"].shape[1], reverse=True)
         lengths = torch.tensor([b["mel_spec"].shape[1] for b in batch]).long()
         results = {}
         for key in batch[0].keys():

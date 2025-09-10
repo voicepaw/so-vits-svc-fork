@@ -1,3 +1,15 @@
 {
-  "extends": ["github>browniebroke/renovate-configs:python"]
+  "extends": [
+    "config:best-practices",
+    ":pinOnlyDevDependencies",
+    ":automergeAll",
+    ":enablePreCommit"
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["python"],
+      "rangeStrategy": "widen",
+      "separateMultipleMinor": true
+    }
+  ]
 }

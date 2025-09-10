@@ -1,6 +1,7 @@
 import warnings
+from collections.abc import Sequence
 from logging import getLogger
-from typing import Any, Literal, Sequence
+from typing import Any, Literal
 
 import torch
 from torch import nn
@@ -148,9 +149,7 @@ class SynthesizerTrn(nn.Module):
             16,
             gin_channels=gin_channels,
         )
-        self.flow = ResidualCouplingBlock(
-            inter_channels, hidden_channels, 5, 1, 4, gin_channels=gin_channels
-        )
+        self.flow = ResidualCouplingBlock(inter_channels, hidden_channels, 5, 1, 4, gin_channels=gin_channels)
         self.f0_decoder = F0Decoder(
             1,
             hidden_channels,
@@ -166,9 +165,7 @@ class SynthesizerTrn(nn.Module):
     def forward(self, c, f0, uv, spec, g=None, c_lengths=None, spec_lengths=None):
         g = self.emb_g(g).transpose(1, 2)
         # ssl prenet
-        x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(
-            c.dtype
-        )
+        x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(c.dtype)
         x = self.pre(c) * x_mask + self.emb_uv(uv.long()).transpose(1, 2)
 
         # f0 predict
@@ -182,9 +179,7 @@ class SynthesizerTrn(nn.Module):
 
         # flow
         z_p = self.flow(z, spec_mask, g=g)
-        z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(
-            z, f0, spec_lengths, self.segment_size
-        )
+        z_slice, pitch_slice, ids_slice = commons.rand_slice_segments_with_pitch(z, f0, spec_lengths, self.segment_size)
 
         # MB-iSTFT-VITS
         if self.mb:
@@ -207,22 +202,16 @@ class SynthesizerTrn(nn.Module):
     def infer(self, c, f0, uv, g=None, noice_scale=0.35, predict_f0=False):
         c_lengths = (torch.ones(c.size(0)) * c.size(-1)).to(c.device)
         g = self.emb_g(g).transpose(1, 2)
-        x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(
-            c.dtype
-        )
+        x_mask = torch.unsqueeze(commons.sequence_mask(c_lengths, c.size(2)), 1).to(c.dtype)
         x = self.pre(c) * x_mask + self.emb_uv(uv.long()).transpose(1, 2)
 
         if predict_f0:
             lf0 = 2595.0 * torch.log10(1.0 + f0.unsqueeze(1) / 700.0) / 500
-            norm_lf0 = so_vits_svc_fork.f0.normalize_f0(
-                lf0, x_mask, uv, random_scale=False
-            )
+            norm_lf0 = so_vits_svc_fork.f0.normalize_f0(lf0, x_mask, uv, random_scale=False)
             pred_lf0 = self.f0_decoder(x, norm_lf0, x_mask, spk_emb=g)
             f0 = (700 * (torch.pow(10, pred_lf0 * 500 / 2595) - 1)).squeeze(1)
 
-        z_p, m_p, logs_p, c_mask = self.enc_p(
-            x, x_mask, f0=f0_to_coarse(f0), noice_scale=noice_scale
-        )
+        z_p, m_p, logs_p, c_mask = self.enc_p(x, x_mask, f0=f0_to_coarse(f0), noice_scale=noice_scale)
         z = self.flow(z_p, c_mask, g=g, reverse=True)
 
         # MB-iSTFT-VITS

@@ -19,22 +19,13 @@ def slice_segments(x: Tensor, starts: Tensor, length: int) -> Tensor:
     return x_slice
 
 
-def rand_slice_segments_with_pitch(
-    x: Tensor, f0: Tensor, x_lengths: Tensor | int | None, segment_size: int | None
-):
+def rand_slice_segments_with_pitch(x: Tensor, f0: Tensor, x_lengths: Tensor | int | None, segment_size: int | None):
     if segment_size is None:
         return x, f0, torch.arange(x.size(0), device=x.device)
     if x_lengths is None:
-        x_lengths = x.size(-1) * torch.ones(
-            x.size(0), dtype=torch.long, device=x.device
-        )
+        x_lengths = x.size(-1) * torch.ones(x.size(0), dtype=torch.long, device=x.device)
     # slice_starts = (torch.rand(z.size(0), device=z.device) * (z_lengths - segment_size)).long()
-    slice_starts = (
-        torch.rand(x.size(0), device=x.device)
-        * torch.max(
-            x_lengths - segment_size, torch.zeros_like(x_lengths, device=x.device)
-        )
-    ).long()
+    slice_starts = (torch.rand(x.size(0), device=x.device) * torch.max(x_lengths - segment_size, torch.zeros_like(x_lengths, device=x.device))).long()
     z_slice = slice_segments(x, slice_starts, segment_size)
     f0_slice = slice_segments(f0, slice_starts, segment_size)
     return z_slice, f0_slice, slice_starts
@@ -43,15 +34,8 @@ def rand_slice_segments_with_pitch(
 def slice_2d_segments(x: Tensor, starts: Tensor, length: int) -> Tensor:
     batch_size, num_features, seq_len = x.shape
     ends = starts + length
-    idxs = (
-        torch.arange(seq_len, device=x.device)
-        .unsqueeze(0)
-        .unsqueeze(1)
-        .repeat(batch_size, num_features, 1)
-    )
-    mask = (idxs >= starts.unsqueeze(-1).unsqueeze(-1)) & (
-        idxs < ends.unsqueeze(-1).unsqueeze(-1)
-    )
+    idxs = torch.arange(seq_len, device=x.device).unsqueeze(0).unsqueeze(1).repeat(batch_size, num_features, 1)
+    mask = (idxs >= starts.unsqueeze(-1).unsqueeze(-1)) & (idxs < ends.unsqueeze(-1).unsqueeze(-1))
     return x[mask].reshape(batch_size, num_features, length)
 
 
@@ -67,9 +51,7 @@ def _slice_segments_v3(x: Tensor, starts: Tensor, length: int) -> Tensor:
     shape = x.shape[:-1] + (length,)
     ends = starts + length
     idxs = torch.arange(x.shape[-1], device=x.device).unsqueeze(0).unsqueeze(0)
-    unsqueeze_dims = len(shape) - len(
-        x.shape
-    )  # calculate number of dimensions to unsqueeze
+    unsqueeze_dims = len(shape) - len(x.shape)  # calculate number of dimensions to unsqueeze
     starts = starts.reshape(starts.shape + (1,) * unsqueeze_dims)
     ends = ends.reshape(ends.shape + (1,) * unsqueeze_dims)
     mask = (idxs >= starts) & (idxs < ends)

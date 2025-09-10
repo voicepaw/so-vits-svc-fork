@@ -15,9 +15,7 @@ class SpeakerEncoder(torch.nn.Module):
         model_embedding_size=256,
     ):
         super().__init__()
-        self.lstm = nn.LSTM(
-            mel_n_channels, model_hidden_size, model_num_layers, batch_first=True
-        )
+        self.lstm = nn.LSTM(mel_n_channels, model_hidden_size, model_num_layers, batch_first=True)
         self.linear = nn.Linear(model_hidden_size, model_embedding_size)
         self.relu = nn.ReLU()
 
@@ -40,9 +38,7 @@ class SpeakerEncoder(torch.nn.Module):
         last_mel = mel[:, -partial_frames:]
 
         if mel_len > partial_frames:
-            mel_slices = self.compute_partial_slices(
-                mel_len, partial_frames, partial_hop
-            )
+            mel_slices = self.compute_partial_slices(mel_len, partial_frames, partial_hop)
             mels = list(mel[:, s] for s in mel_slices)
             mels.append(last_mel)
             mels = torch.stack(tuple(mels), 0).squeeze(1)
@@ -90,9 +86,7 @@ class Encoder(nn.Module):
 
     def forward(self, x, x_lengths, g=None):
         # print(x.shape,x_lengths.shape)
-        x_mask = torch.unsqueeze(commons.sequence_mask(x_lengths, x.size(2)), 1).to(
-            x.dtype
-        )
+        x_mask = torch.unsqueeze(commons.sequence_mask(x_lengths, x.size(2)), 1).to(x.dtype)
         x = self.pre(x) * x_mask
         x = self.enc(x, x_mask, g=g)
         stats = self.proj(x) * x_mask
@@ -122,9 +116,7 @@ class TextEncoder(nn.Module):
         self.proj = nn.Conv1d(hidden_channels, out_channels * 2, 1)
         self.f0_emb = nn.Embedding(256, hidden_channels)
 
-        self.enc_ = attentions.Encoder(
-            hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout
-        )
+        self.enc_ = attentions.Encoder(hidden_channels, filter_channels, n_heads, n_layers, kernel_size, p_dropout)
 
     def forward(self, x, x_mask, f0=None, noice_scale=1):
         x = x + self.f0_emb(f0).transpose(1, 2)

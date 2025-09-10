@@ -60,7 +60,8 @@ click.Context.formatter_class = RichHelpFormatter
 
 @click.group(context_settings=CONTEXT_SETTINGS)
 def cli():
-    """so-vits-svc allows any folder structure for training data.
+    """
+    so-vits-svc allows any folder structure for training data.
     However, the following folder structure is recommended.\n
         When training: dataset_raw/{speaker_name}/**/{wav_name}.{any_format}\n
         When inference: configs/44k/config.json, logs/44k/G_XXXX.pth\n
@@ -107,8 +108,10 @@ def train(
     tensorboard: bool = False,
     reset_optimizer: bool = False,
 ):
-    """Train model
-    If D_0.pth or G_0.pth not found, automatically download from hub."""
+    """
+    Train model
+    If D_0.pth or G_0.pth not found, automatically download from hub.
+    """
     from .train import train
 
     config_path = Path(config_path)
@@ -125,15 +128,15 @@ def train(
         url = tb.launch()
         webbrowser.open(url)
 
-    train(
-        config_path=config_path, model_path=model_path, reset_optimizer=reset_optimizer
-    )
+    train(config_path=config_path, model_path=model_path, reset_optimizer=reset_optimizer)
 
 
 @cli.command()
 def gui():
-    """Opens GUI
-    for conversion and realtime inference"""
+    """
+    Opens GUI
+    for conversion and realtime inference
+    """
     from .gui import main
 
     main()
@@ -181,9 +184,7 @@ def gui():
     is_flag=True,
 )
 @click.option("-t", "--transpose", type=int, default=0, help="transpose")
-@click.option(
-    "-db", "--db-thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)"
-)
+@click.option("-db", "--db-thresh", type=int, default=-20, help="threshold (DB) (RELATIVE)")
 @click.option(
     "-fm",
     "--f0-method",
@@ -198,9 +199,7 @@ def gui():
     default=True,
     help="auto predict f0",
 )
-@click.option(
-    "-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio"
-)
+@click.option("-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio")
 @click.option("-n", "--noise-scale", type=float, default=0.4, help="noise scale")
 @click.option("-p", "--pad-seconds", type=float, default=0.5, help="pad seconds")
 @click.option(
@@ -262,14 +261,10 @@ def infer(
         output_path = input_path.parent / f"{input_path.stem}.out{input_path.suffix}"
     output_path = Path(output_path)
     if input_path.is_dir() and not recursive:
-        raise ValueError(
-            "input_path is a directory. Use 0re or --recursive to infer recursively."
-        )
+        raise ValueError("input_path is a directory. Use 0re or --recursive to infer recursively.")
     model_path = Path(model_path)
     if model_path.is_dir():
-        model_path = list(
-            sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)
-        )[-1]
+        model_path = sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)[-1]
         LOG.info(f"Since model_path is a directory, use {model_path}")
     config_path = Path(config_path)
     if cluster_model_path is not None:
@@ -329,13 +324,9 @@ def infer(
     default=True,
     help="auto predict f0 (not recommended for realtime since voice pitch will not be stable)",
 )
-@click.option(
-    "-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio"
-)
+@click.option("-r", "--cluster-infer-ratio", type=float, default=0, help="cluster infer ratio")
 @click.option("-n", "--noise-scale", type=float, default=0.4, help="noise scale")
-@click.option(
-    "-db", "--db-thresh", type=int, default=-30, help="threshold (DB) (ABSOLUTE)"
-)
+@click.option("-db", "--db-thresh", type=int, default=-30, help="threshold (DB) (ABSOLUTE)")
 @click.option(
     "-fm",
     "--f0-method",
@@ -417,9 +408,7 @@ def vc(
     from so_vits_svc_fork.inference.main import realtime
 
     if auto_predict_f0:
-        LOG.warning(
-            "auto_predict_f0 = True in realtime inference will cause unstable voice pitch, use with caution"
-        )
+        LOG.warning("auto_predict_f0 = True in realtime inference will cause unstable voice pitch, use with caution")
     else:
         LOG.warning(
             f"auto_predict_f0 = False, transpose = {transpose}. If you want to change the pitch, please change the transpose value."
@@ -430,9 +419,7 @@ def vc(
     if cluster_model_path is not None:
         cluster_model_path = Path(cluster_model_path)
     if model_path.is_dir():
-        model_path = list(
-            sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)
-        )[-1]
+        model_path = sorted(model_path.glob("G_*.pth"), key=lambda x: x.stat().st_mtime)[-1]
         LOG.info(f"Since model_path is a directory, use {model_path}")
 
     realtime(
@@ -489,9 +476,7 @@ def vc(
 )
 @click.option("-d", "--top-db", type=float, default=30, help="top db")
 @click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
-@click.option(
-    "-ho", "-hop", "--hop-seconds", type=float, default=0.3, help="hop seconds"
-)
+@click.option("-ho", "-hop", "--hop-seconds", type=float, default=0.3, help="hop seconds")
 def pre_resample(
     input_dir: Path,
     output_dir: Path,
@@ -613,8 +598,10 @@ def pre_hubert(
     force_rebuild: bool,
     f0_method: Literal["crepe", "crepe-tiny", "parselmouth", "dio", "harvest"],
 ) -> None:
-    """Preprocessing part 3: hubert
-    If the HuBERT model is not found, it will be downloaded automatically."""
+    """
+    Preprocessing part 3: hubert
+    If the HuBERT model is not found, it will be downloaded automatically.
+    """
     from so_vits_svc_fork.preprocessing.preprocess_hubert_f0 import preprocess_hubert_f0
 
     input_dir = Path(input_dir)
@@ -652,9 +639,7 @@ def pre_hubert(
 )
 @click.option("-min", "--min-speakers", type=int, default=2, help="min speakers")
 @click.option("-max", "--max-speakers", type=int, default=2, help="max speakers")
-@click.option(
-    "-t", "--huggingface-token", type=str, default=None, help="huggingface token"
-)
+@click.option("-t", "--huggingface-token", type=str, default=None, help="huggingface token")
 @click.option("-s", "--sr", type=int, default=44100, help="sampling rate")
 def pre_sd(
     input_dir: Path | str,
@@ -669,9 +654,7 @@ def pre_sd(
     if huggingface_token is None:
         huggingface_token = os.environ.get("HUGGINGFACE_TOKEN", None)
     if huggingface_token is None:
-        huggingface_token = click.prompt(
-            "Please enter your HuggingFace token", hide_input=True
-        )
+        huggingface_token = click.prompt("Please enter your HuggingFace token", hide_input=True)
     if os.environ.get("HUGGINGFACE_TOKEN", None) is None:
         LOG.info("You can also set the HUGGINGFACE_TOKEN environment variable.")
     assert huggingface_token is not None
@@ -727,9 +710,7 @@ def pre_sd(
 )
 @click.option("-d", "--top-db", type=float, default=30, help="top db")
 @click.option("-f", "--frame-seconds", type=float, default=1, help="frame seconds")
-@click.option(
-    "-ho", "-hop", "--hop-seconds", type=float, default=0.3, help="hop seconds"
-)
+@click.option("-ho", "-hop", "--hop-seconds", type=float, default=0.3, help="hop seconds")
 @click.option("-s", "--sr", type=int, default=44100, help="sample rate")
 def pre_split(
     input_dir: Path | str,
@@ -840,9 +821,7 @@ def clean():
     default="cpu",
     help="device to use",
 )
-def onnx(
-    input_path: Path, output_path: Path, config_path: Path, device: torch.device | str
-) -> None:
+def onnx(input_path: Path, output_path: Path, config_path: Path, device: torch.device | str) -> None:
     """Export model to onnx (currently not working)"""
     raise NotImplementedError("ONNX export is not yet supported")
     input_path = Path(input_path)
@@ -881,15 +860,9 @@ def onnx(
     default=Path("./logs/44k/kmeans.pt"),
 )
 @click.option("-n", "--n-clusters", type=int, help="number of clusters", default=2000)
-@click.option(
-    "-m/-nm", "--minibatch/--no-minibatch", default=True, help="use minibatch k-means"
-)
-@click.option(
-    "-b", "--batch-size", type=int, default=4096, help="batch size for minibatch kmeans"
-)
-@click.option(
-    "-p/-np", "--partial-fit", default=False, help="use partial fit (only use with -m)"
-)
+@click.option("-m/-nm", "--minibatch/--no-minibatch", default=True, help="use minibatch k-means")
+@click.option("-b", "--batch-size", type=int, default=4096, help="batch size for minibatch kmeans")
+@click.option("-p/-np", "--partial-fit", default=False, help="use partial fit (only use with -m)")
 def train_cluster(
     input_dir: Path,
     output_path: Path,

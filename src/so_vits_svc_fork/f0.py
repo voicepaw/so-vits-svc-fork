@@ -15,9 +15,7 @@ from so_vits_svc_fork.utils import get_optimal_device
 LOG = getLogger(__name__)
 
 
-def normalize_f0(
-    f0: FloatTensor, x_mask: FloatTensor, uv: FloatTensor, random_scale=True
-) -> FloatTensor:
+def normalize_f0(f0: FloatTensor, x_mask: FloatTensor, uv: FloatTensor, random_scale=True) -> FloatTensor:
     # calculate means based on x_mask
     uv_sum = torch.sum(uv, dim=1, keepdim=True)
     uv_sum[uv_sum == 0] = 9999
@@ -35,7 +33,7 @@ def normalize_f0(
 
 
 def interpolate_f0(
-    f0: ndarray[Any, dtype[float32]]
+    f0: ndarray[Any, dtype[float32]],
 ) -> tuple[ndarray[Any, dtype[float32]], ndarray[Any, dtype[float32]]]:
     data = np.reshape(f0, (f0.size, 1))
 
@@ -104,9 +102,7 @@ def compute_f0_parselmouth(
     return f0
 
 
-def _resize_f0(
-    x: ndarray[Any, dtype[float32]], target_len: int
-) -> ndarray[Any, dtype[float32]]:
+def _resize_f0(x: ndarray[Any, dtype[float32]], target_len: int) -> ndarray[Any, dtype[float32]]:
     source = np.array(x)
     source[source < 0.001] = np.nan
     target = np.interp(
@@ -201,15 +197,11 @@ def compute_f0(
         elif method == "crepe":
             f0 = compute_f0_crepe(wav_numpy, p_len, sampling_rate, hop_length, **kwargs)
         elif method == "crepe-tiny":
-            f0 = compute_f0_crepe(
-                wav_numpy, p_len, sampling_rate, hop_length, model="tiny", **kwargs
-            )
+            f0 = compute_f0_crepe(wav_numpy, p_len, sampling_rate, hop_length, model="tiny", **kwargs)
         elif method == "parselmouth":
             f0 = compute_f0_parselmouth(wav_numpy, p_len, sampling_rate, hop_length)
         else:
-            raise ValueError(
-                "type must be dio, crepe, crepe-tiny, harvest or parselmouth"
-            )
+            raise ValueError("type must be dio, crepe, crepe-tiny, harvest or parselmouth")
     rtf = t.elapsed / (len(wav_numpy) / sampling_rate)
     LOG.info(f"F0 inference time:       {t.elapsed:.3f}s, RTF: {rtf:.3f}")
     return f0
@@ -218,9 +210,7 @@ def compute_f0(
 def f0_to_coarse(f0: torch.Tensor | float):
     is_torch = isinstance(f0, torch.Tensor)
     f0_mel = 1127 * (1 + f0 / 700).log() if is_torch else 1127 * np.log(1 + f0 / 700)
-    f0_mel[f0_mel > 0] = (f0_mel[f0_mel > 0] - f0_mel_min) * (f0_bin - 2) / (
-        f0_mel_max - f0_mel_min
-    ) + 1
+    f0_mel[f0_mel > 0] = (f0_mel[f0_mel > 0] - f0_mel_min) * (f0_bin - 2) / (f0_mel_max - f0_mel_min) + 1
 
     f0_mel[f0_mel <= 1] = 1
     f0_mel[f0_mel > f0_bin - 1] = f0_bin - 1

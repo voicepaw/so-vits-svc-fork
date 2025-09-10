@@ -16,13 +16,12 @@ LRELU_SLOPE = 0.1
 
 
 def padDiff(x):
-    return F.pad(
-        F.pad(x, (0, 0, -1, 1), "constant", 0) - x, (0, 0, 0, -1), "constant", 0
-    )
+    return F.pad(F.pad(x, (0, 0, -1, 1), "constant", 0) - x, (0, 0, 0, -1), "constant", 0)
 
 
 class SineGen(torch.nn.Module):
-    """Definition of sine generator
+    """
+    Definition of sine generator
     SineGen(samp_rate, harmonic_num = 0,
             sine_amp = 0.1, noise_std = 0.003,
             voiced_threshold = 0,
@@ -61,7 +60,8 @@ class SineGen(torch.nn.Module):
         return uv
 
     def _f02sine(self, f0_values):
-        """f0_values: (batchsize, length, dim)
+        """
+        f0_values: (batchsize, length, dim)
         where dim indicates fundamental tone and overtones
         """
         # convert to F0 in rad. The integer part n can be ignored
@@ -69,9 +69,7 @@ class SineGen(torch.nn.Module):
         rad_values = (f0_values / self.sampling_rate) % 1
 
         # initial phase noise (no noise for fundamental component)
-        rand_ini = torch.rand(
-            f0_values.shape[0], f0_values.shape[2], device=f0_values.device
-        )
+        rand_ini = torch.rand(f0_values.shape[0], f0_values.shape[2], device=f0_values.device)
         rand_ini[:, 0] = 0
         rad_values[:, 0, :] = rad_values[:, 0, :] + rand_ini
 
@@ -88,9 +86,7 @@ class SineGen(torch.nn.Module):
             cumsum_shift = torch.zeros_like(rad_values)
             cumsum_shift[:, 1:, :] = tmp_over_one_idx * -1.0
 
-            sines = torch.sin(
-                torch.cumsum(rad_values + cumsum_shift, dim=1) * 2 * np.pi
-            )
+            sines = torch.sin(torch.cumsum(rad_values + cumsum_shift, dim=1) * 2 * np.pi)
         else:
             # If necessary, make sure that the first time step of every
             # voiced segments is sin(pi) or cos(0)
@@ -122,7 +118,8 @@ class SineGen(torch.nn.Module):
         return sines
 
     def forward(self, f0):
-        """sine_tensor, uv = forward(f0)
+        """
+        sine_tensor, uv = forward(f0)
         input F0: tensor(batchsize=1, length, dim=1)
                   f0 for unvoiced steps should be 0
         output sine_tensor: tensor(batchsize=1, length, dim)
@@ -134,9 +131,7 @@ class SineGen(torch.nn.Module):
             # fn = torch.multiply(
             #    f0, torch.FloatTensor([[range(1, self.harmonic_num + 2)]]).to(f0.device)
             # )
-            fn = torch.multiply(
-                f0, torch.arange(1, self.harmonic_num + 2).to(f0.device).to(f0.dtype)
-            )
+            fn = torch.multiply(f0, torch.arange(1, self.harmonic_num + 2).to(f0.device).to(f0.dtype))
 
             # generate sine waveforms
             sine_waves = self._f02sine(fn) * self.sine_amp
@@ -159,7 +154,8 @@ class SineGen(torch.nn.Module):
 
 
 class SourceModuleHnNSF(torch.nn.Module):
-    """SourceModule for hn-nsf
+    """
+    SourceModule for hn-nsf
     SourceModule(sampling_rate, harmonic_num=0, sine_amp=0.1,
                  add_noise_std=0.003, voiced_threshod=0)
     sampling_rate: sampling_rate in Hz
@@ -190,9 +186,7 @@ class SourceModuleHnNSF(torch.nn.Module):
         self.noise_std = add_noise_std
 
         # to produce sine waveforms
-        self.l_sin_gen = SineGen(
-            sampling_rate, harmonic_num, sine_amp, add_noise_std, voiced_threshod
-        )
+        self.l_sin_gen = SineGen(sampling_rate, harmonic_num, sine_amp, add_noise_std, voiced_threshod)
 
         # to merge source harmonics into a single excitation
         self.l_linear = torch.nn.Linear(harmonic_num + 1, 1)
@@ -222,18 +216,12 @@ class NSFHifiGANGenerator(torch.nn.Module):
         self.num_kernels = len(h["resblock_kernel_sizes"])
         self.num_upsamples = len(h["upsample_rates"])
         self.f0_upsamp = torch.nn.Upsample(scale_factor=np.prod(h["upsample_rates"]))
-        self.m_source = SourceModuleHnNSF(
-            sampling_rate=h["sampling_rate"], harmonic_num=8
-        )
+        self.m_source = SourceModuleHnNSF(sampling_rate=h["sampling_rate"], harmonic_num=8)
         self.noise_convs = nn.ModuleList()
-        self.conv_pre = weight_norm(
-            Conv1d(h["inter_channels"], h["upsample_initial_channel"], 7, 1, padding=3)
-        )
+        self.conv_pre = weight_norm(Conv1d(h["inter_channels"], h["upsample_initial_channel"], 7, 1, padding=3))
         resblock = ResBlock1 if h["resblock"] == "1" else ResBlock2
         self.ups = nn.ModuleList()
-        for i, (u, k) in enumerate(
-            zip(h["upsample_rates"], h["upsample_kernel_sizes"])
-        ):
+        for i, (u, k) in enumerate(zip(h["upsample_rates"], h["upsample_kernel_sizes"])):
             c_cur = h["upsample_initial_channel"] // (2 ** (i + 1))
             self.ups.append(
                 weight_norm(
@@ -262,9 +250,7 @@ class NSFHifiGANGenerator(torch.nn.Module):
         self.resblocks = nn.ModuleList()
         for i in range(len(self.ups)):
             ch = h["upsample_initial_channel"] // (2 ** (i + 1))
-            for j, (k, d) in enumerate(
-                zip(h["resblock_kernel_sizes"], h["resblock_dilation_sizes"])
-            ):
+            for j, (k, d) in enumerate(zip(h["resblock_kernel_sizes"], h["resblock_dilation_sizes"])):
                 self.resblocks.append(resblock(ch, k, d))
 
         self.conv_post = weight_norm(Conv1d(ch, 1, 7, 1, padding=3))

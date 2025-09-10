@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from logging import getLogger
 from pathlib import Path
-from typing import Literal, Sequence
+from typing import Literal
 
 import librosa
 import numpy as np
@@ -46,9 +47,7 @@ def infer(
     if isinstance(output_path, (str, Path)):
         output_path = [output_path]
     if len(input_path) != len(output_path):
-        raise ValueError(
-            f"input_path and output_path must have same length, but got {len(input_path)} and {len(output_path)}"
-        )
+        raise ValueError(f"input_path and output_path must have same length, but got {len(input_path)} and {len(output_path)}")
 
     model_path = Path(model_path)
     config_path = Path(config_path)
@@ -60,13 +59,9 @@ def infer(
     for input_path, output_path in zip(input_path, output_path):
         if input_path.is_dir():
             if not recursive:
-                raise ValueError(
-                    f"input_path is a directory, but recursive is False: {input_path}"
-                )
+                raise ValueError(f"input_path is a directory, but recursive is False: {input_path}")
             input_paths.extend(list(input_path.rglob("*.*")))
-            output_paths.extend(
-                [output_path / p.relative_to(input_path) for p in input_paths]
-            )
+            output_paths.extend([output_path / p.relative_to(input_path) for p in input_paths])
             continue
         input_paths.append(input_path)
         output_paths.append(output_path)
@@ -75,9 +70,7 @@ def infer(
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
-        cluster_model_path=(
-            cluster_model_path.as_posix() if cluster_model_path else None
-        ),
+        cluster_model_path=(cluster_model_path.as_posix() if cluster_model_path else None),
         device=device,
     )
 
@@ -148,9 +141,7 @@ def realtime(
     svc_model = Svc(
         net_g_path=model_path.as_posix(),
         config_path=config_path.as_posix(),
-        cluster_model_path=(
-            cluster_model_path.as_posix() if cluster_model_path else None
-        ),
+        cluster_model_path=(cluster_model_path.as_posix() if cluster_model_path else None),
         device=device,
     )
 
@@ -159,12 +150,8 @@ def realtime(
         model = RealtimeVC(
             svc_model=svc_model,
             crossfade_len=int(crossfade_seconds * svc_model.target_sample),
-            additional_infer_before_len=int(
-                additional_infer_before_seconds * svc_model.target_sample
-            ),
-            additional_infer_after_len=int(
-                additional_infer_after_seconds * svc_model.target_sample
-            ),
+            additional_infer_before_len=int(additional_infer_before_seconds * svc_model.target_sample),
+            additional_infer_after_len=int(additional_infer_after_seconds * svc_model.target_sample),
         )
     else:
         model = RealtimeVC2(
@@ -175,18 +162,14 @@ def realtime(
     devices = sd.query_devices()
     LOG.info(f"Device: {devices}")
     if isinstance(input_device, str):
-        input_device_candidates = [
-            i for i, d in enumerate(devices) if d["name"] == input_device
-        ]
+        input_device_candidates = [i for i, d in enumerate(devices) if d["name"] == input_device]
         if len(input_device_candidates) == 0:
             LOG.warning(f"Input device {input_device} not found, using default")
             input_device = None
         else:
             input_device = input_device_candidates[0]
     if isinstance(output_device, str):
-        output_device_candidates = [
-            i for i, d in enumerate(devices) if d["name"] == output_device
-        ]
+        output_device_candidates = [i for i, d in enumerate(devices) if d["name"] == output_device]
         if len(output_device_candidates) == 0:
             LOG.warning(f"Output device {output_device} not found, using default")
             output_device = None
@@ -196,9 +179,7 @@ def realtime(
         input_device = sd.default.device[0]
     if output_device is None or output_device >= len(devices):
         output_device = sd.default.device[1]
-    LOG.info(
-        f"Input Device: {devices[input_device]['name']}, Output Device: {devices[output_device]['name']}"
-    )
+    LOG.info(f"Input Device: {devices[input_device]['name']}, Output Device: {devices[output_device]['name']}")
 
     # the model RTL is somewhat significantly high only in the first inference
     # there could be no better way to warm up the model than to do a dummy inference
@@ -222,9 +203,7 @@ def realtime(
         time: int,
         status: sd.CallbackFlags,
     ) -> None:
-        LOG.debug(
-            f"Frames: {frames}, Status: {status}, Shape: {indata.shape}, Time: {time}"
-        )
+        LOG.debug(f"Frames: {frames}, Status: {status}, Shape: {indata.shape}, Time: {time}")
 
         kwargs = dict(
             input_audio=indata.mean(axis=1).astype(np.float32),

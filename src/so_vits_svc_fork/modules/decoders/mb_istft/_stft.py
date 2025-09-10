@@ -47,6 +47,7 @@ def window_sumsquare(
     Compute the sum-square envelope of a window function at a given hop length.
     This is used to estimate modulation effects induced by windowing
     observations in short-time fourier transforms.
+
     Parameters
     ----------
     window : string, tuple, number, callable, or list-like
@@ -61,10 +62,12 @@ def window_sumsquare(
         The length of each analysis frame.
     dtype : np.dtype
         The data type of the output
+
     Returns
     -------
     wss : np.ndarray, shape=`(n_fft + hop_length * (n_frames - 1))`
         The sum-squared envelope of the window function
+
     """
     if win_length is None:
         win_length = n_fft
@@ -87,9 +90,7 @@ def window_sumsquare(
 class STFT(torch.nn.Module):
     """adapted from Prem Seetharaman's https://github.com/pseeth/pytorch-stft"""
 
-    def __init__(
-        self, filter_length=800, hop_length=200, win_length=800, window="hann"
-    ):
+    def __init__(self, filter_length=800, hop_length=200, win_length=800, window="hann"):
         super().__init__()
         self.filter_length = filter_length
         self.hop_length = hop_length
@@ -100,14 +101,10 @@ class STFT(torch.nn.Module):
         fourier_basis = np.fft.fft(np.eye(self.filter_length))
 
         cutoff = int(self.filter_length / 2 + 1)
-        fourier_basis = np.vstack(
-            [np.real(fourier_basis[:cutoff, :]), np.imag(fourier_basis[:cutoff, :])]
-        )
+        fourier_basis = np.vstack([np.real(fourier_basis[:cutoff, :]), np.imag(fourier_basis[:cutoff, :])])
 
         forward_basis = torch.FloatTensor(fourier_basis[:, None, :])
-        inverse_basis = torch.FloatTensor(
-            np.linalg.pinv(scale * fourier_basis).T[:, None, :]
-        )
+        inverse_basis = torch.FloatTensor(np.linalg.pinv(scale * fourier_basis).T[:, None, :])
 
         if window is not None:
             assert filter_length >= win_length
@@ -155,9 +152,7 @@ class STFT(torch.nn.Module):
         return magnitude, phase
 
     def inverse(self, magnitude, phase):
-        recombine_magnitude_phase = torch.cat(
-            [magnitude * torch.cos(phase), magnitude * torch.sin(phase)], dim=1
-        )
+        recombine_magnitude_phase = torch.cat([magnitude * torch.cos(phase), magnitude * torch.sin(phase)], dim=1)
 
         inverse_transform = F.conv_transpose1d(
             recombine_magnitude_phase,
@@ -176,16 +171,10 @@ class STFT(torch.nn.Module):
                 dtype=np.float32,
             )
             # remove modulation effects
-            approx_nonzero_indices = torch.from_numpy(
-                np.where(window_sum > tiny(window_sum))[0]
-            )
-            window_sum = torch.autograd.Variable(
-                torch.from_numpy(window_sum), requires_grad=False
-            )
+            approx_nonzero_indices = torch.from_numpy(np.where(window_sum > tiny(window_sum))[0])
+            window_sum = torch.autograd.Variable(torch.from_numpy(window_sum), requires_grad=False)
             window_sum = window_sum.to(inverse_transform.device())
-            inverse_transform[:, :, approx_nonzero_indices] /= window_sum[
-                approx_nonzero_indices
-            ]
+            inverse_transform[:, :, approx_nonzero_indices] /= window_sum[approx_nonzero_indices]
 
             # scale by hop ratio
             inverse_transform *= float(self.filter_length) / self.hop_length
@@ -202,16 +191,12 @@ class STFT(torch.nn.Module):
 
 
 class TorchSTFT(torch.nn.Module):
-    def __init__(
-        self, filter_length=800, hop_length=200, win_length=800, window="hann"
-    ):
+    def __init__(self, filter_length=800, hop_length=200, win_length=800, window="hann"):
         super().__init__()
         self.filter_length = filter_length
         self.hop_length = hop_length
         self.win_length = win_length
-        self.window = torch.from_numpy(
-            get_window(window, win_length, fftbins=True).astype(np.float32)
-        )
+        self.window = torch.from_numpy(get_window(window, win_length, fftbins=True).astype(np.float32))
 
     def transform(self, input_data):
         forward_transform = torch.stft(
@@ -234,9 +219,7 @@ class TorchSTFT(torch.nn.Module):
             window=self.window.to(magnitude.device),
         )
 
-        return inverse_transform.unsqueeze(
-            -2
-        )  # unsqueeze to stay consistent with conv_transpose1d implementation
+        return inverse_transform.unsqueeze(-2)  # unsqueeze to stay consistent with conv_transpose1d implementation
 
     def forward(self, input_data):
         self.magnitude, self.phase = self.transform(input_data)

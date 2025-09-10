@@ -44,18 +44,14 @@ def preprocess_config(
             paths.append(path)
         random.shuffle(paths)
         if len(paths) <= 4:
-            raise ValueError(
-                f"too few files in {input_dir / speaker} (expected at least 5)."
-            )
+            raise ValueError(f"too few files in {input_dir / speaker} (expected at least 5).")
         train += paths[2:-2]
         val += paths[:2]
         test += paths[-2:]
 
     LOG.info(f"Writing {train_list_path}")
     train_list_path.parent.mkdir(parents=True, exist_ok=True)
-    train_list_path.write_text(
-        "\n".join([x.as_posix() for x in train]), encoding="utf-8"
-    )
+    train_list_path.write_text("\n".join([x.as_posix() for x in train]), encoding="utf-8")
 
     LOG.info(f"Writing {val_list_path}")
     val_list_path.parent.mkdir(parents=True, exist_ok=True)
@@ -66,16 +62,7 @@ def preprocess_config(
     test_list_path.write_text("\n".join([x.as_posix() for x in test]), encoding="utf-8")
 
     config = deepcopy(
-        json.loads(
-            (
-                CONFIG_TEMPLATE_DIR
-                / (
-                    config_name
-                    if config_name.endswith(".json")
-                    else config_name + ".json"
-                )
-            ).read_text(encoding="utf-8")
-        )
+        json.loads((CONFIG_TEMPLATE_DIR / (config_name if config_name.endswith(".json") else config_name + ".json")).read_text(encoding="utf-8"))
     )
     config["spk"] = spk_dict
     config["data"]["training_files"] = train_list_path.as_posix()

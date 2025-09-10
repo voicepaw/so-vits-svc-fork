@@ -1,7 +1,7 @@
 # See https://pre-commit.com for more information
 # See https://pre-commit.com/hooks.html for more hooks
-exclude: "CHANGELOG.md|.copier-answers.yml"
-default_stages: [commit]
+exclude: "CHANGELOG.md|.copier-answers.yml|.all-contributorsrc|project"
+default_stages: [pre-commit]
 
 ci:
   autofix_commit_msg: "chore(pre-commit.ci): auto fixes"
@@ -9,12 +9,12 @@ ci:
 
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v3.28.0
+    rev: v4.6.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: debug-statements
       - id: check-builtin-literals
@@ -27,52 +27,31 @@ repos:
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: trailing-whitespace
-  - repo: https://github.com/python-poetry/poetry
-    rev: 1.8.3
+  - repo: https://github.com/tox-dev/pyproject-fmt
+    rev: "v2.5.1"
     hooks:
-      - id: poetry-check
+      - id: pyproject-fmt
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.6.14
+    hooks:
+      - id: uv-lock
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v3.1.0
     hooks:
       - id: prettier
         args: ["--tab-width", "2"]
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.17.0
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.11.5
     hooks:
-      - id: pyupgrade
-        args: [--py38-plus]
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.3.1
-    hooks:
-      - id: autoflake
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2
-    hooks:
-      - id: isort
-  - repo: https://github.com/psf/black
-    rev: 24.1.0
-    hooks:
-      - id: black
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      - id: ruff-format
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.2.6
+    rev: v2.4.1
     hooks:
       - id: codespell
-        args: [-w]
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1
-    hooks:
-      - id: flake8
-  #- repo: https://github.com/pre-commit/mirrors-mypy
-  #  rev: v0.931
-  #  hooks:
-  #    - id: mypy
-  #      additional_dependencies: []
-  # - repo: https://github.com/PyCQA/bandit
-  #   rev: 1.7.4
+  # - repo: https://github.com/pre-commit/mirrors-mypy
+  #   rev: v1.15.0
   #   hooks:
-  #     - id: bandit
-  #       args: [-x, tests]
-  - repo: https://github.com/srstevenson/nb-clean
-    rev: "3.3.0"
-    hooks:
-      - id: nb-clean
+  #     - id: mypy
+  #       additional_dependencies: []

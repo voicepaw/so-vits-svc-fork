@@ -9,14 +9,14 @@ IS_COLAB = os.getenv("COLAB_RELEASE_TAG", False)
 
 class TestMain(TestCase):
     def test_import(self):
-        import so_vits_svc_fork.cluster.train_cluster  # noqa
-        import so_vits_svc_fork.inference.main  # noqa
+        import so_vits_svc_fork.cluster.train_cluster
+        import so_vits_svc_fork.inference.main
 
-        # import so_vits_svc_fork.modules.onnx._export  # noqa
-        import so_vits_svc_fork.preprocessing.preprocess_flist_config  # noqa
-        import so_vits_svc_fork.preprocessing.preprocess_hubert_f0  # noqa
-        import so_vits_svc_fork.preprocessing.preprocess_resample  # noqa
-        import so_vits_svc_fork.preprocessing.preprocess_split  # noqa
+        # import so_vits_svc_fork.modules.onnx._export
+        import so_vits_svc_fork.preprocessing.preprocess_flist_config
+        import so_vits_svc_fork.preprocessing.preprocess_hubert_f0
+        import so_vits_svc_fork.preprocessing.preprocess_resample
+        import so_vits_svc_fork.preprocessing.preprocess_split
         import so_vits_svc_fork.train  # noqa
 
     def test_infer(self):
@@ -31,9 +31,7 @@ class TestMain(TestCase):
             preprocess_resample,
         )
 
-        preprocess_resample(
-            "tests/dataset_raw", "tests/dataset/44k", 44100, n_jobs=1 if IS_CI else -1
-        )
+        preprocess_resample("tests/dataset_raw", "tests/dataset/44k", 44100, n_jobs=1 if IS_CI else -1)
 
         from so_vits_svc_fork.preprocessing.preprocess_flist_config import (
             preprocess_config,
