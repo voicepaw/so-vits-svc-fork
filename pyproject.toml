@@ -1,106 +1,131 @@
-[tool.poetry]
+[build-system]
+build-backend = "setuptools.build_meta"
+requires = [ "setuptools" ]
+
+[project]
 name = "so-vits-svc-fork"
 version = "4.2.26"
 description = "A fork of so-vits-svc."
-authors = ["34j <34j.95a2p@simplelogin.com>"]
-license = "MIT"
 readme = "README.md"
-repository = "https://github.com/34j/so-vits-svc-fork"
-documentation = "https://so-vits-svc-fork.readthedocs.io"
+license = { text = "MIT" }
+authors = [
+  { name = "34j", email = "34j.95a2p@simplelogin.com" },
+]
+requires-python = ">=3.9"
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
-    "Intended Audience :: Developers",
-    "Natural Language :: English",
-    "Operating System :: OS Independent",
-    "Topic :: Software Development :: Libraries",
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Software Development :: Libraries",
 ]
-packages = [
-    { include = "so_vits_svc_fork", from = "src" },
+
+dependencies = [
+    "click>=8.1.8",
+    "cm-time>=0.1.2",
+    "fastapi>=0.116.1",
+    "librosa>=0.11.0",
+    "lightning>=2.5.5",
+    "matplotlib>=3.9.4",
+    "numpy>=2.0.2",
+    "pebble>=5.1.3",
+    "praat-parselmouth>=0.4.6",
+    "pysimplegui-4-foss>=4.60.4.1",
+    "pyworld>=0.3.5",
+    "requests>=2.32.5",
+    "rich>=14.1.0",
+    "scipy>=1.13.1",
+    "sounddevice>=0.5.2",
+    "soundfile>=0.13.1",
+    "tensorboard>=2.20.0",
+    "tensorboardx>=2.6.4",
+    "torch>=2.8.0",
+    "torchaudio>=2.8.0",
+    "torchcrepe>=0.0.24",
+    "tqdm>=4.67.1",
+    "tqdm-joblib>=0.0.4",
+    "transformers>=4.56.1",
+]
+urls."Bug Tracker" = "https://github.com/voicepaw/so-vits-svc-fork/issues"
+urls.Changelog = "https://github.com/voicepaw/so-vits-svc-fork/blob/main/CHANGELOG.md"
+urls.documentation = "https://so-vits-svc-fork.readthedocs.io"
+urls.repository = "https://github.com/voicepaw/so-vits-svc-fork"
+scripts.svc = "so_vits_svc_fork.__main__:cli"
+scripts.svcg = "so_vits_svc_fork.gui:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8,<9",
+  "pytest-cov>=6,<7",
+]
+docs = [
+  "furo>=2023.5.20; python_version>='3.11'",
+  "myst-parser>=0.16; python_version>='3.11'",
+  "sphinx>=4; python_version>='3.11'",
+  "sphinx-autobuild>=2024,<2025; python_version>='3.11'",
 ]
 
-[tool.poetry.scripts]
-so-vits-svc-fork = "so_vits_svc_fork.__main__:cli"
-svc = "so_vits_svc_fork.__main__:cli"
-svcf = "so_vits_svc_fork.__main__:cli"
-svcg = "so_vits_svc_fork.gui:main"
-svc-gui = "so_vits_svc_fork.gui:main"
-svcf-gui = "so_vits_svc_fork.gui:main"
-
-[tool.poetry.urls]
-"Bug Tracker" = "https://github.com/34j/so-vits-svc-fork/issues"
-"Changelog" = "https://github.com/34j/so-vits-svc-fork/blob/main/CHANGELOG.md"
-
-[tool.poetry.dependencies]
-python = ">=3.9,<3.13"
-librosa = "*"
-numpy = "^1.26.4"
-pyworld = "*"
-requests = "*"
-scipy = "*"
-sounddevice = "*"
-SoundFile = "*"
-tqdm = "*"
-praat-parselmouth = "*"
-torch = "^2"
-torchaudio = "*"
-tensorboard = "*"
-rich = "*"
-tqdm-joblib = "^0.0.4"
-tensorboardx = "*"
-cm-time = ">=0.1.2"
-pebble = ">=5.0"
-torchcrepe = ">=0.0.17"
-lightning = "^2.0.1"
-fastapi = "==0.111.1"
-transformers = "^4.28.1"
-matplotlib = "^3.7.1"
-click = "^8.1.7"
-setuptools = "^69.5.1"
-pysimplegui-4-foss = "^4.60.4.1"
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = ">=3"
-pytest = "^8.0.0"
-pytest-cov = "^4.0.0"
-pipdeptree = "^2.7.0"
-pip-licenses = "^5.0.0"
-
-[tool.poetry.group.docs]
-optional = true
-
-[tool.poetry.group.docs.dependencies]
-myst-parser = ">=0.16"
-sphinx = ">=4.0"
-sphinx-rtd-theme = ">=1.0"
-
-[tool.semantic_release]
-branch = "main"
-version_toml = "pyproject.toml:tool.poetry.version"
-version_variable = "src/so_vits_svc_fork/__init__.py:__version__"
-build_command = "pip install poetry && poetry build"
+[tool.ruff]
+line-length = 88
+lint.select = [
+  "B",   # flake8-bugbear
+  "D",   # flake8-docstrings
+  "C4",  # flake8-comprehensions
+  "S",   # flake8-bandit
+  "F",   # pyflake
+  "E",   # pycodestyle
+  "W",   # pycodestyle
+  "UP",  # pyupgrade
+  "I",   # isort
+  "RUF", # ruff specific
+]
+lint.ignore = [
+  "D203", # 1 blank line required before class docstring
+  "D212", # Multi-line docstring summary should start at the first line
+  "D100", # Missing docstring in public module
+  "D104", # Missing docstring in public package
+  "D107", # Missing docstring in `__init__`
+  "D401", # First line of docstring should be in imperative mood
+]
+lint.per-file-ignores."conftest.py" = [ "D100" ]
+lint.per-file-ignores."docs/conf.py" = [ "D100" ]
+lint.per-file-ignores."setup.py" = [ "D100" ]
+lint.per-file-ignores."tests/**/*" = [
+  "D100",
+  "D101",
+  "D102",
+  "D103",
+  "D104",
+  "S101",
+]
+lint.isort.known-first-party = [ "so_vits_svc_fork", "tests" ]
 
 [tool.pytest.ini_options]
-addopts = "-v -Wdefault --cov=so_vits_svc_fork --cov-report=term-missing:skip-covered"
-pythonpath = ["src"]
+addopts = """\
+    -v
+    -Wdefault
+    --cov=so_vits_svc_fork
+    --cov-report=term
+    --cov-report=xml
+    """
+pythonpath = [ "src" ]
 
 [tool.coverage.run]
 branch = true
 
 [tool.coverage.report]
 exclude_lines = [
-    "pragma: no cover",
-    "@overload",
-    "if TYPE_CHECKING",
-    "raise NotImplementedError",
-    'if __name__ == "__main__":',
+  "pragma: no cover",
+  "@overload",
+  "if TYPE_CHECKING",
+  "raise NotImplementedError",
+  'if __name__ == "__main__":',
 ]
-
-[tool.isort]
-profile = "black"
-known_first_party = ["so_vits_svc_fork", "tests"]
-
-[tool.autoflake]
-remove_all_unused_imports = true
 
 [tool.mypy]
 check_untyped_defs = true
@@ -113,8 +138,8 @@ show_error_codes = true
 warn_unreachable = true
 warn_unused_ignores = true
 exclude = [
-    'docs/.*',
-    'setup.py',
+  'docs/.*',
+  'setup.py',
 ]
 
 [[tool.mypy.overrides]]
@@ -125,9 +150,37 @@ allow_untyped_defs = true
 module = "docs.*"
 ignore_errors = true
 
-[tool.bandit]
-exclude_dirs = ["src"]
+[tool.semantic_release]
+version_toml = [ "pyproject.toml:project.version" ]
+version_variables = [
+  "src/so_vits_svc_fork/__init__.py:__version__",
+  "docs/conf.py:release",
+]
+build_command = """
+pip install uv
+uv lock
+git add uv.lock
+uv build
+"""
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.semantic_release.changelog]
+exclude_commit_patterns = [
+  '''chore(?:\([^)]*?\))?: .+''',
+  '''ci(?:\([^)]*?\))?: .+''',
+  '''refactor(?:\([^)]*?\))?: .+''',
+  '''style(?:\([^)]*?\))?: .+''',
+  '''test(?:\([^)]*?\))?: .+''',
+  '''build\((?!deps\): .+)''',
+  '''Merged? .*''',
+  '''Initial [Cc]ommit.*''', # codespell:ignore
+]
+
+[tool.semantic_release.changelog.environment]
+keep_trailing_newline = true
+
+[tool.semantic_release.branches.main]
+match = "main"
+
+[tool.semantic_release.branches.noop]
+match = "(?!main$)"
+prerelease = true

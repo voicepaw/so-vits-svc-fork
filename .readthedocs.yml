@@ -6,18 +6,15 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-20.04
+  os: ubuntu-22.04
   tools:
-    python: "3.9"
-  jobs:
-    post_create_environment:
-      # Install poetry
-      - pip install poetry
-      # Tell poetry to not use a virtual environment
-      - poetry config virtualenvs.create false
-    post_install:
-      # Install dependencies
-      - poetry install --with docs
+    python: "3.12"
+  commands:
+    - asdf plugin add uv
+    - asdf install uv latest
+    - asdf global uv latest
+    - uv sync --only-group docs --frozen
+    - uv run -m sphinx -T -b html -d docs/_build/doctrees -D language=en docs $READTHEDOCS_OUTPUT/html
 
 # Build documentation in the docs directory with Sphinx
 sphinx:

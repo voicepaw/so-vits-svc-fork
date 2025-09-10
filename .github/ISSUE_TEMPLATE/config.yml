@@ -1,5 +1,8 @@
+# Disabling blank issues to ensure all necessary information is provided
+# Users should use the provided templates for specific issues
+# For general questions, please refer to the contact links section
 blank_issues_enabled: false
 contact_links:
-  - name: Discussions
-    url: https://github.com/34j/so-vits-svc-fork/discussions
+  - name: Questions
+    url: https://github.com/voicepaw/so-vits-svc-fork/discussions/categories/q-a
     about: Please ask and answer questions here.

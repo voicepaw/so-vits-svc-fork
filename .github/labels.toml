@@ -92,3 +92,8 @@ description = "Automatically closes as answered after a delay"
 color = "5f7972"
 name = "waiting"
 description = "Automatically closes if no answer after a delay"
+
+[fund]
+color = "0E8A16"
+name = "fund"
+description = "Add a section linking to polar.sh for funding the issue."

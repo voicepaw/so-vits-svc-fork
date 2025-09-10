@@ -29,7 +29,7 @@ body:
     attributes:
       label: Code of Conduct
       description: By submitting this issue, you agree to follow our
-        [Code of Conduct](https://github.com/34j/so-vits-svc-fork/blob/main/CODE_OF_CONDUCT.md).
+        [Code of Conduct](https://github.com/voicepaw/so-vits-svc-fork/blob/main/.github/CODE_OF_CONDUCT.md).
       options:
         - label: I agree to follow this project's Code of Conduct
           required: true
@@ -43,8 +43,6 @@ body:
         - label: Yes, I have the time, but I don't know how to start. I would need guidance.
         - label: No, I don't have the time, although I believe I could do it if I had the time...
         - label: No, I don't have the time and I wouldn't even know how to start.
-    validations:
-      required: true
   - type: markdown
     attributes:
       value: 👋 Have a great day and thank you for the feature request!

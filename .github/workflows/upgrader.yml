@@ -1,0 +1,12 @@
+name: Upgrader
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "15 11 3 1-9,11-12 *"
+
+jobs:
+  upgrade:
+    uses: browniebroke/github-actions/.github/workflows/uv-upgrade.yml@v1
+    secrets:
+      gh_pat: ${{ secrets.GH_PAT }}
