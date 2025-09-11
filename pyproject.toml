@@ -61,7 +61,7 @@ scripts.svcg = "so_vits_svc_fork.gui:main"
 [dependency-groups]
 dev = [
   "pytest>=8,<9",
-  "pytest-cov>=6,<7",
+  "pytest-cov>=7,<8",
 ]
 docs = [
   "furo>=2023.5.20; python_version>='3.11'",
