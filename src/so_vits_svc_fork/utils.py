@@ -369,8 +369,8 @@ def plot_spectrogram_to_numpy(spectrogram: ndarray) -> ndarray:
     plt.tight_layout()
 
     fig.canvas.draw()
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep="")
-    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    data = np.fromstring(fig.canvas.tostring_argb(), dtype=np.uint8, sep="")
+    data = data.reshape(fig.canvas.get_width_height()[::-1] + (4,))
     plt.close()
     return data
 
@@ -416,8 +416,8 @@ def plot_data_to_numpy(x: ndarray, y: ndarray) -> ndarray:
     plt.tight_layout()
 
     fig.canvas.draw()
-    data = np.fromstring(fig.canvas.tostring_rgb(), dtype=np.uint8, sep="")
-    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+    data = np.fromstring(fig.canvas.tostring_argb(), dtype=np.uint8, sep="")
+    data = data.reshape(fig.canvas.get_width_height()[::-1] + (4,))
     plt.close()
     return data
 

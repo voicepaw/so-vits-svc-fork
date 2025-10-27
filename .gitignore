@@ -156,3 +156,8 @@ tests/**/*.yaml
 *.tfevents.*
 *.pt
 user_gui_presets.json
+logs
+dataset
+dataset_raw
+configs
+filelists
