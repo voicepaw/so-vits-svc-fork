@@ -1,5 +1,15 @@
 # Changelog
 
+## v4.2.29 (2025-10-27)
+
+### Bug fixes
+
+- Fix train not working ([`f90cc40`](https://github.com/voicepaw/so-vits-svc-fork/commit/f90cc40802a56ebb3a8ba1f1493ff8d6008fa57b))
+
+### Documentation
+
+- Better notebook ([`a80a296`](https://github.com/voicepaw/so-vits-svc-fork/commit/a80a296166ed0a872f93fc30f504b3a504e11f9e))
+
 ## v4.2.28 (2025-10-26)
 
 ### Documentation
