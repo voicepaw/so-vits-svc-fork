@@ -51,9 +51,9 @@ The voice changer boom that occurred in 2023 has come to an end, and many develo
 
 There are too many alternatives to list here but:
 
-- RVC family: [IAHispano/Applio](https://github.com/IAHispano/Applio) (MIT), [fumiama's RVC](https://github.com/fumiama/Retrieval-based-Voice-Conversion-WebUI) (AGPL) and [original RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) (MIT)
-- [VCClient](https://github.com/w-okada/voice-changer) (MIT etc.) is quite actively maintained and offers web-based GUI for real-time conversion.
-- [fish-diffusion](https://github.com/fishaudio/fish-diffusion/commits/main/) tried to be quite modular but not quite actively maintained.
+- RVC family: [IAHispano/Applio](https://github.com/IAHispano/Applio) (MIT) (actively maintained), [fumiama's RVC](https://github.com/fumiama/Retrieval-based-Voice-Conversion-WebUI) (AGPL) and [original RVC](https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI) (MIT) (no longer maintained)
+- [VCClient](https://github.com/w-okada/voice-changer) (MIT etc.) offers web-based GUI for real-time conversion but not quite actively maintained.
+- [fish-diffusion](https://github.com/fishaudio/fish-diffusion/commits/main/) tried to be quite modular but not actively maintained.
 - [yxlllc/DDSP\-SVC](https://github.com/yxlllc/DDSP-SVC) - new releases are issued occasionally. [yxlllc/ReFlow\-VAE\-SVC](https://github.com/yxlllc/ReFlow-VAE-SVC)
 - [coqui\-ai/TTS](https://github.com/coqui-ai/TTS) was for TTS but was partially modular. However, it is not maintained anymore, unfortunately.
 
