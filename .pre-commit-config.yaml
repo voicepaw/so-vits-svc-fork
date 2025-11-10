@@ -9,7 +9,7 @@ ci:
 
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.9.1
+    rev: v4.10.0
     hooks:
       - id: commitizen
         stages: [commit-msg]
@@ -36,7 +36,7 @@ repos:
     hooks:
       - id: uv-lock
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.1.0
+    rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
         args: ["--tab-width", "2"]
