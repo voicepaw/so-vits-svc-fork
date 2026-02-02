@@ -10,13 +10,7 @@ class TestConfigTemplates(TestCase):
     def test_config_template_dir_exists_in_source(self):
         """Test that the config template directory exists in source code."""
         # Test the source code location directly
-        config_template_dir = (
-            Path(__file__).parent.parent
-            / "src"
-            / "so_vits_svc_fork"
-            / "preprocessing"
-            / "config_templates"
-        )
+        config_template_dir = Path(__file__).parent.parent / "src" / "so_vits_svc_fork" / "preprocessing" / "config_templates"
 
         self.assertTrue(
             config_template_dir.exists(),
@@ -25,13 +19,7 @@ class TestConfigTemplates(TestCase):
 
     def test_config_templates_are_available_in_source(self):
         """Test that config template JSON files are available in source code."""
-        config_template_dir = (
-            Path(__file__).parent.parent
-            / "src"
-            / "so_vits_svc_fork"
-            / "preprocessing"
-            / "config_templates"
-        )
+        config_template_dir = Path(__file__).parent.parent / "src" / "so_vits_svc_fork" / "preprocessing" / "config_templates"
 
         json_files = list(config_template_dir.rglob("*.json"))
         self.assertGreater(
@@ -42,13 +30,7 @@ class TestConfigTemplates(TestCase):
 
     def test_expected_config_templates_exist_in_source(self):
         """Test that expected config templates exist in source code."""
-        config_template_dir = (
-            Path(__file__).parent.parent
-            / "src"
-            / "so_vits_svc_fork"
-            / "preprocessing"
-            / "config_templates"
-        )
+        config_template_dir = Path(__file__).parent.parent / "src" / "so_vits_svc_fork" / "preprocessing" / "config_templates"
 
         expected_templates = [
             "so-vits-svc-4.0v1",
@@ -67,13 +49,7 @@ class TestConfigTemplates(TestCase):
 
     def test_cli_config_type_choices_in_source(self):
         """Test that CLI config type choices are properly populated in source code."""
-        config_template_dir = (
-            Path(__file__).parent.parent
-            / "src"
-            / "so_vits_svc_fork"
-            / "preprocessing"
-            / "config_templates"
-        )
+        config_template_dir = Path(__file__).parent.parent / "src" / "so_vits_svc_fork" / "preprocessing" / "config_templates"
 
         # This simulates what happens in __main__.py line 533
         choices = [x.stem for x in config_template_dir.rglob("*.json")]
