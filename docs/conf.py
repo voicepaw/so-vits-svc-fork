@@ -15,7 +15,7 @@ from sphinx.ext import apidoc
 project = "SoftVC VITS Singing Voice Conversion Fork"
 copyright = "2023, 34j"
 author = "34j"
-release = "4.2.29"
+release = "4.2.30"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration

@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.2.30 (2026-02-02)
+
+### Bug fixes
+
+- Fix `.json` files not included ([`922beed`](https://github.com/voicepaw/so-vits-svc-fork/commit/922beedff7d1efd7d54c75d92f2e090e18c58369))
+
 ## v4.2.29 (2025-10-27)
 
 ### Bug fixes
