@@ -71,6 +71,9 @@ docs = [
   "sphinx-autobuild>=2025,<2026; python_version>='3.11'",
 ]
 
+[tool.setuptools.package-data]
+"so_vits_svc_fork" = ["**/*.json"]
+
 [tool.ruff]
 line-length = 150
 lint.select = [
