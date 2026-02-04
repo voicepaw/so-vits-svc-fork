@@ -9,7 +9,7 @@ ci:
 
 repos:
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.13.3
+    rev: v4.13.4
     hooks:
       - id: commitizen
         stages: [commit-msg]
