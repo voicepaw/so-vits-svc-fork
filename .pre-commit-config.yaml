@@ -28,7 +28,7 @@ repos:
       - id: end-of-file-fixer
       - id: trailing-whitespace
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: "v2.15.3"
+    rev: "v2.16.0"
     hooks:
       - id: pyproject-fmt
   - repo: https://github.com/astral-sh/uv-pre-commit
