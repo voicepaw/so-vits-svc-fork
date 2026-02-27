@@ -32,7 +32,7 @@ repos:
     hooks:
       - id: pyproject-fmt
   - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.10.6
+    rev: 0.10.7
     hooks:
       - id: uv-lock
   - repo: https://github.com/pre-commit/mirrors-prettier
