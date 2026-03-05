@@ -1753,11 +1753,11 @@ wheels = [
 
 [[package]]
 name = "imagesize"
-version = "1.4.1"
+version = "1.5.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a7/84/62473fb57d61e31fef6e36d64a179c8781605429fd927b5dd608c997be31/imagesize-1.4.1.tar.gz", hash = "sha256:69150444affb9cb0d5cc5a92b3676f0b2fb7cd9ae39e947a5e11a36b4497cd4a", size = 1280026, upload-time = "2022-07-01T12:21:05.687Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/cf/59/4b0dd64676aa6fb4986a755790cb6fc558559cf0084effad516820208ec3/imagesize-1.5.0.tar.gz", hash = "sha256:8bfc5363a7f2133a89f0098451e0bcb1cd71aba4dc02bbcecb39d99d40e1b94f", size = 1281127, upload-time = "2026-03-03T01:59:54.651Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ff/62/85c4c919272577931d407be5ba5d71c20f0b616d31a0befe0ae45bb79abd/imagesize-1.4.1-py2.py3-none-any.whl", hash = "sha256:0d8d18d08f840c19d0ee7ca1fd82490fdc3729b7ac93f49870406ddde8ef8d8b", size = 8769, upload-time = "2022-07-01T12:21:02.467Z" },
+    { url = "https://files.pythonhosted.org/packages/1e/b1/a0662b03103c66cf77101a187f396ea91167cd9b7d5d3a2e465ad2c7ee9b/imagesize-1.5.0-py2.py3-none-any.whl", hash = "sha256:32677681b3f434c2cb496f00e89c5a291247b35b1f527589909e008057da5899", size = 5763, upload-time = "2026-03-03T01:59:52.343Z" },
 ]
 
 [[package]]
