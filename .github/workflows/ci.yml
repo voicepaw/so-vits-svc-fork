@@ -52,7 +52,7 @@ jobs:
         id: setup-python
         with:
           python-version: ${{ matrix.python-version }}
-      - uses: astral-sh/setup-uv@6ee6290f1cbc4156c0bdd66691b2c144ef8df19a # v7
+      - uses: astral-sh/setup-uv@e06108dd0aef18192324c70427afc47652e63a82 # v7
       - run: uv sync --no-python-downloads
         shell: bash
       - run: uv run pytest
