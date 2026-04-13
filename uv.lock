@@ -1162,10 +1162,10 @@ wheels = [
 
 [[package]]
 name = "cuda-pathfinder"
-version = "1.5.1"
+version = "1.5.2"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c4/74/8c66861b873d8eed51fde56d3091baa4906a56f0d4390cae991f2d41dda5/cuda_pathfinder-1.5.1-py3-none-any.whl", hash = "sha256:b3718097fb57cf9e8a904dd072d806f2c9a27627e35c020b06ab9454bcec08c0", size = 49861, upload-time = "2026-04-03T16:41:22.203Z" },
+    { url = "https://files.pythonhosted.org/packages/f2/f9/1b9b60a30fc463c14cdea7a77228131a0ccc89572e8df9cb86c9648271ab/cuda_pathfinder-1.5.2-py3-none-any.whl", hash = "sha256:0c5f160a7756c5b072723cbbd6d861e38917ef956c68150b02f0b6e9271c71fa", size = 49988, upload-time = "2026-04-06T23:01:05.17Z" },
 ]
 
 [[package]]
@@ -1804,7 +1804,7 @@ wheels = [
 
 [[package]]
 name = "huggingface-hub"
-version = "1.9.0"
+version = "1.10.1"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -1823,9 +1823,9 @@ dependencies = [
     { name = "typer", marker = "python_full_version >= '3.10'" },
     { name = "typing-extensions", marker = "python_full_version >= '3.10'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/88/bb/62c7aa86f63a05e2f9b96642fdef9b94526a23979820b09f5455deff4983/huggingface_hub-1.9.0.tar.gz", hash = "sha256:0ea5be7a56135c91797cae6ad726e38eaeb6eb4b77cefff5c9d38ba0ecf874f7", size = 750326, upload-time = "2026-04-03T08:35:55.888Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e4/28/baf5d745559503ce8d28cf5bc9551f5ac59158eafd7b6a6afff0bcdb0f50/huggingface_hub-1.10.1.tar.gz", hash = "sha256:696c53cf9c2ac9befbfb5dd41d05392a031c69fc6930d1ed9671debd405b6fff", size = 758094, upload-time = "2026-04-09T15:01:18.928Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/73/37/0d15d16150e1829f3e90962c99f28257f6de9e526a680b4c6f5acdb54fd2/huggingface_hub-1.9.0-py3-none-any.whl", hash = "sha256:2999328c058d39fd19ab748dd09bd4da2fbaa4f4c1ddea823eab103051e14a1f", size = 637355, upload-time = "2026-04-03T08:35:53.897Z" },
+    { url = "https://files.pythonhosted.org/packages/83/8c/c7a33f3efaa8d6a5bc40e012e5ecc2d72c2e6124550ca9085fe0ceed9993/huggingface_hub-1.10.1-py3-none-any.whl", hash = "sha256:6b981107a62fbe68c74374418983399c632e35786dcd14642a9f2972633c8b5a", size = 642630, upload-time = "2026-04-09T15:01:17.35Z" },
 ]
 
 [[package]]
@@ -3773,7 +3773,7 @@ wheels = [
 
 [[package]]
 name = "platformdirs"
-version = "4.9.4"
+version = "4.9.6"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -3781,9 +3781,9 @@ resolution-markers = [
     "python_full_version == '3.11.*'",
     "python_full_version == '3.10.*'",
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/19/56/8d4c30c8a1d07013911a8fdbd8f89440ef9f08d07a1b50ab8ca8be5a20f9/platformdirs-4.9.4.tar.gz", hash = "sha256:1ec356301b7dc906d83f371c8f487070e99d3ccf9e501686456394622a01a934", size = 28737, upload-time = "2026-03-05T18:34:13.271Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/9f/4a/0883b8e3802965322523f0b200ecf33d31f10991d0401162f4b23c698b42/platformdirs-4.9.6.tar.gz", hash = "sha256:3bfa75b0ad0db84096ae777218481852c0ebc6c727b3168c1b9e0118e458cf0a", size = 29400, upload-time = "2026-04-09T00:04:10.812Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/63/d7/97f7e3a6abb67d8080dd406fd4df842c2be0efaf712d1c899c32a075027c/platformdirs-4.9.4-py3-none-any.whl", hash = "sha256:68a9a4619a666ea6439f2ff250c12a853cd1cbd5158d258bd824a7df6be2f868", size = 21216, upload-time = "2026-03-05T18:34:12.172Z" },
+    { url = "https://files.pythonhosted.org/packages/75/a6/a0a304dc33b49145b21f4808d763822111e67d1c3a32b524a1baf947b6e1/platformdirs-4.9.6-py3-none-any.whl", hash = "sha256:e61adb1d5e5cb3441b4b7710bea7e4c12250ca49439228cc1021c00dcfac0917", size = 21348, upload-time = "2026-04-09T00:04:09.463Z" },
 ]
 
 [[package]]
@@ -3802,7 +3802,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
     { name = "platformdirs", version = "4.4.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "platformdirs", version = "4.9.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "platformdirs", version = "4.9.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "requests", version = "2.32.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "requests", version = "2.33.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
@@ -4787,16 +4787,16 @@ wheels = [
 
 [[package]]
 name = "rich"
-version = "14.3.3"
+version = "15.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "markdown-it-py", version = "3.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "markdown-it-py", version = "4.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "pygments" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b3/c6/f3b320c27991c46f43ee9d856302c70dc2d0fb2dba4842ff739d5f46b393/rich-14.3.3.tar.gz", hash = "sha256:b8daa0b9e4eef54dd8cf7c86c03713f53241884e814f4e2f5fb342fe520f639b", size = 230582, upload-time = "2026-02-19T17:23:12.474Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c0/8f/0722ca900cc807c13a6a0c696dacf35430f72e0ec571c4275d2371fca3e9/rich-15.0.0.tar.gz", hash = "sha256:edd07a4824c6b40189fb7ac9bc4c52536e9780fbbfbddf6f1e2502c31b068c36", size = 230680, upload-time = "2026-04-12T08:24:00.75Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/25/b208c5683343959b670dc001595f2f3737e051da617f66c31f7c4fa93abc/rich-14.3.3-py3-none-any.whl", hash = "sha256:793431c1f8619afa7d3b52b2cdec859562b950ea0d4b6b505397612db8d5362d", size = 310458, upload-time = "2026-02-19T17:23:13.732Z" },
+    { url = "https://files.pythonhosted.org/packages/82/3b/64d4899d73f91ba49a8c18a8ff3f0ea8f1c1d75481760df8c68ef5235bf5/rich-15.0.0-py3-none-any.whl", hash = "sha256:33bd4ef74232fb73fe9279a257718407f169c09b78a87ad3d296f548e27de0bb", size = 310654, upload-time = "2026-04-12T08:24:02.83Z" },
 ]
 
 [[package]]
@@ -5236,7 +5236,7 @@ dependencies = [
     { name = "tqdm-joblib", version = "0.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
     { name = "tqdm-joblib", version = "0.0.5", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "transformers", version = "4.57.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "transformers", version = "5.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "transformers", version = "5.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
 
 [package.dev-dependencies]
@@ -5674,7 +5674,7 @@ version = "0.22.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "huggingface-hub", version = "0.36.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.10'" },
-    { name = "huggingface-hub", version = "1.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "huggingface-hub", version = "1.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/73/6f/f80cfef4a312e1fb34baf7d85c72d4411afde10978d4657f8cdd811d3ccc/tokenizers-0.22.2.tar.gz", hash = "sha256:473b83b915e547aa366d1eee11806deaf419e17be16310ac0a14077f1e28f917", size = 372115, upload-time = "2026-01-05T10:45:15.988Z" }
 wheels = [
@@ -6038,7 +6038,7 @@ wheels = [
 
 [[package]]
 name = "transformers"
-version = "5.5.0"
+version = "5.5.3"
 source = { registry = "https://pypi.org/simple" }
 resolution-markers = [
     "python_full_version >= '3.13'",
@@ -6047,7 +6047,7 @@ resolution-markers = [
     "python_full_version == '3.10.*'",
 ]
 dependencies = [
-    { name = "huggingface-hub", version = "1.9.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
+    { name = "huggingface-hub", version = "1.10.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.10'" },
     { name = "numpy", version = "2.2.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "numpy", version = "2.4.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "packaging", marker = "python_full_version >= '3.10'" },
@@ -6058,9 +6058,9 @@ dependencies = [
     { name = "tqdm", marker = "python_full_version >= '3.10'" },
     { name = "typer", marker = "python_full_version >= '3.10'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/ff/9d/fb46e729b461985f41a5740167688b924a4019141e5c164bea77548d3d9e/transformers-5.5.0.tar.gz", hash = "sha256:c8db656cf51c600cd8c75f06b20ef85c72e8b8ff9abc880c5d3e8bc70e0ddcbd", size = 8237745, upload-time = "2026-04-02T16:13:08.113Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/af/35/cd5b0d1288e65d2c12db4ce84c1ec1074f7ee9bced040de6c9d69e70d620/transformers-5.5.3.tar.gz", hash = "sha256:3f60128e840b40d352655903552e1eed4f94ed49369a4d43e1bc067bd32d3f50", size = 8226047, upload-time = "2026-04-09T15:52:56.231Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/e7/28/35f7411ff80a3640c1f4fc907dcbb6a65061ebb82f66950e38bfc9f7f740/transformers-5.5.0-py3-none-any.whl", hash = "sha256:821a9ff0961abbb29eb1eb686d78df1c85929fdf213a3fe49dc6bd94f9efa944", size = 10245591, upload-time = "2026-04-02T16:13:03.462Z" },
+    { url = "https://files.pythonhosted.org/packages/a1/0b/f8524551ab2d896dfaca74ddb70a4453d515bbf4ab5451c100c7788ae155/transformers-5.5.3-py3-none-any.whl", hash = "sha256:e48f3ec31dd96505e96e66b63a1e43e1ad7a65749e108d9227caaf51051cdb02", size = 10236257, upload-time = "2026-04-09T15:52:52.866Z" },
 ]
 
 [[package]]
@@ -6157,15 +6157,15 @@ wheels = [
 
 [[package]]
 name = "uvicorn"
-version = "0.43.0"
+version = "0.44.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click", version = "8.3.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
     { name = "h11", marker = "python_full_version >= '3.11'" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/62/f2/368268300fb8af33743508d738ef7bb4d56afdb46c6d9c0fa3dd515df171/uvicorn-0.43.0.tar.gz", hash = "sha256:ab1652d2fb23abf124f36ccc399828558880def222c3cb3d98d24021520dc6e8", size = 85686, upload-time = "2026-04-03T18:37:48.984Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5e/da/6eee1ff8b6cbeed47eeb5229749168e81eb4b7b999a1a15a7176e51410c9/uvicorn-0.44.0.tar.gz", hash = "sha256:6c942071b68f07e178264b9152f1f16dfac5da85880c4ce06366a96d70d4f31e", size = 86947, upload-time = "2026-04-06T09:23:22.826Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/55/df/0cf5b0c451602748fdc7a702d4667f6e209bf96aa6e3160d754234445f2a/uvicorn-0.43.0-py3-none-any.whl", hash = "sha256:46fac64f487fd968cd999e5e49efbbe64bd231b5bd8b4a0b482a23ebce499620", size = 68591, upload-time = "2026-04-03T18:37:47.64Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/23/a5bbd9600dd607411fa644c06ff4951bec3a4d82c4b852374024359c19c0/uvicorn-0.44.0-py3-none-any.whl", hash = "sha256:ce937c99a2cc70279556967274414c087888e8cec9f9c94644dfca11bd3ced89", size = 69425, upload-time = "2026-04-06T09:23:21.524Z" },
 ]
 
 [[package]]
