@@ -7,6 +7,6 @@ on:
 
 jobs:
   upgrade:
-    uses: browniebroke/github-actions/.github/workflows/poetry-upgrade.yml@a4a8428c6f76ab8848c94c5a649fa809aacf8688 # v1
+    uses: browniebroke/github-actions/.github/workflows/poetry-upgrade.yml@3ceed0e5ad20c6d9e64f46937b7c0425bbe51b54 # v1
     secrets:
       gh_pat: ${{ secrets.GH_PAT }}
