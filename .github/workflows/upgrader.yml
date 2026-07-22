@@ -7,6 +7,6 @@ on:
 
 jobs:
   upgrade:
-    uses: browniebroke/github-actions/.github/workflows/uv-upgrade.yml@2e443406e88fd4e9f1d23620f0908f425220b38a # v1
+    uses: browniebroke/github-actions/.github/workflows/uv-upgrade.yml@f62ef26d5b2705fbcbf9c48ed4619f055efa3481 # v1
     secrets:
       gh_pat: ${{ secrets.GH_PAT }}
