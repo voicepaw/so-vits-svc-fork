@@ -330,7 +330,7 @@ def clean_checkpoints(path_to_models: Path | str, n_ckpts_to_keep: int = 2, sort
 
     models = list(
         filter(
-            lambda p: (p.is_file() and re.match(r"[GD]_\d+", p.stem) and not p.stem.endswith("_0")),
+            lambda p: p.is_file() and re.match(r"[GD]_\d+", p.stem) and not p.stem.endswith("_0"),
             path_to_models.glob("*.pth"),
         )
     )
