@@ -75,7 +75,7 @@ def get_supported_file_types() -> tuple[tuple[str, str], ...]:
     common_file_types = ["WAV", "MP3", "FLAC", "OGG", "M4A", "WMA"]
     res = sorted(
         res,
-        key=lambda x: (common_file_types.index(x[0]) if x[0] in common_file_types else len(common_file_types)),
+        key=lambda x: common_file_types.index(x[0]) if x[0] in common_file_types else len(common_file_types),
     )
     return res
 
