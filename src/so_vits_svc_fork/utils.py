@@ -437,3 +437,58 @@ def get_total_gpu_memory(type_: Literal["total", "free", "used"]) -> int | None:
     if memories is None:
         return
     return sum(memories)
+
+
+class SQLiteAcousticCache:
+    """Lightweight SQLite-backed key-value cache for pre-computed acoustic features.
+
+    Enables fast deterministic retrieval of F0 contours, HuBERT hidden states,
+    and volume curves during repeated training or inference iterations.
+    """
+
+    def __init__(self, db_path: str | Path = ":memory:"):
+        import sqlite3
+
+        self.db_path = str(db_path)
+        self._conn = sqlite3.connect(self.db_path)
+        self._init_db()
+
+    def _init_db(self) -> None:
+        with self._conn:
+            self._conn.execute(
+                "CREATE TABLE IF NOT EXISTS feature_cache (key TEXT PRIMARY KEY, payload BLOB)"
+            )
+
+    def set(self, key: str, tensor: torch.Tensor) -> None:
+        import io
+
+        buffer = io.BytesIO()
+        torch.save(tensor.cpu(), buffer)
+        with self._conn:
+            self._conn.execute(
+                "INSERT OR REPLACE INTO feature_cache (key, payload) VALUES (?, ?)",
+                (key, buffer.getvalue()),
+            )
+
+    def get(self, key: str) -> torch.Tensor | None:
+        import io
+
+        cursor = self._conn.cursor()
+        cursor.execute("SELECT payload FROM feature_cache WHERE key = ?", (key,))
+        row = cursor.fetchone()
+        if row:
+            buffer = io.BytesIO(row[0])
+            return torch.load(buffer, weights_only=True)
+        return None
+
+    def close(self) -> None:
+        if self._conn:
+            self._conn.close()
+            self._conn = None
+
+    def __enter__(self) -> SQLiteAcousticCache:
+        return self
+
+    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+        self.close()
+
