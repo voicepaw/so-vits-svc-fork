@@ -455,9 +455,7 @@ class SQLiteAcousticCache:
 
     def _init_db(self) -> None:
         with self._conn:
-            self._conn.execute(
-                "CREATE TABLE IF NOT EXISTS feature_cache (key TEXT PRIMARY KEY, payload BLOB)"
-            )
+            self._conn.execute("CREATE TABLE IF NOT EXISTS feature_cache (key TEXT PRIMARY KEY, payload BLOB)")
 
     def set(self, key: str, tensor: torch.Tensor) -> None:
         import io
@@ -491,4 +489,3 @@ class SQLiteAcousticCache:
 
     def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
         self.close()
-
