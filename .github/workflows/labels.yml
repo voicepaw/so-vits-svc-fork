@@ -1,4 +1,4 @@
-name: Sync Github labels
+name: Sync GitHub labels
 
 on:
   push:
@@ -9,14 +9,7 @@ on:
 
 jobs:
   labels:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - name: Set up Python
-        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
-        with:
-          python-version: 3.x
-      - name: Install labels
-        run: pip install labels
-      - name: Sync config with Github
-        run: labels -u ${{ github.repository_owner }} -t ${{ secrets.GH_PAT }} sync -f .github/labels.toml
+    uses: 34j/.github/.github/workflows/labels.yml@main
+    permissions:
+      contents: read
+      issues: write

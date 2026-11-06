@@ -1,15 +1,3 @@
 {
-  "extends": [
-    "config:best-practices",
-    ":pinOnlyDevDependencies",
-    ":automergeAll",
-    ":enablePreCommit"
-  ],
-  "packageRules": [
-    {
-      "matchPackageNames": ["python"],
-      "rangeStrategy": "widen",
-      "separateMultipleMinor": true
-    }
-  ]
+  "extends": ["github>34j/renovate-config:python"]
 }
