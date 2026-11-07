@@ -1,20 +1,19 @@
 # Changes here will be overwritten by Copier
-_commit: 2e4f7d0
-_src_path: gh:34j/pypackage-template
+_commit: cba0ccb
+_src_path: gh:34j/pypackage-template-fork
 copyright_year: '2023'
 documentation: true
-email: 34j.95a2p@simplelogin.com
-full_name: 34j
-github_username: voicepaw
+github_user: voicepaw
 has_cli: false
 initial_commit: false
-is_django_package: false
+module_name: so_vits_svc_fork
 open_source_license: MIT
 open_with_editor: false
-package_name: so_vits_svc_fork
 project_name: SoftVC VITS Singing Voice Conversion Fork
 project_short_description: A fork of so-vits-svc.
 project_slug: so-vits-svc-fork
 run_uv_sync: false
+setup_github: false
 setup_pre_commit: false
-
+user_name: 34j
+version: 4.2.30

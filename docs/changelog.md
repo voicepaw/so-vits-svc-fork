@@ -1,5 +1,0 @@
-(changelog)=
-
-```{include} ../CHANGELOG.md
-
-```
