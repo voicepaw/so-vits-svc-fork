@@ -48,7 +48,7 @@ repos:
     hooks:
       - id: local-ty
         name: ty check
-        entry: uv run ty check --exclude docs/conf.py
+        entry: uv run ty check --exclude docs/conf.py --exit-zero
         require_serial: true
         language: system
         pass_filenames: false

@@ -113,18 +113,16 @@ def ensure_pretrained_model(folder_path: Path | str, type_: str | dict[str, str]
     # new code
     if not isinstance(type_, str):
         try:
-            Parallel(n_jobs=len(type_))(
-                [
-                    delayed(download_file)(
-                        url,
-                        folder_path / filename,
-                        position=i,
-                        skip_if_exists=True,
-                        **tqdm_kwargs,
-                    )
-                    for i, (filename, url) in enumerate(type_.items())
-                ]
-            )
+            Parallel(n_jobs=len(type_))([
+                delayed(download_file)(
+                    url,
+                    folder_path / filename,
+                    position=i,
+                    skip_if_exists=True,
+                    **tqdm_kwargs,
+                )
+                for i, (filename, url) in enumerate(type_.items())
+            ])
             return tuple(folder_path / filename for filename in type_.values())
         except Exception as e:
             LOG.error(f"Failed to download {type_}")
@@ -138,12 +136,10 @@ def ensure_pretrained_model(folder_path: Path | str, type_: str | dict[str, str]
     for model_urls in models_candidates:
         paths = [folder_path / model_url.split("/")[-1] for model_url in model_urls]
         try:
-            Parallel(n_jobs=len(paths))(
-                [
-                    delayed(download_file)(url, path, position=i, skip_if_exists=True, **tqdm_kwargs)
-                    for i, (url, path) in enumerate(zip(model_urls, paths))
-                ]
-            )
+            Parallel(n_jobs=len(paths))([
+                delayed(download_file)(url, path, position=i, skip_if_exists=True, **tqdm_kwargs)
+                for i, (url, path) in enumerate(zip(model_urls, paths))
+            ])
             return tuple(paths)
         except Exception as e:
             LOG.error(f"Failed to download {model_urls}")
@@ -330,7 +326,7 @@ def clean_checkpoints(path_to_models: Path | str, n_ckpts_to_keep: int = 2, sort
 
     models = list(
         filter(
-            lambda p: (p.is_file() and re.match(r"[GD]_\d+", p.stem) and not p.stem.endswith("_0")),
+            lambda p: p.is_file() and re.match(r"[GD]_\d+", p.stem) and not p.stem.endswith("_0"),
             path_to_models.glob("*.pth"),
         )
     )

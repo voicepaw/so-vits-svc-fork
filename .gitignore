@@ -214,3 +214,26 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Project data
+tests/**/*.wav
+!tests/dataset_raw/test/**/*.wav
+tests/**/*.npy
+tests/**/*.pt
+tests/**/*.txt
+tests/**/*.json
+tests/**/*.pth
+tests/**/*.download
+tests/**/*.lab
+tests/**/*.pdf
+tests/**/*.csv
+tests/**/*.ckpt
+tests/**/*.yaml
+*.tfevents.*
+*.pt
+user_gui_presets.json
+logs
+dataset
+dataset_raw
+configs
+filelists

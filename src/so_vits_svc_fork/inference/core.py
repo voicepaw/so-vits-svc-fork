@@ -260,13 +260,11 @@ class Svc:
             else:
                 # pad
                 pad_len = int(sr * pad_seconds)
-                audio_chunk_pad = np.concatenate(
-                    [
-                        np.zeros([pad_len], dtype=np.float32),
-                        chunk.audio,
-                        np.zeros([pad_len], dtype=np.float32),
-                    ]
-                )
+                audio_chunk_pad = np.concatenate([
+                    np.zeros([pad_len], dtype=np.float32),
+                    chunk.audio,
+                    np.zeros([pad_len], dtype=np.float32),
+                ])
                 audio_chunk_pad_infer_tensor, _ = self.infer(
                     speaker,
                     transpose,
@@ -315,13 +313,11 @@ def sola_crossfade(
     sola_shift = np.argmax(cor_nom / cor_den)
     LOG.info(f"SOLA shift: {sola_shift}")
     second = second[sola_shift : sola_shift + len(second) - sola_search_len]
-    return np.concatenate(
-        [
-            first[:-crossfade_len],
-            first[-crossfade_len:] * np.linspace(1, 0, crossfade_len) + second[:crossfade_len] * np.linspace(0, 1, crossfade_len),
-            second[crossfade_len:],
-        ]
-    )
+    return np.concatenate([
+        first[:-crossfade_len],
+        first[-crossfade_len:] * np.linspace(1, 0, crossfade_len) + second[:crossfade_len] * np.linspace(0, 1, crossfade_len),
+        second[crossfade_len:],
+    ])
 
 
 class Crossfader:
@@ -587,25 +583,21 @@ class RealtimeVC2:
                 output_audio = np.concatenate([output_audio, chunk.audio])
             else:
                 # if is_silence, concat with zeros and compress with silence_compress_rate
-                output_audio = np.concatenate(
-                    [
-                        output_audio,
-                        np.zeros(
-                            chunk_duration_output,
-                            dtype=np.float32,
-                        ),
-                    ]
-                )
+                output_audio = np.concatenate([
+                    output_audio,
+                    np.zeros(
+                        chunk_duration_output,
+                        dtype=np.float32,
+                    ),
+                ])
 
             if break_flag:
                 break
         LOG.info(f"Chunk store: {self.chunk_store}, output_audio: {output_audio.shape}")
         # make same length (errors)
         output_audio = output_audio[:input_audio_len]
-        output_audio = np.concatenate(
-            [
-                output_audio,
-                np.zeros(input_audio_len - output_audio.shape[0], dtype=np.float32),
-            ]
-        )
+        output_audio = np.concatenate([
+            output_audio,
+            np.zeros(input_audio_len - output_audio.shape[0], dtype=np.float32),
+        ])
         return output_audio
