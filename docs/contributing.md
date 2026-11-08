@@ -1,5 +1,0 @@
-(contributing)=
-
-```{include} ../CONTRIBUTING.md
-
-```

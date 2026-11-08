@@ -11,109 +11,23 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
-        with:
-          python-version: 3.x
-      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd # v3.0.1
-
-  # Make sure commit messages follow the conventional commits convention:
-  # https://www.conventionalcommits.org
-  commitlint:
-    name: Lint Commit Messages
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-        with:
-          fetch-depth: 0
-      - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed # v6.2.1
-
-  test:
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version:
-          # - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
-          - "3.13"
-        os:
-          - ubuntu-latest
-          # - windows-latest
-          # - macOS-latest
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
-        id: setup-python
-        with:
-          python-version: ${{ matrix.python-version }}
-      - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
-      - run: uv sync --no-python-downloads
-        shell: bash
-      - run: uv run pytest
-        shell: bash
-      - uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-  release:
-    needs:
-      - test
-      - lint
-      - commitlint
-
-    runs-on: ubuntu-latest
-    environment: release
-    concurrency: release
+  ci:
+    uses: 34j/.github/.github/workflows/python-package-ci.yml@main
     permissions:
-      id-token: write
       attestations: write
       contents: write
-
+      id-token: write
+  publish:
+    if: needs.ci.outputs.released == 'true'
+    needs: ci
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      id-token: write
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/download-artifact@v4
         with:
-          fetch-depth: 0
-          ref: ${{ github.sha }}
-
-      - name: Checkout commit for release
-        run: |
-          git checkout -B ${{ github.ref_name }} ${{ github.sha }}
-
-      # Do a dry run of PSR
-      - name: Test release
-        uses: python-semantic-release/python-semantic-release@b700dbeb1f431a0fcc30a79f3f0869407fe07278 # v10
-        if: github.ref_name != 'main'
-        with:
-          root_options: --noop
-          github_token: noop
-
-      # On main branch: actual PSR + upload to PyPI & GitHub
-      - name: Release
-        uses: python-semantic-release/python-semantic-release@b700dbeb1f431a0fcc30a79f3f0869407fe07278 # v10
-        id: release
-        if: github.ref_name == 'main'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Attest build provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4
-        if: steps.release.outputs.released == 'true'
-        with:
-          subject-path: "dist/*"
-
+          name: python-package-dist
+          path: dist
       - name: Publish package distributions to PyPI
-        uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # release/v1
-        if: steps.release.outputs.released == 'true'
-
-      - name: Publish package distributions to GitHub Releases
-        uses: python-semantic-release/publish-action@99d4062dd393b5a7a62c5fe9ed78fb364b5674f2 # v10
-        if: steps.release.outputs.released == 'true'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ steps.release.outputs.tag }}
+        uses: pypa/gh-action-pypi-publish@v1.14.0

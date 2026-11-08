@@ -19,7 +19,6 @@ from torch.nn import functional as F
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard.writer import SummaryWriter
 
-import so_vits_svc_fork.f0
 import so_vits_svc_fork.modules.commons as commons
 import so_vits_svc_fork.utils
 
@@ -441,21 +440,19 @@ class VitsLightning(pl.LightningModule):
         if self.hparams.model.get("type_") == "mb-istft":
             self.log_("loss/g/subband", loss_subband)
         if self.total_batch_idx % self.hparams.train.log_interval == 0:
-            self.log_image_dict(
-                {
-                    "slice/mel_org": utils.plot_spectrogram_to_numpy(y_mel[0].data.cpu().float().numpy()),
-                    "slice/mel_gen": utils.plot_spectrogram_to_numpy(y_hat_mel[0].data.cpu().float().numpy()),
-                    "all/mel": utils.plot_spectrogram_to_numpy(mel[0].data.cpu().float().numpy()),
-                    "all/lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
-                        lf0[0, 0, :].cpu().float().numpy(),
-                        pred_lf0[0, 0, :].detach().cpu().float().numpy(),
-                    ),
-                    "all/norm_lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
-                        lf0[0, 0, :].cpu().float().numpy(),
-                        norm_lf0[0, 0, :].detach().cpu().float().numpy(),
-                    ),
-                }
-            )
+            self.log_image_dict({
+                "slice/mel_org": utils.plot_spectrogram_to_numpy(y_mel[0].data.cpu().float().numpy()),
+                "slice/mel_gen": utils.plot_spectrogram_to_numpy(y_hat_mel[0].data.cpu().float().numpy()),
+                "all/mel": utils.plot_spectrogram_to_numpy(mel[0].data.cpu().float().numpy()),
+                "all/lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
+                    lf0[0, 0, :].cpu().float().numpy(),
+                    pred_lf0[0, 0, :].detach().cpu().float().numpy(),
+                ),
+                "all/norm_lf0": so_vits_svc_fork.utils.plot_data_to_numpy(
+                    lf0[0, 0, :].cpu().float().numpy(),
+                    norm_lf0[0, 0, :].detach().cpu().float().numpy(),
+                ),
+            })
 
         accumulate_grad_batches = self.hparams.train.get("accumulate_grad_batches", 1)
         should_update = (batch_idx + 1) % accumulate_grad_batches == 0 or self.trainer.is_last_batch
@@ -503,12 +500,10 @@ class VitsLightning(pl.LightningModule):
             y_hat = self.net_g.infer(c, f0, uv, g=g)
             y_hat_mel = mel_spectrogram_torch(y_hat.squeeze(1).float(), self.hparams)
             self.log_audio_dict({f"gen/audio_{batch_idx}": y_hat[0], f"gt/audio_{batch_idx}": y[0]})
-            self.log_image_dict(
-                {
-                    "gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().float().numpy()),
-                    "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().float().numpy()),
-                }
-            )
+            self.log_image_dict({
+                "gen/mel": utils.plot_spectrogram_to_numpy(y_hat_mel[0].cpu().float().numpy()),
+                "gt/mel": utils.plot_spectrogram_to_numpy(mel[0].cpu().float().numpy()),
+            })
 
     def on_validation_end(self) -> None:
         self.save_checkpoints()

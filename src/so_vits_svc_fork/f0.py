@@ -86,7 +86,8 @@ def compute_f0_parselmouth(
     f0_min = 50
     f0_max = 1100
     f0 = (
-        parselmouth.Sound(x, sampling_rate)
+        parselmouth
+        .Sound(x, sampling_rate)
         .to_pitch_ac(
             time_step=time_step / 1000,
             voicing_threshold=0.6,

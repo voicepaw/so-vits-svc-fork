@@ -49,7 +49,6 @@ def mel_spectrogram_torch(audio: torch.Tensor, hps: HParams) -> torch.Tensor:
 from logging import getLogger
 
 import torch
-import torch.utils.data
 from librosa.filters import mel as librosa_mel_fn
 
 LOG = getLogger(__name__)
