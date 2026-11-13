@@ -24,7 +24,7 @@ classifiers = [
   "Topic :: Software Development :: Libraries",
 ]
 dependencies = [
-  "click>=8.1.8",
+  "click>=8.5.1",
   "cm-time>=0.1.2",
   "fastapi>=0.116.1",
   "librosa>=0.11",
