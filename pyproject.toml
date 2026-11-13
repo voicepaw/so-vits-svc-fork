@@ -47,7 +47,7 @@ dependencies = [
   "torchaudio>=2.8",
   "torchcrepe>=0.0.24",
   "tqdm>=4.67.1",
-  "tqdm-joblib>=0.0.4",
+  "tqdm-joblib>=0.0.5",
   "transformers>=4.56.1",
 ]
 urls."Bug Tracker" = "https://github.com/voicepaw/so-vits-svc-fork/issues"
