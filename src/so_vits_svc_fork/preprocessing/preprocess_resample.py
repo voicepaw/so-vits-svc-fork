@@ -103,10 +103,11 @@ def preprocess_resample(
     output_dir = Path(output_dir)
     """Preprocess audio files in input_dir and save them to output_dir."""
 
-    out_paths = []
     in_paths = list(input_dir.rglob("*.*"))
     if not in_paths:
         raise ValueError(f"No audio files found in {input_dir}")
+    in_and_out_paths: list[tuple[Path, Path]] = []
+    out_paths: list[Path] = []
     for in_path in in_paths:
         in_path_relative = in_path.relative_to(input_dir)
         if not in_path.is_absolute() and is_relative_to(in_path, Path("dataset_raw") / "44k"):
@@ -126,8 +127,7 @@ def preprocess_resample(
         out_path = _get_unique_filename(out_path, out_paths)
         out_path.parent.mkdir(parents=True, exist_ok=True)
         out_paths.append(out_path)
-
-    in_and_out_paths = list(zip(in_paths, out_paths))
+        in_and_out_paths.append((in_path, out_path))
 
     with tqdm_joblib(desc="Preprocessing", total=len(in_and_out_paths)):
         Parallel(n_jobs=n_jobs)(
